@@ -1,0 +1,104 @@
+/*
+// open lancto
+// open colancto
+// open itlancto
+// open histlanc
+// open tpmovto
+
+// open infotce
+// open tbinftce
+
+// open infocad
+// open tbinfcad
+
+// open fontes
+// open fundos
+
+open plano
+open planomg
+open receitas
+open econorca
+open cadsiop
+open relsiop
+
+// plano     69
+// planomg  332
+// receitas 137
+// econorca 242
+// cadsiop   82
+// relsiop   83
+
+
+clear econorca
+constraint_set 1
+constrain econorca.ano le '2019'
+constrained_find first econorca by recnum
+while [found]
+ reread econorca
+ delete econorca
+ unlock
+ constrained_find next
+end
+constraint_set 1 clear
+
+clear receitas
+constraint_set 1
+constrain receitas.ano le '2019'
+constrained_find first receitas by recnum
+while [found]
+ reread receitas
+ delete receitas
+ unlock
+ constrained_find next
+end
+constraint_set 1 clear
+
+clear plano
+constraint_set 1
+constrain plano.ano le '2019'
+constrained_find first plano by recnum
+while [found]
+ reread plano
+ delete plano
+ unlock
+ constrained_find next
+end
+constraint_set 1 clear
+
+clear planomg
+constraint_set 1
+constrain planomg.ano le '2019'
+constrained_find first planomg by recnum
+while [found]
+ reread planomg
+ delete planomg
+ unlock
+ constrained_find next
+end
+constraint_set 1 clear
+
+clear cadsiop
+constraint_set 1
+constrain cadsiop.ano le '2019'
+constrained_find first cadsiop by recnum
+while [found]
+ reread cadsiop
+ delete cadsiop
+ unlock
+ constrained_find next
+end
+constraint_set 1 clear
+
+clear relsiop
+constraint_set 1
+constrain relsiop.ano le '2019'
+constrained_find first relsiop by recnum
+while [found]
+ reread relsiop
+ delete relsiop
+ unlock
+ constrained_find next
+end
+constraint_set 1 clear
+
+abort
