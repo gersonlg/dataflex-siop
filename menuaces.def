@@ -1,0 +1,43 @@
+-----------------------------------------------------------------------------
+  DATE: 25/10/2023      TIME: 17:31                                  PAGE:  1
+  FILE DEFINITION FOR FILE: MENUACES (# 203)
+-----------------------------------------------------------------------------
+  DRIVER NAME               : DATAFLEX
+  FILE ROOT NAME            : MENUACES
+  USER DISPLAY NAME         : MENUACES
+  DATAFLEX FILE NAME        : MENUACES
+-----------------------------------------------------------------------------
+  RECORD LENGTH             : 56        ( USED: 52 )
+  MAX NUMBER OF RECORDS     : 16711679  ( USED: 0 )
+  FILE COMPRESSION          : NONE
+  RE-USE DELETED SPACE      : YES
+  LOCKING TYPE              : FILE
+  HEADER INTEGRITY CHECKING : YES
+  TRANSACTION TYPE          : CLIENT ATOMIC
+  RECORD IDENTITY INDEX     : 0 ( 0 , 0 )
+  FILE LOGIN PARAMETER      : 
+  SYSTEM FILE               : NO 
+-----------------------------------------------------------------------------
+
+NUM  FIELD NAME       TYPE SIZE  OFFST IX   RELATES TO FILE.FIELD
+---  ---------------  ---- ----- ----- --   ---------------------------------
+  1  COD_ENTIDADE     ASC      2     1  1   
+  2  EXERCICIO        ASC      4     3  1   
+  3  NOME             ASC     12     7      
+  4  N_OPCAO          ASC      2    19  1   
+  5  PROGRAMA         ASC      8    21      
+  6  COD_USUARIO      ASC      5    29  1   
+  7  DATA             DAT      3    34  1   
+  8  ENTRADA          ASC      8    37      
+  9  SAIDA            ASC      8    45      
+
+
+INDEX# FIELDS          DES U/C    LENGTH LEVELS SEGMENTS MODE
+------ --------------- --- ---    ------ ------ -------- -------
+  1    COD_ENTIDADE    NO  NO       19     6       6     ON-LINE
+       EXERCICIO       NO  NO 
+       COD_USUARIO     NO  NO 
+       DATA            NO  NO 
+       N_OPCAO         NO  NO 
+       RECNUM          NO  NO 
+

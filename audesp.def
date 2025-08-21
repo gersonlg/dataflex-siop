@@ -1,0 +1,34 @@
+-----------------------------------------------------------------------------
+  DATE: 25/10/2023      TIME: 17:31                                  PAGE:  1
+  FILE DEFINITION FOR FILE: AUDESP (# 244)
+-----------------------------------------------------------------------------
+  DRIVER NAME               : DATAFLEX
+  FILE ROOT NAME            : AUDESP
+  USER DISPLAY NAME         : AUDESP
+  DATAFLEX FILE NAME        : AUDESP
+-----------------------------------------------------------------------------
+  RECORD LENGTH             : 46        ( USED: 44 )
+  MAX NUMBER OF RECORDS     : 16711679  ( USED: 14 )
+  FILE COMPRESSION          : NONE
+  RE-USE DELETED SPACE      : YES
+  LOCKING TYPE              : FILE
+  HEADER INTEGRITY CHECKING : YES
+  TRANSACTION TYPE          : CLIENT ATOMIC
+  RECORD IDENTITY INDEX     : 0 ( 0 , 0 )
+  FILE LOGIN PARAMETER      : 
+  SYSTEM FILE               : NO 
+-----------------------------------------------------------------------------
+
+NUM  FIELD NAME       TYPE SIZE  OFFST IX   RELATES TO FILE.FIELD
+---  ---------------  ---- ----- ----- --   ---------------------------------
+  1  CODIGO           NUM    4.0     1  1   
+  2  DESCRICAO        ASC     40     3  2   
+  3  TAMANHO_COD      NUM    4.0    43      
+
+
+INDEX# FIELDS          DES U/C    LENGTH LEVELS SEGMENTS MODE
+------ --------------- --- ---    ------ ------ -------- -------
+  1    CODIGO          NO  NO       2      4       1     ON-LINE
+
+  2    DESCRICAO       NO  NO       40     7       1     ON-LINE
+

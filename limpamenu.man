@@ -1,0 +1,132 @@
+//--rodar a ferramenta enquanto o lost_menu.txt conter registros
+/*
+
+STRING ST_MENU ST_LINHA
+
+OPEN MENUCOMP
+OPEN MENUTITU
+OPEN TEMPCALC
+
+INICIO:
+ZEROFILE TEMPCALC
+
+//--salva nomes de menus no tempaude para buscar menus perdidos
+CLEAR MENUCOMP
+CONSTRAINT_SET 1
+CONSTRAINED_FIND FIRST MENUCOMP BY INDEX.1
+WHILE [FOUND]
+ 
+ CLEAR TEMPCALC
+ MOVE 'LOST'                TO TEMPCALC.USUARIO
+ MOVE (TRIM(MENUCOMP.NOME)) TO TEMPCALC.CODIGO
+ FIND EQ TEMPCALC BY INDEX.1
+ [ FOUND] REREAD TEMPCALC
+ SAVERECORD TEMPCALC
+ UNLOCK
+ 
+ CONSTRAINT_SET 1
+ CONSTRAINED_FIND NEXT
+ END
+CONSTRAINT_SET 1 CLEAR
+
+
+//--busca por chamadas ao nome do menu
+DIRECT_OUTPUT CHANNEL 1 'lost_menu.txt'
+APPEND_OUTPUT CHANNEL 2 'lost_menu_completo.txt'
+
+CLEAR TEMPCALC
+CONSTRAINT_SET 1
+CONSTRAIN TEMPCALC.USUARIO EQ 'LOST'
+CONSTRAINED_FIND FIRST TEMPCALC BY INDEX.1
+WHILE [FOUND]
+ 
+ MOVE (TRIM(TEMPCALC.CODIGO)) TO ST_MENU
+ 
+ CLEAR MENUCOMP
+ MOVE ST_MENU TO MENUCOMP.NOME
+ FIND EQ MENUCOMP BY INDEX.1
+ [~FOUND] BEGIN
+           GOTOXY 10 0
+           SHOWLN MENUCOMP.RECNUM
+           SHOWLN TEMPCALC.CODIGO
+          END
+ 
+ INDICATE TEM! FALSE
+ 
+ CLEAR MENUCOMP
+ CONSTRAINT_SET 2
+ CONSTRAINED_FIND FIRST MENUCOMP BY INDEX.1
+ WHILE [FOUND]
+  GOTOXY 20 0
+  SHOWLN MENUCOMP.NOME ' ' MENUCOMP.RECNUM
+ 
+  FOR FIELDINDEX FROM 0 TO 6
+   IF MENUCOMP.PROG_MENU& EQ ST_MENU INDICATE TEM! TRUE
+   
+   GOTOXY 21 0
+   SHOWLN MENUCOMP.NOME ' ' MENUCOMP.RECNUM ' ' MENUCOMP.PROG_MENU&
+   
+  LOOP
+  CONSTRAINT_SET 2
+  CONSTRAINED_FIND NEXT
+  END
+ CONSTRAINT_SET 2 CLEAR
+ 
+ [~TEM!] IF ST_MENU NE 'SISTEMA' BEGIN
+                                  WRITELN CHANNEL 1 TEMPCALC.CODIGO
+                                  WRITELN CHANNEL 2 TEMPCALC.CODIGO
+                                  
+                                  GOTOXY 15 0
+                                  SHOWLN TEMPCALC.CODIGO
+                                  
+                                  CLEAR MENUCOMP
+                                  MOVE ST_MENU TO MENUCOMP.NOME
+                                  FIND EQ MENUCOMP BY INDEX.1
+                                  [ FOUND] BEGIN
+                                            REREAD MENUCOMP
+                                            DELETE MENUCOMP
+                                            UNLOCK
+                                           END
+                                 END
+ 
+ CONSTRAINT_SET 1
+ CONSTRAINED_FIND NEXT
+ END
+CONSTRAINT_SET 1 CLEAR
+
+
+//--apaga menutitu sem menucomp
+CLEAR MENUTITU
+CONSTRAINT_SET 1
+CONSTRAINED_FIND FIRST MENUTITU BY INDEX.1
+WHILE [FOUND]
+
+ CLEAR MENUCOMP
+ MOVE MENUTITU.NOME TO MENUCOMP.NOME
+ FIND EQ MENUCOMP BY INDEX.1
+ [~FOUND] BEGIN
+           REREAD MENUTITU
+           DELETE MENUTITU
+           UNLOCK
+          END
+
+ CONSTRAINT_SET 1
+ CONSTRAINED_FIND NEXT
+ END
+CONSTRAINT_SET 1 CLEAR
+
+CLOSE_OUTPUT
+
+MOVE '' TO ST_LINHA
+DIRECT_INPUT CHANNEL 1 'lost_menu.txt'
+READLN       CHANNEL 1 ST_LINHA
+
+IF ST_LINHA NE '' BEGIN
+                   CLEARXY 0 0
+                   SHOWLN ' - lost_menu.txt com registro - '
+                   GOTO INICIO
+                  END
+
+ZEROFILE TEMPCALC
+
+ABORT

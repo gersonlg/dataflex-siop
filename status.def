@@ -1,0 +1,58 @@
+-----------------------------------------------------------------------------
+  DATE: 25/10/2023      TIME: 17:31                                  PAGE:  1
+  FILE DEFINITION FOR FILE: STATUS (# 250)
+-----------------------------------------------------------------------------
+  DRIVER NAME               : DATAFLEX
+  FILE ROOT NAME            : STATUS
+  USER DISPLAY NAME         : STATUS
+  DATAFLEX FILE NAME        : STATUS
+-----------------------------------------------------------------------------
+  RECORD LENGTH             : 73        ( USED: 72 )
+  MAX NUMBER OF RECORDS     : 16711679  ( USED: 0 )
+  FILE COMPRESSION          : NONE
+  RE-USE DELETED SPACE      : YES
+  LOCKING TYPE              : FILE
+  HEADER INTEGRITY CHECKING : YES
+  TRANSACTION TYPE          : CLIENT ATOMIC
+  RECORD IDENTITY INDEX     : 0 ( 0 , 0 )
+  FILE LOGIN PARAMETER      : 
+  SYSTEM FILE               : NO 
+-----------------------------------------------------------------------------
+
+NUM  FIELD NAME       TYPE SIZE  OFFST IX   RELATES TO FILE.FIELD
+---  ---------------  ---- ----- ----- --   ---------------------------------
+  1  COD_ENTIDADE     ASC      2     1  1   
+  2  EXERCICIO        ASC      4     3  1   
+  3  TABELA           ASC      8     7  1   
+  4  CODIGO_1         ASC     20    15  1   
+  5  CODIGO_2         ASC     10    35  1   
+  6  STATUS           ASC      1    45      
+  7  MES              ASC      2    46  1   
+  8  ANO              ASC      4    48  1   
+  9  ENVIADO          ASC      1    52      
+ 10  CODIGO_3         ASC     10    53  1   
+ 11  CODIGO_4         ASC     10    63  1   
+
+
+INDEX# FIELDS          DES U/C    LENGTH LEVELS SEGMENTS MODE
+------ --------------- --- ---    ------ ------ -------- -------
+  1    COD_ENTIDADE    NO  NO       70     9       9     ON-LINE
+       EXERCICIO       NO  NO 
+       TABELA          NO  NO 
+       CODIGO_1        NO  NO 
+       CODIGO_2        NO  NO 
+       CODIGO_3        NO  NO 
+       CODIGO_4        NO  NO 
+       MES             NO  NO 
+       ANO             NO  NO 
+
+  2    COD_ENTIDADE    NO  NO       70     9       9     ON-LINE
+       EXERCICIO       NO  NO 
+       MES             NO  NO 
+       ANO             NO  NO 
+       TABELA          NO  NO 
+       CODIGO_1        NO  NO 
+       CODIGO_2        NO  NO 
+       CODIGO_3        NO  NO 
+       CODIGO_4        NO  NO 
+

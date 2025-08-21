@@ -1,0 +1,673 @@
+/TELA RESIDENT
+³ __/__/____  ________________________________________________________         ³
+ÆÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍµ
+³                                                                              ³
+³                                                                              ³
+³                                                                              ³
+³                                                                              ³
+³                                                                              ³
+³                                                                              ³
+³                                                                              ³
+³                                                                              ³
+³                                                                              ³
+³                                                                              ³
+³                                                                              ³
+³                                                                              ³
+³                                                                              ³
+³                                                                              ³
+³                                                                              ³
+³                                                                              ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                             <ESC> Retorna                                    ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/TELA_COMPLETA RESIDENT
+³                                                                              ³
+³ Estado                 __                               Exerc¡cio    ____    ³
+³                                                                              ³
+³ C¢digo - TCE           ____________              Tipo _            Grau _    ³
+³                                                                              ³
+³ Descri‡„o              __________________________________________________    ³
+³                                                                              ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                                                                              ³
+³ C¢digo - SIOPS   ____  _________________         Tipo _            Grau _    ³
+³                                                                              ³
+³ Descri‡„o              __________________________________________________    ³
+³                        __________________________________________________    ³
+³                        __________________________________________________    ³
+³                        __________________________________________________    ³
+³                                                                              ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³______________________________________________________________________________³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/TELA_PESQUISA RESIDENT
+³______________________________________________________________________________³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³______________________________________________________________________________³
+³______________________________________________________________________________³
+³______________________________________________________________________________³
+³______________________________________________________________________________³
+³______________________________________________________________________________³
+³______________________________________________________________________________³
+³______________________________________________________________________________³
+³______________________________________________________________________________³
+³______________________________________________________________________________³
+³______________________________________________________________________________³
+³______________________________________________________________________________³
+³______________________________________________________________________________³
+³______________________________________________________________________________³
+³______________________________________________________________________________³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ <Enter> Completa           <F2> Altera Relacionamento         <ESC> Retorna  ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/BUFFER RESIDENT
+T  ________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+1  ________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+2  ________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+3  ________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+4  ________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+5  ________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+6  ________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+7  ________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+8  ________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+9  ________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+10 ________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+11 ________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+12 ________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+13 ________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+14 ________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+/TELA_RECNUM RESIDENT
+TITULO _________.
+1      _________.
+2      _________.
+3      _________.
+4      _________.
+5      _________.
+6      _________.
+7      _________.
+8      _________.
+9      _________.
+10     _________.
+11     _________.
+12     _________.
+13     _________.
+14     _________.
+/FANTASMA RESIDENT
+___________,___.__
+/SELECAO RESIDENT
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³                      Estado __    EXERC¡CIO ____                           ³
+³                                                                            ³
+³               Entre com o C¢DIGO da ECONOMICA desejada ou                  ³
+³                           <Enter> para todas.                              ³
+³                              ____________                                  ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/CONFIRMA RESIDENT
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³______________________________________________________________________________³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/*
+#INCLUDE CONAM.LIB
+
+STRING ST_MONTALINHA 240 ST@LINHA 240 ST_CODIGO  ST_DESTINO ST_COD_ENTIDADE 2 ST_DESCRICAO 50 ST_SISTEMA ST_NATUREZA ST_CODIGO_SIOPS_ANTES
+STRING ST_AUX        255
+
+INTEGER IT_CONTADOR IT@LINHAS  IT_JANELA IT_RECNUM
+
+#COMMAND MONTALINHA
+ MOVE ECONORCA.DESCRICAO TO ST_DESCRICAO
+
+ MOVE '' TO ST@LINHA
+ APPEND ST@LINHA ' Ano   C¢digo        Descri‡„o                                           T  G'
+
+ MOVE ST@LINHA TO JN_BUFFER_TITULO
+ MOVE '' TO ST_MONTALINHA
+ APPEND ST_MONTALINHA ' ' ECONORCA.ANO '  ' ECONORCA.CODIGO '  ' ST_DESCRICAO '  ' ECONORCA.TIPO '  ' ECONORCA.GRAU
+
+#ENDCOMMAND
+
+#COMMAND SOBE_1
+  MOVE JN_BUFFER_2  TO JN_BUFFER_1
+  MOVE JN_BUFFER_3  TO JN_BUFFER_2
+  MOVE JN_BUFFER_4  TO JN_BUFFER_3
+  MOVE JN_BUFFER_5  TO JN_BUFFER_4
+  MOVE JN_BUFFER_6  TO JN_BUFFER_5
+  MOVE JN_BUFFER_7  TO JN_BUFFER_6
+  MOVE JN_BUFFER_8  TO JN_BUFFER_7
+  MOVE JN_BUFFER_9  TO JN_BUFFER_8
+  MOVE JN_BUFFER_10 TO JN_BUFFER_9
+  MOVE JN_BUFFER_11 TO JN_BUFFER_10
+  MOVE JN_BUFFER_12 TO JN_BUFFER_11
+  MOVE JN_BUFFER_13 TO JN_BUFFER_12
+  MOVE JN_BUFFER_14 TO JN_BUFFER_13
+
+  MOVE JN_RECNUM_2  TO JN_RECNUM_1
+  MOVE JN_RECNUM_3  TO JN_RECNUM_2
+  MOVE JN_RECNUM_4  TO JN_RECNUM_3
+  MOVE JN_RECNUM_5  TO JN_RECNUM_4
+  MOVE JN_RECNUM_6  TO JN_RECNUM_5
+  MOVE JN_RECNUM_7  TO JN_RECNUM_6
+  MOVE JN_RECNUM_8  TO JN_RECNUM_7
+  MOVE JN_RECNUM_9  TO JN_RECNUM_8
+  MOVE JN_RECNUM_10 TO JN_RECNUM_9
+  MOVE JN_RECNUM_11 TO JN_RECNUM_10
+  MOVE JN_RECNUM_12 TO JN_RECNUM_11
+  MOVE JN_RECNUM_13 TO JN_RECNUM_12
+  MOVE JN_RECNUM_14 TO JN_RECNUM_13
+#ENDCOMMAND
+
+#COMMAND DESCE_1
+  MOVE JN_BUFFER_13 TO JN_BUFFER_14
+  MOVE JN_BUFFER_12 TO JN_BUFFER_13
+  MOVE JN_BUFFER_11 TO JN_BUFFER_12
+  MOVE JN_BUFFER_10 TO JN_BUFFER_11
+  MOVE JN_BUFFER_9  TO JN_BUFFER_10
+  MOVE JN_BUFFER_8  TO JN_BUFFER_9
+  MOVE JN_BUFFER_7  TO JN_BUFFER_8
+  MOVE JN_BUFFER_6  TO JN_BUFFER_7
+  MOVE JN_BUFFER_5  TO JN_BUFFER_6
+  MOVE JN_BUFFER_4  TO JN_BUFFER_5
+  MOVE JN_BUFFER_3  TO JN_BUFFER_4
+  MOVE JN_BUFFER_2  TO JN_BUFFER_3
+  MOVE JN_BUFFER_1  TO JN_BUFFER_2
+
+  MOVE JN_RECNUM_13 TO JN_RECNUM_14
+  MOVE JN_RECNUM_12 TO JN_RECNUM_13
+  MOVE JN_RECNUM_11 TO JN_RECNUM_12
+  MOVE JN_RECNUM_10 TO JN_RECNUM_11
+  MOVE JN_RECNUM_9  TO JN_RECNUM_10
+  MOVE JN_RECNUM_8  TO JN_RECNUM_9
+  MOVE JN_RECNUM_7  TO JN_RECNUM_8
+  MOVE JN_RECNUM_6  TO JN_RECNUM_7
+  MOVE JN_RECNUM_5  TO JN_RECNUM_6
+  MOVE JN_RECNUM_4  TO JN_RECNUM_5
+  MOVE JN_RECNUM_3  TO JN_RECNUM_4
+  MOVE JN_RECNUM_2  TO JN_RECNUM_3
+  MOVE JN_RECNUM_1  TO JN_RECNUM_2
+#ENDCOMMAND
+
+AUTOPAGE TELA
+NAME JN_TARJA_DATA
+NAME JN_TARJA_TITULO
+
+AUTOPAGE SELECAO
+NAME JN_UF JN_ANO
+NAME JN_CODIGO_SELECAO
+
+AUTOPAGE TELA_COMPLETA
+NAME JN_ESTADO
+NAME JN_EXERCICIO
+NAME JN_CODIGO_TCE
+NAME JN_TIPO_TCE             JN_GRAU_TCE
+NAME JN_DESCRICAO_TCE
+NAME JN_F2                   
+NAME JN_CODIGO_SIOPS
+NAME JN_TIPO_SIOPS           JN_GRAU_SIOPS
+NAME JN_DESCRICAO_SIOPS_1
+NAME JN_DESCRICAO_SIOPS_2
+NAME JN_DESCRICAO_SIOPS_3
+NAME JN_DESCRICAO_SIOPS_4
+NAME JN_RODAPE
+
+AUTOPAGE TELA_PESQUISA
+NAME JN_TITULO
+NAME JN_LINHA_1
+NAME JN_LINHA_2
+NAME JN_LINHA_3
+NAME JN_LINHA_4
+NAME JN_LINHA_5
+NAME JN_LINHA_6
+NAME JN_LINHA_7
+NAME JN_LINHA_8
+NAME JN_LINHA_9
+NAME JN_LINHA_10
+NAME JN_LINHA_11
+NAME JN_LINHA_12
+NAME JN_LINHA_13
+NAME JN_LINHA_14
+
+AUTOPAGE BUFFER
+NAME JN_BUFFER_TITULO
+NAME JN_BUFFER_1
+NAME JN_BUFFER_2
+NAME JN_BUFFER_3
+NAME JN_BUFFER_4
+NAME JN_BUFFER_5
+NAME JN_BUFFER_6
+NAME JN_BUFFER_7
+NAME JN_BUFFER_8
+NAME JN_BUFFER_9
+NAME JN_BUFFER_10
+NAME JN_BUFFER_11
+NAME JN_BUFFER_12
+NAME JN_BUFFER_13
+NAME JN_BUFFER_14
+
+AUTOPAGE TELA_RECNUM
+NAME JN_RECNUM_TITULO
+NAME JN_RECNUM_1
+NAME JN_RECNUM_2
+NAME JN_RECNUM_3
+NAME JN_RECNUM_4
+NAME JN_RECNUM_5
+NAME JN_RECNUM_6
+NAME JN_RECNUM_7
+NAME JN_RECNUM_8
+NAME JN_RECNUM_9
+NAME JN_RECNUM_10
+NAME JN_RECNUM_11
+NAME JN_RECNUM_12
+NAME JN_RECNUM_13
+NAME JN_RECNUM_14
+
+OPEN ECONORCA
+OPEN RELSIOP
+OPEN CADSIOP
+
+PAGE SET CONFIRMA      AT 21 00  COLORS IT_COR_TARJA  IT_COR_MOLDURA
+PAGE SET TELA          AT 03 00  COLORS IT_COR_TARJA  IT_COR_MOLDURA
+PAGE SET SELECAO       AT 10 01  COLORS IT_COR_TARJA  IT_COR_TITULO
+PAGE SET TELA_PESQUISA AT 05 00  COLORS IT_COR_TARJA  IT_COR_MOLDURA
+PAGE SET TELA_COMPLETA AT 05 00  COLORS IT_COR_TARJA  IT_COR_MOLDURA
+
+SCREENMODE IT_COR_MOLDURA ON
+SYSDATA JN_TARJA_DATA
+SCREENMODE IT_COR_TITULO ON
+CABEC 'PESQUISA RELACIONAMENTO DESPESA TCE - SIOPS' JN_TARJA_TITULO
+SCREENMODE IT_COR_TARJA ON
+
+MOVE 'SIOPS'   TO ST_SISTEMA
+MOVE 'DESPESA' TO ST_NATUREZA
+
+INICIO:
+KEYPROC OFF
+PAGE TELA
+PAGE SELECAO
+
+IF ST@CODIGO@ENTIDADE NE '01' BEGIN
+                               ADVERTE 'PROGRAMA INDISPONIVEL PARA ESTA ENTIDADE'
+                               ABORT
+                              END
+
+SCREENMODE IT_COR_TARJA ON
+CLEARFORM JN_UF THRU JN_CODIGO_SELECAO
+
+MOVE PARGERAL.ESTADO    TO JN_UF
+MOVE PARGERAL.EXERCICIO TO JN_ANO
+
+ACCEPT JN_CODIGO_SELECAO {AUTOCLEAR}
+[ KEY.ESCAPE] ABORT
+IF JN_CODIGO_SELECAO EQ '' MOVE '3' TO JN_CODIGO_SELECAO
+
+PONTUA_ECONOMICA JN_CODIGO_SELECAO
+MOVE JN_CODIGO_SELECAO TO ST_CODIGO
+
+CLEAR ECONORCA
+MOVE JN_UF           TO ECONORCA.UF
+MOVE JN_ANO          TO ECONORCA.ANO
+MOVE ST_CODIGO       TO ECONORCA.CODIGO
+FIND EQ ECONORCA BY INDEX.1
+[~FOUND] BEGIN
+          FIND GT ECONORCA BY INDEX.1
+          [ FOUND] INDICATE FOUND AS ECONORCA.UF  EQ JN_UF
+          [ FOUND] INDICATE FOUND AS ECONORCA.ANO EQ JN_ANO
+          [~FOUND] BEGIN
+                    DISPENSA 357
+                   END
+         END
+
+FIND LT ECONORCA BY INDEX.1
+[ FOUND] MOVE ECONORCA.RECNUM TO IT_RECNUM
+[~FOUND] MOVE '0'             TO IT_RECNUM
+
+MOVE 0 TO IT_JANELA
+SCREENMODE IT_COR_MOLDURA ON
+
+LB_ROTINA_INICIO:
+
+ CLEARFORM JN_BUFFER_1 THRU JN_BUFFER_14
+ CLEARFORM JN_RECNUM_1 THRU JN_RECNUM_14
+
+ MOVE 0  TO IT_CONTADOR 
+ MOVE 0  TO WINDOWINDEX
+ MOVE 14 TO IT@LINHAS
+
+ CLEAR ECONORCA
+ MOVE IT_RECNUM TO ECONORCA.RECNUM
+ FIND EQ ECONORCA BY RECNUM
+
+FOR IT_CONTADOR FROM 1 TO IT@LINHAS
+ FIND GT ECONORCA BY INDEX.1
+ [  FOUND] INDICATE FOUND AS ECONORCA.UF  EQ JN_UF
+ [  FOUND] INDICATE FOUND AS ECONORCA.ANO EQ JN_ANO
+ [FINDERR] BEGIN
+             IF (WINDOWINDEX-1) LT IT_JANELA CALC (WINDOWINDEX-1) TO IT_JANELA
+             MOVE IT@LINHAS TO IT_CONTADOR
+           END
+
+ [FOUND] BEGIN
+          MONTALINHA
+          MOVE ST_MONTALINHA   TO JN_BUFFER_1&
+          MOVE ECONORCA.RECNUM TO JN_RECNUM_1&
+          INCREMENT WINDOWINDEX
+         END
+LOOP 
+
+ ENCHE_TELA
+ PAGE TELA_PESQUISA
+
+ MOVE IT_JANELA     TO WINDOWINDEX
+ MOVE ECONORCA.RECNUM TO IT_RECNUM
+
+ REPEAT
+  GOSUB ALTA_INTENSIDADE
+  INKEY ST_TECLA
+  GOSUB BAIXA_INTENSIDADE
+
+  [KEY.RIGHT] BEGIN
+               IF IT@POSICAO LE (IT@MAXIMO-76) BEGIN
+                                                INCREMENT IT@POSICAO
+                                                ENCHE_TELA
+                                               END
+              END
+
+  [KEY.LEFT] IF IT@POSICAO NE 1 BEGIN
+                                 DECREMENT IT@POSICAO
+                                 ENCHE_TELA
+                                END
+
+  [KEY.ESCAPE] BEGIN
+                CLEAR ECONORCA
+                GOTO INICIO
+               END
+
+  [KEY.UP] BEGIN                            // SET SOBE
+            IF WINDOWINDEX NE 0 DECREMENT WINDOWINDEX
+            ELSE BEGIN
+                  CLEAR ECONORCA
+                  MOVE JN_RECNUM_1 TO ECONORCA.RECNUM
+                  FIND EQ ECONORCA BY RECNUM
+                  FIND LT ECONORCA BY INDEX.1
+                  [FOUND] INDICATE FOUND AS ECONORCA.UF  EQ JN_UF
+                  [FOUND] INDICATE FOUND AS ECONORCA.ANO EQ JN_ANO
+                  [FOUND] BEGIN
+                           DESCE_1
+                           MONTALINHA
+                           MOVE ST_MONTALINHA   TO JN_BUFFER_1
+                           MOVE ECONORCA.RECNUM TO JN_RECNUM_1
+                           ENCHE_TELA
+                          END
+                 END
+           END
+
+  [KEY.DOWN] BEGIN                         // SET DESCE
+               IF WINDOWINDEX EQ (IT@LINHAS-1) BEGIN
+                                                CLEAR ECONORCA
+                                                MOVE JN_RECNUM_14 TO ECONORCA.RECNUM
+                                                FIND EQ ECONORCA BY RECNUM
+                                                FIND GT ECONORCA BY INDEX.1
+                                                [FOUND] INDICATE FOUND AS ECONORCA.UF  EQ JN_UF
+                                                [FOUND] INDICATE FOUND AS ECONORCA.ANO EQ JN_ANO
+                                                [FOUND] BEGIN
+                                                         SOBE_1
+                                                         MONTALINHA
+                                                         MOVE ST_MONTALINHA   TO JN_BUFFER_14
+                                                         MOVE ECONORCA.RECNUM TO JN_RECNUM_14
+                                                         ENCHE_TELA
+                                                        END
+                                              END
+              ELSE BEGIN
+                    INCREMENT WINDOWINDEX
+                    IF JN_RECNUM_1& EQ 0 DECREMENT WINDOWINDEX
+                   END
+            END
+
+  [KEY.NEXT] IF JN_RECNUM_14 NE 0 BEGIN
+                                   CLEAR ECONORCA
+                                   MOVE JN_RECNUM_14 TO ECONORCA.RECNUM
+                                   FIND EQ ECONORCA BY RECNUM
+                                   FIND GT ECONORCA BY INDEX.1
+                                   [FOUND] INDICATE FOUND AS ECONORCA.UF  EQ JN_UF
+                                   [FOUND] INDICATE FOUND AS ECONORCA.ANO EQ JN_ANO
+                                   [FOUND] BEGIN
+                                            MOVE JN_RECNUM_14 TO IT_RECNUM
+                                            MOVE WINDOWINDEX  TO IT_JANELA
+                                            GOTO LB_ROTINA_INICIO
+                                           END
+                                  END
+
+  [KEY.PREVIOUS] BEGIN
+                  CLEAR ECONORCA
+                  MOVE JN_RECNUM_1 TO ECONORCA.RECNUM
+                  FIND EQ ECONORCA BY RECNUM
+                  FOR IT_CONTADOR FROM 1 TO (IT@LINHAS+1)
+                   FIND LT ECONORCA BY INDEX.1
+                   [ FOUND] INDICATE FOUND AS ECONORCA.UF  EQ JN_UF
+                   [ FOUND] INDICATE FOUND AS ECONORCA.ANO EQ JN_ANO
+                   [~FOUND] MOVE (IT@LINHAS+1)    TO IT_CONTADOR
+                   [ FOUND] MOVE ECONORCA.RECNUM  TO IT_RECNUM
+                  LOOP
+
+                  MOVE WINDOWINDEX  TO IT_JANELA
+
+                  [~FOUND] BEGIN
+                            CLEAR ECONORCA
+                            MOVE JN_UF           TO ECONORCA.UF
+                            MOVE JN_ANO          TO ECONORCA.ANO
+                            FIND GT ECONORCA BY INDEX.1
+                            [ FOUND] INDICATE FOUND AS ECONORCA.UF  EQ JN_UF
+                            [ FOUND] INDICATE FOUND AS ECONORCA.ANO EQ JN_ANO
+                            [ FOUND] BEGIN
+                                      FIND LT ECONORCA BY INDEX.1
+                                      [ FOUND] MOVE ECONORCA.RECNUM TO IT_RECNUM
+                                      [~FOUND] MOVE '0'             TO IT_RECNUM
+                                     END
+                           END
+                  GOTO LB_ROTINA_INICIO
+                 END
+
+  [ KEY.RETURN] BEGIN
+                 CLEAR ECONORCA
+                 MOVE JN_RECNUM_1& TO ECONORCA.RECNUM
+                 FIND EQ ECONORCA BY RECNUM
+                 
+                 CLEAR RELSIOP
+                 MOVE ECONORCA.UF     TO RELSIOP.UF
+                 MOVE ECONORCA.ANO    TO RELSIOP.ANO
+                 MOVE ST_SISTEMA      TO RELSIOP.SISTEMA
+                 MOVE ST_NATUREZA     TO RELSIOP.NATUREZA
+                 MOVE ECONORCA.CODIGO TO RELSIOP.CODIGO_TCE
+                 MOVE ''              TO RELSIOP.CNR
+                 FIND EQ RELSIOP BY INDEX.2
+                 [~FOUND] CLEAR RELSIOP
+                 
+                 CLEAR CADSIOP
+                 MOVE ST_SISTEMA          TO CADSIOP.SISTEMA
+                 MOVE JN_ANO              TO CADSIOP.ANO
+                 MOVE ST_NATUREZA         TO CADSIOP.NATUREZA
+                 MOVE RELSIOP.CODIGO_SIOP TO CADSIOP.CODIGO
+                 FIND EQ CADSIOP BY INDEX.1
+                 [~FOUND] CLEAR CADSIOP
+                 
+                 SCREENMODE IT_COR_MOLDURA ON
+                 BLANKFORM                            JN_F2
+                 CABEC 'Qualquer Tecla Para Retornar' JN_RODAPE
+                 SCREENMODE IT_COR_TARJA ON
+                 BLANKFORM JN_ESTADO       THRU JN_DESCRICAO_TCE
+                 BLANKFORM JN_CODIGO_SIOPS THRU JN_DESCRICAO_SIOPS_4
+                 
+                 MOVE ECONORCA.UF                     TO JN_ESTADO
+                 MOVE ECONORCA.ANO                    TO JN_EXERCICIO
+                 MOVE ECONORCA.CODIGO                 TO JN_CODIGO_TCE
+                 MOVE ECONORCA.DESCRICAO              TO JN_DESCRICAO_TCE
+                 MOVE ECONORCA.TIPO                   TO JN_TIPO_TCE
+                 MOVE ECONORCA.GRAU                   TO JN_GRAU_TCE
+                
+                 MOVE CADSIOP.CODIGO                  TO JN_CODIGO_SIOPS
+                 MOVE (MID(CADSIOP.DESCRICAO,50,1))   TO JN_DESCRICAO_SIOPS_1
+                 MOVE (MID(CADSIOP.DESCRICAO,50,51))  TO JN_DESCRICAO_SIOPS_2
+                 MOVE (MID(CADSIOP.DESCRICAO,50,101)) TO JN_DESCRICAO_SIOPS_3
+                 MOVE (MID(CADSIOP.DESCRICAO,50,151)) TO JN_DESCRICAO_SIOPS_4
+                 MOVE CADSIOP.TIPO                    TO JN_TIPO_SIOPS
+                 MOVE CADSIOP.GRAU                    TO JN_GRAU_SIOPS
+                 PAGE TELA_COMPLETA
+                 GOTOXY 25 0
+                 INKEY ST_TECLA
+                 MOVE 0 TO CURRENT_IMAGE
+                 SCREENMODE IT_COR_MOLDURA ON
+                END
+
+  [ KEY.FIELD] BEGIN
+                CLEAR ECONORCA
+                MOVE JN_RECNUM_1& TO ECONORCA.RECNUM
+                FIND EQ ECONORCA BY RECNUM
+                
+                IF ECONORCA.TIPO NE 'A' BEGIN
+                                         ADVERTE 'RELACIONAMENTO SOMENTE PARA CONTAS ANALITICAS'
+                                         GOTO LB_CONTINUA
+                                        END
+
+                CLEAR RELSIOP
+                MOVE ECONORCA.UF     TO RELSIOP.UF
+                MOVE ECONORCA.ANO    TO RELSIOP.ANO
+                MOVE ST_SISTEMA      TO RELSIOP.SISTEMA
+                MOVE ST_NATUREZA     TO RELSIOP.NATUREZA
+                MOVE ECONORCA.CODIGO TO RELSIOP.CODIGO_TCE
+                MOVE ''              TO RELSIOP.CNR
+                FIND EQ RELSIOP BY INDEX.2
+                [~FOUND] CLEAR RELSIOP
+                
+                CLEAR CADSIOP
+                MOVE ST_SISTEMA          TO CADSIOP.SISTEMA
+                MOVE JN_ANO              TO CADSIOP.ANO
+                MOVE ST_NATUREZA         TO CADSIOP.NATUREZA
+                MOVE RELSIOP.CODIGO_SIOP TO CADSIOP.CODIGO
+                FIND EQ CADSIOP BY INDEX.1
+                [~FOUND] CLEAR CADSIOP
+                
+                SCREENMODE IT_COR_MOLDURA ON
+                MOVE  '<F2>'         TO JN_F2
+                CABEC '<ESC> Retorna'   JN_RODAPE
+                SCREENMODE IT_COR_TARJA ON
+                BLANKFORM JN_ESTADO       THRU JN_DESCRICAO_TCE
+                BLANKFORM JN_CODIGO_SIOPS THRU JN_DESCRICAO_SIOPS_4
+                
+                MOVE ECONORCA.UF                     TO JN_ESTADO
+                MOVE ECONORCA.ANO                    TO JN_EXERCICIO
+                MOVE ECONORCA.CODIGO                 TO JN_CODIGO_TCE
+                MOVE ECONORCA.DESCRICAO              TO JN_DESCRICAO_TCE
+                MOVE ECONORCA.TIPO                   TO JN_TIPO_TCE
+                MOVE ECONORCA.GRAU                   TO JN_GRAU_TCE
+               
+                MOVE CADSIOP.CODIGO                  TO JN_CODIGO_SIOPS
+                MOVE (MID(CADSIOP.DESCRICAO,50,1))   TO JN_DESCRICAO_SIOPS_1
+                MOVE (MID(CADSIOP.DESCRICAO,50,51))  TO JN_DESCRICAO_SIOPS_2
+                MOVE (MID(CADSIOP.DESCRICAO,50,101)) TO JN_DESCRICAO_SIOPS_3
+                MOVE (MID(CADSIOP.DESCRICAO,50,151)) TO JN_DESCRICAO_SIOPS_4
+                MOVE CADSIOP.TIPO                    TO JN_TIPO_SIOPS
+                MOVE CADSIOP.GRAU                    TO JN_GRAU_SIOPS
+                MOVE JN_CODIGO_SIOPS                 TO ST_CODIGO_SIOPS_ANTES
+                PAGE TELA_COMPLETA
+                
+                LB_INICIO_ALTERACAO:
+                
+                ACCEPT JN_CODIGO_SIOPS {AUTOCLEAR}
+                [ KEY.ESCAPE] GOTO LB_CONTINUA
+                [ KEY.FIELD] BEGIN
+                              MOVE 'CCADSIOP 1 ' TO ST_DESTINO 
+                              APPEND ST_DESTINO ST@USUARIO ' ' ST@OPCAO ' ' ST@PROGRAMA ' ' ST@CODIGO@ENTIDADE ' ' ST@EXERCICIO@FINANCEIRO ' ' ST_NATUREZA ' ' 'SIOPS'
+                              
+                              CHAIN WAIT ST_DESTINO EXPORT_FILES
+                              MOVE 0 TO CURRENT_IMAGE
+                              PAGE TELA
+                              PAGE TELA_COMPLETA
+                              IF CADSIOP.CODIGO NE '' TRIM CADSIOP.CODIGO TO JN_CODIGO_SIOPS
+                              ELSE GOTO LB_INICIO_ALTERACAO
+                             END
+                
+                PONTUA_ECONOMICA_SIOPS JN_CODIGO_SIOPS PARGERAL.EXERCICIO
+                
+                CLEAR CADSIOP
+                MOVE ST_SISTEMA      TO CADSIOP.SISTEMA
+                MOVE JN_ANO          TO CADSIOP.ANO
+                MOVE ST_NATUREZA     TO CADSIOP.NATUREZA
+                MOVE JN_CODIGO_SIOPS TO CADSIOP.CODIGO
+                FIND EQ CADSIOP BY INDEX.1
+                [~FOUND] BEGIN
+                          ADVERTE 'CODIGO INFORMADO NAO ENCONTRADO'
+                          GOTO LB_INICIO_ALTERACAO
+                         END
+                
+                IF CADSIOP.TIPO NE 'A' BEGIN
+                                        ADVERTE 'CODIGO INFORMADO DEVERA SER ANALITICO'
+                                        GOTO LB_INICIO_ALTERACAO
+                                       END
+                
+                MOVE (MID(CADSIOP.DESCRICAO,50,1))   TO JN_DESCRICAO_SIOPS_1
+                MOVE (MID(CADSIOP.DESCRICAO,50,51))  TO JN_DESCRICAO_SIOPS_2
+                MOVE (MID(CADSIOP.DESCRICAO,50,101)) TO JN_DESCRICAO_SIOPS_3
+                MOVE (MID(CADSIOP.DESCRICAO,50,151)) TO JN_DESCRICAO_SIOPS_4
+                MOVE CADSIOP.TIPO                    TO JN_TIPO_SIOPS
+                MOVE CADSIOP.GRAU                    TO JN_GRAU_SIOPS
+                
+                SCREENMODE IT_COR_TITULO ON
+                CABEC 'CONFIRMA RELACIONAMENTO <S/N>' CONFIRMA.1
+                SCREENMODE IT_COR_TARJA ON
+                PAGE CONFIRMA
+                INKEYCHECK ST_TECLA IN 'SsNn'
+                IF ST_TECLA IN 'Nn' GOTO LB_INICIO_ALTERACAO
+                ELSE BEGIN
+                      CLEAR RELSIOP
+                      MOVE ECONORCA.UF     TO RELSIOP.UF
+                      MOVE ECONORCA.ANO    TO RELSIOP.ANO
+                      MOVE ST_SISTEMA      TO RELSIOP.SISTEMA
+                      MOVE ST_NATUREZA     TO RELSIOP.NATUREZA
+                      MOVE ECONORCA.CODIGO TO RELSIOP.CODIGO_TCE
+                      MOVE ''              TO RELSIOP.CNR
+                      FIND EQ RELSIOP BY INDEX.2
+                      INDICATE ERR FALSE
+                      ON ERROR GOSUB CHECA_GRAVACAO
+                      [ FOUND] REREAD RELSIOP
+                      MOVE JN_CODIGO_SIOPS TO RELSIOP.CODIGO_SIOP
+                      SAVERECORD RELSIOP
+                      UNLOCK
+                      ON ERROR OFF
+                               
+                      MOVE 'RELACIONAMENTO RECEITA SIOPS - DE: ' TO ST_AUX
+                      APPEND ST_AUX JN_CODIGO_TCE ' ' ST_CODIGO_SIOPS_ANTES ' PARA: ' JN_CODIGO_TCE ' ' JN_CODIGO_SIOPS
+                      GRAVAINCLUSAO 'RELSIOP' ST_AUX 'A'
+                     END
+                
+                MOVE 0 TO CURRENT_IMAGE
+                SCREENMODE IT_COR_MOLDURA ON
+               END
+
+LB_CONTINUA:
+PAGE TELA_PESQUISA
+GOSUB ALTA_INTENSIDADE
+
+LOOP
+ABORT
+
+BAIXA_INTENSIDADE:
+ SCREENMODE IT_COR_MOLDURA ON
+ DISPLAY JN_LINHA_1& TO JN_LINHA_1&
+ GOTOXY 25 0
+RETURN
+
+ALTA_INTENSIDADE:
+ SCREENMODE IT_COR_TITULO ON
+ DISPLAY JN_LINHA_1& TO JN_LINHA_1&
+ GOTOXY 25 0
+RETURN
+
+KEYPROC KEY.HELP
+AJUDA
+PAGE TELA_PESQUISA
+GOTOXY 30 0
+RETURN
+
+#INCLUDE INTEGRID.INC
+
+
+

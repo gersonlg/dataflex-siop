@@ -1,0 +1,54 @@
+-----------------------------------------------------------------------------
+  DATE: 27/05/2024      TIME: 15:53                                  PAGE:  1
+  FILE DEFINITION FOR FILE: FONTES (# 220)
+-----------------------------------------------------------------------------
+  DRIVER NAME               : DATAFLEX
+  FILE ROOT NAME            : FONTES
+  USER DISPLAY NAME         : FONTES
+  DATAFLEX FILE NAME        : FONTES
+-----------------------------------------------------------------------------
+  RECORD LENGTH             : 102       ( USED: 97 )
+  MAX NUMBER OF RECORDS     : 16711679  ( USED: 2192 )
+  FILE COMPRESSION          : NONE
+  RE-USE DELETED SPACE      : YES
+  LOCKING TYPE              : FILE
+  HEADER INTEGRITY CHECKING : YES
+  TRANSACTION TYPE          : CLIENT ATOMIC
+  RECORD IDENTITY INDEX     : 0 ( 0 , 0 )
+  FILE LOGIN PARAMETER      : 
+  SYSTEM FILE               : NO 
+-----------------------------------------------------------------------------
+
+NUM  FIELD NAME       TYPE SIZE  OFFST IX   RELATES TO FILE.FIELD
+---  ---------------  ---- ----- ----- --   ---------------------------------
+  1  EXERCICIO        ASC      4     1  1   
+  2  TIPO             ASC      1     5  1   
+  3  CODIGO           ASC      5     6  1   
+  4  DESCRICAO        ASC     50    11  2   
+  5  STATUS           ASC      1    61      
+  6  NIVEL_APLICACAO  ASC      1    62      
+  7  SALDO_CAIXA      NUM   14.2    63      
+  8  PERCENTUAL       NUM    4.2    71      
+  9  TP_APLICACAO     ASC      2    74      
+ 10  FONTE_AUX        ASC      2    76      
+ 11  COD_APLIC_AUX    ASC      7    78      
+ 12  DETALHA          ASC      1    85      
+ 13  INICIO_VIGENCIA  ASC      4    86      
+ 14  FIM_VIGENCIA     ASC      4    90      
+ 15  CONVENIO         ASC      1    94      
+ 16  CONTRATO         ASC      1    95      
+ 17  CONVENIO_SICOM   ASC      1    96      
+ 18  CONTRATO_SICOM   ASC      1    97      
+
+
+INDEX# FIELDS          DES U/C    LENGTH LEVELS SEGMENTS MODE
+------ --------------- --- ---    ------ ------ -------- -------
+  1    EXERCICIO       NO  NO       10     5       3     ON-LINE
+       TIPO            NO  NO 
+       CODIGO          NO  NO 
+
+  2    EXERCICIO       NO  NO       60     8       4     ON-LINE
+       TIPO            NO  NO 
+       DESCRICAO       NO  NO 
+       CODIGO          NO  NO 
+

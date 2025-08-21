@@ -1,0 +1,618 @@
+/TELA RESIDENT
+ÚÄ SIOPE - SIOPS ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ ____ ¿
+³______________________________________________________________________________³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ __/__/____  ________________________________________________________         ³
+ÆÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍµ
+³                                                                              ³
+³                                                                              ³
+ÃÄÄÄÄÄÄÄÄÄÄ IMPORTA€ŽO DO BALANCETE ISOLADO CONTA CONT BIL - AUDESP ÄÄÄÄÄÄÄÄÄÄÄ´
+³                                                                              ³
+³                                                                              ³
+³                                                                              ³
+³                                                                              ³
+³    Informe a Entidade <F2> : __ _________________________________________    ³
+³                                                                              ³
+³                                                                              ³
+³    Mˆs / Ano desejado      : __ / ____                                       ³
+³                                                                              ³
+³                                                                              ³
+³    Arquivo : ____________________________________________________________    ³
+³                                                                              ³
+³                                                                              ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                               <ESC>  Retorna                                 ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/RODAPE
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                               <ESC>  Retorna                                 ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/CONFIRMA RESIDENT
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³______________________________________________________________________________³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/MSG RESIDENT
+ÚÄÄÄÄÄÄÄÄÄ IMPORTA€ŽO DO BALANCETE ISOLADO CONTA CONT BIL - AUDESP ÄÄÄÄÄÄÄÄÄÄ¿
+³                                                                            ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ SOLICITADO ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                                                                            ³
+³                                                                            ³
+³                        Entidade __  Mes __ / ____                          ³
+³                                                                            ³
+³                                                                            ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ PROCESSANDO ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                                                                            ³
+³                                                                            ³
+³          Lendo : ______________.        Gravando : ______________.         ³
+³                                                                            ³
+³                                                                            ³
+³                                                                            ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/MENSAGEM RESIDENT
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ A T E N € Ž O !!! ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³                                                           ³
+³     Problemas na exporta‡„o do arquivo : ________         ³
+³                                                           ³
+³                                                           ³
+³     C¢digo da Entidade n„o confere com o cadastro         ³
+³                      deste arquivo.                       ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/*
+#INCLUDE CONAM.LIB
+#INCLUDE AUDESP.LIB
+#INCLUDE CAMINHO.LIB
+
+#COMMAND LER
+ READLN !1
+ TRIM !1 TO !1
+ CALC (JN_LENDO +1) TO JN_LENDO
+#ENDCOMMAND
+
+#COMMAND PEGA_DADO
+#IFDEF    IT@POS@INICIO
+#ELSE
+   INTEGER IT@POS@INICIO
+#ENDIF
+#IFDEF    IT@POS@FINAL
+#ELSE
+   INTEGER IT@POS@FINAL
+#ENDIF
+#IFDEF    IT@AUX
+#ELSE
+   INTEGER IT@AUX
+#ENDIF
+#IFDEF    IT@TAMANHO
+#ELSE
+   INTEGER IT@TAMANHO
+#ENDIF
+#IFDEF    ST@STRING
+#ELSE
+   STRING  ST@STRING 255
+#ENDIF
+ 
+ INDICATE @PEGOU! FALSE
+ 
+ IF !1 IN !3 BEGIN
+  POS !1 IN !3 TO IT@POS@INICIO
+  POS !2 IN !3 TO IT@POS@FINAL
+ 
+  LENGTH !1                               TO IT@AUX
+  CALC (IT@POS@INICIO + IT@AUX)           TO IT@POS@INICIO
+  CALC (IT@POS@FINAL  - IT@POS@INICIO)    TO IT@TAMANHO
+  MOVE (MID(!3,IT@TAMANHO,IT@POS@INICIO)) TO ST@STRING
+  TRIM ST@STRING TO ST@STRING
+ 
+  MOVE (TRIM(ST@STRING)) TO !4
+  
+  INDICATE @PEGOU! TRUE
+  END
+#ENDCOMMAND
+
+STRING ST_JUNTA           ST_ARQUIVO     255 ST_AUX             255 ST_LINHA           255
+STRING ST_NOME_USUARIO    ST_DIRETORIO   255 ST_SAIDA           255 ST_CAMINHO         255
+STRING ST_DATA_INICIAL 10 ST_DATA_FINAL   10 ST_DATA_INICIAL_ANO 10
+STRING ST_STRING      255 ST_ADVERTE     255 ST_ACERTA_XML      255 ST_CABECALHO
+STRING ST_ULTIMO_MES    2 ST_FINAL
+
+STRING ST_CONTA
+STRING ST_ANO
+STRING ST_TIPO_DOCUMENTO
+STRING ST_ENTIDADE
+STRING ST_ENTIDADE_CTB
+STRING ST_DATA_CRIACAO
+STRING ST_COD_MUNICIPIO
+STRING ST_MES
+
+STRING ST_SALDO_INICIAL
+STRING ST_NATUREZA_INICIAL
+STRING ST_CREDITO
+STRING ST_DEBITO
+STRING ST_SALDO_FINAL
+STRING ST_NATUREZA_FINAL
+
+STRING ST_DC_RESULTADO 1
+
+NUMBER NB_CREDITO NB_DEBITO NB_SALDO_INICIAL NB_SALDO_FINAL NB_RESULTADO
+
+DATE DT_DATA_INICIAL DT_DATA_FINAL DT_DATA_INICIAL_ANO DT_DATA_LANCAMENTO
+
+INTEGER IT_COD_MUNICIPIO IT_COD_ENTIDADE IT_POS_INICIO IT_POS_FINAL IT_TAMANHO IT_AUX IT_LINHAS
+
+STRING ST_MENSAGEM 255
+
+AUTOPAGE TELA
+NAME JN_EXERCICIO
+NAME JN_TARJA
+NAME JN_TARJA_DATA   JN_TARJA_TITULO
+NAME JN_COD_ENTIDADE JN_ENTIDADE
+NAME JN_MES          JN_ANO
+NAME JN_ARQUIVO
+
+AUTOPAGE MSG
+NAME JN_MSG_ENTIDADE JN_MSG_MES JN_MSG_ANO
+NAME JN_LENDO
+NAME JN_GRAVANDO
+
+OPEN ENTIDADE
+OPEN BALANCO
+OPEN PLANO
+
+INDICATE PREFEITURA! AS PARGERAL.COD_ENTIDADE EQ '01'
+
+MOVE '14' TO ST_ULTIMO_MES
+
+PAGE SET MSG       AT 05 01 COLORS IT_COR_TITULO IT_COR_TITULO
+PAGE SET TELA      AT  0  0 COLORS IT_COR_TARJA  IT_COR_MOLDURA
+PAGE SET RODAPE    AT 21  0 COLORS IT_COR_TARJA  IT_COR_MOLDURA
+PAGE SET CONFIRMA  AT 21  0 COLORS IT_COR_TARJA  IT_COR_MOLDURA
+PAGE SET MENSAGEM  AT 10 10 COLORS IT_COR_TARJA  IT_COR_TITULO
+
+MOVE ST@PREFEITURA TO ST_CABECALHO
+REPEAT
+ REPLACE '@' IN ST_CABECALHO WITH ' '
+UNTIL [~FOUND]
+
+SCREENMODE IT_COR_MOLDURA ON
+MOVE PARGERAL.EXERCICIO TO JN_EXERCICIO
+SYSDATA JN_TARJA_DATA
+SCREENMODE IT_COR_TITULO ON
+CABEC 'M¢DULO DE IMPORTA€ŽO DE DADOS - AUDESP' JN_TARJA_TITULO
+SCREENMODE IT_COR_TARJA ON
+CABEC ST_CABECALHO JN_TARJA
+
+INICIO:
+SCREENMODE IT_COR_TARJA ON
+
+MOVE PARGERAL.EXERCICIO TO JN_ANO
+
+MOVEALL 0 TO IT_COD_MUNICIPIO IT_COD_ENTIDADE
+
+[ PREFEITURA!] BEGIN
+                REPEAT
+                 ACCEPT JN_COD_ENTIDADE {AUTOCLEAR}
+                 [KEY.ESCAPE] ABORT
+                 IF JN_COD_ENTIDADE EQ '' MENSAGEM 1
+                 ELSE BEGIN
+                       COMZEROS JN_COD_ENTIDADE 2
+                       CLEAR ENTIDADE
+                       MOVE ST@EXERCICIO@FINANCEIRO TO ENTIDADE.EXERCICIO
+                       MOVE JN_COD_ENTIDADE         TO ENTIDADE.CODIGO
+                       FIND EQ ENTIDADE BY INDEX.1
+                       [~FOUND] BEGIN
+                                 ADVERTE 'ENTIDADE NŽO CADASTRADA'
+                                 CLEARFORM JN_COD_ENTIDADE THRU JN_ENTIDADE
+                                END
+                      END
+                UNTIL JN_COD_ENTIDADE NE ''
+                MOVE ENTIDADE.DESCRICAO TO JN_ENTIDADE
+
+                IF ENTIDADE.ORGAO_TCE EQ '' BEGIN
+                                             ADVERTE 'ATUALIZAR O CADASTRO DE ENTIDADES, CAMPO ORGAO-AUDESP'
+                                             GOTO INICIO
+                                            END
+               END
+
+[~PREFEITURA!] BEGIN
+                MOVE PARGERAL.COD_ENTIDADE TO JN_COD_ENTIDADE
+                
+                CLEAR ENTIDADE
+                MOVE ST@EXERCICIO@FINANCEIRO TO ENTIDADE.EXERCICIO
+                MOVE JN_COD_ENTIDADE         TO ENTIDADE.CODIGO
+                FIND EQ ENTIDADE BY INDEX.1
+                [~FOUND] CLEAR ENTIDADE
+                
+                MOVE ENTIDADE.DESCRICAO TO JN_ENTIDADE
+               END
+
+MOVE ENTIDADE.ORGAO_TCE TO IT_COD_ENTIDADE
+MOVE PARGERAL.COD_SIAFI TO IT_COD_MUNICIPIO
+
+//--verificar se precisa importar dados da entidade
+[ PREFEITURA!] BEGIN
+//                 VERIFICA_ENTIDADE_IMPORTACAO JN_COD_ENTIDADE JN_ANO 'MSG'
+               END
+
+LB_MES:
+ACCEPT JN_MES {AUTOCLEAR}
+[KEY.ESCAPE] ABORT
+IF JN_MES EQ '' GOTO INICIO
+COMZEROS JN_MES 2
+IF ((JN_MES LT '01') OR (JN_MES GT '14')) BEGIN
+ ADVERTE 'MˆS INV LIDO. TENTE NOVAMENTE.'
+ CLEARFORM JN_MES
+ GOTO INICIO
+ END
+
+REPEAT
+ ANO_2000 JN_ANO {AUTOCLEAR}
+UNTIL JN_ANO NE ''
+
+MOVE '01/'    TO ST_DATA_INICIAL
+MOVE '01/'    TO ST_DATA_FINAL
+MOVE '01/01/' TO ST_DATA_INICIAL_ANO
+
+APPEND ST_DATA_INICIAL_ANO JN_ANO
+IF JN_MES LT '12' BEGIN
+                   APPEND ST_DATA_INICIAL JN_MES '/' JN_ANO
+                   APPEND ST_DATA_FINAL (JN_MES + 1) '/' JN_ANO
+                  END
+ELSE              BEGIN
+                   APPEND ST_DATA_INICIAL '12' '/' JN_ANO
+                   APPEND ST_DATA_FINAL '01/' (JN_ANO + 1)
+                  END
+
+MOVE ST_DATA_INICIAL     TO DT_DATA_INICIAL
+MOVE ST_DATA_FINAL       TO DT_DATA_FINAL
+MOVE ST_DATA_INICIAL_ANO TO DT_DATA_INICIAL_ANO
+
+CALC (DT_DATA_FINAL - 1) TO DT_DATA_LANCAMENTO
+
+//-------------verifica se esta em linux
+VERSAO
+
+//--criar arquivo tidy.conf (configuracoes para acertar .xml (tidy.exe))
+CRIA_TIDY_CONF
+
+LB_ARQUIVO:
+
+MOVE (OBTER_PASTA_TEXTOS('TEXTOS','')) TO ST_CAMINHO
+
+ACCEPT JN_ARQUIVO {AUTOCLEAR}
+[KEY.ESCAPE] ABORT
+IF JN_ARQUIVO EQ '' BEGIN
+ MENSAGEM 1
+ GOTO INICIO
+ END
+APPEND ST_CAMINHO  (LOWERCASE(JN_ARQUIVO))
+DIRECT_INPUT ST_CAMINHO
+
+[ SEQEOF] BEGIN
+           ADVERTE 'ARQUIVO INEXISTENTE'
+           GOTO LB_ARQUIVO
+          END
+CLOSE_INPUT
+
+SCREENMODE IT_COR_TARJA ON
+MOVE JN_COD_ENTIDADE TO JN_MSG_ENTIDADE
+MOVE JN_MES          TO JN_MSG_MES
+MOVE JN_ANO          TO JN_MSG_ANO
+PAGE MSG
+
+CONFIRMACAO 'IMPORTA€ŽO'
+
+MOVE 'tidy -m -config tidy.conf' TO ST_ACERTA_XML
+APPEND ST_ACERTA_XML ' ' ST_CAMINHO ' ' '> null'
+GOTOXY 0 0
+RUNPROGRAM WAIT ST_ACERTA_XML
+
+//--outra maneira de estruturar os xml's de terceiros
+//--MOVE "sed -i 's/></>\n</g'" TO ST_ACERTA_XML
+
+PAGE TELA
+PAGE MSG
+GOTOXY 25 0
+
+//--
+//--verifica se arquivo possui mais que 3 linhas (rodou o tidy ok)
+//--
+DIRECT_INPUT ST_CAMINHO
+
+MOVE 0 TO IT_LINHAS
+
+REPEAT
+ [ SEQEOF] GOTO LB_CONTINUA
+
+ MOVE '' TO ST_AUX
+ READLN ST_AUX
+ IF ST_AUX NE '' INCREMENT IT_LINHAS
+ 
+LOOP
+
+LB_CONTINUA:
+CLOSE_INPUT
+
+IF IT_LINHAS LE 3 BEGIN
+                   ADVERTE 'VERIFIQUE PERMISSAO DE ACESSO AO ARQUIVO XML NA PASTA TEXTOS'
+                   ABORT
+                  END
+//--
+
+DIRECT_INPUT ST_CAMINHO
+
+//---------verifica arquivo
+REPEAT
+ [ SEQEOF] GOTO LB_GRAVA
+
+ LER ST_LINHA
+ 
+         INDICATE LER! AS '<Descritor>'     IN ST_LINHA
+ [~LER!] INDICATE LER! AS '<ctb:Descritor>' IN ST_LINHA
+ [ LER!] BEGIN
+          IF '<ctb:Descritor>' IN ST_LINHA MOVE '</ctb:Descritor>' TO ST_FINAL
+          ELSE                             MOVE '</Descritor>'     TO ST_FINAL
+ 
+          REPEAT
+           LER ST_LINHA
+           PEGA_DADO '<gen:AnoExercicio>'    '</gen:AnoExercicio>'   ST_LINHA ST_ANO
+           PEGA_DADO '<gen:TipoDocumento>'   '</gen:TipoDocumento>'  ST_LINHA ST_TIPO_DOCUMENTO
+           PEGA_DADO '<gen:Entidade>'        '</gen:Entidade>'       ST_LINHA ST_ENTIDADE
+           PEGA_DADO '<gen:Municipio>'       '</gen:Municipio>'      ST_LINHA ST_COD_MUNICIPIO
+           PEGA_DADO '<gen:DataCriacaoXML>'  '</gen:DataCriacaoXML>' ST_LINHA ST_DATA_CRIACAO
+           PEGA_DADO '<gen:MesExercicio>'    '</gen:MesExercicio>'   ST_LINHA ST_MES
+          UNTIL ST_FINAL IN ST_LINHA
+
+          COMZEROS ST_MES 2
+
+          MOVE '' TO ST_ADVERTE
+               IF ST_ANO           NE JN_ANO           MOVE 'ANO DO DOCUMENTO XML DIFERENTE DO EXERC¡CIO CORRENTE'                         TO ST_ADVERTE
+          ELSE IF ST_ENTIDADE      NE IT_COD_ENTIDADE  MOVE 'C¢DIGO DA ENTIDADE DO DOCUMENTO XML NŽO CORRESPONDE AO CADASTRO DE ENTIDADES' TO ST_ADVERTE
+          ELSE IF ST_COD_MUNICIPIO NE IT_COD_MUNICIPIO MOVE 'C¢DIGO DO MUNIC¡PIO DO DOCUMENTO XML DIFERENTE DO PARAMETRO DO SISTEMA'       TO ST_ADVERTE
+          ELSE IF ST_MES           NE JN_MES           MOVE 'MES DO DOCUMENTO DO XML DIFERENTE DO INFORMADO NA SELE€ŽO'                    TO ST_ADVERTE
+
+          IF ST_MES LE '12' IF ST_TIPO_DOCUMENTO NE 'BALANCETE-ISOLADO-CONTA-CONTABIL'                 MOVE 'DOCUMENTO XML NŽO CORRESPONDE AO BALANCETE ISOLADO CONTA CONTABIL'        TO ST_ADVERTE
+          IF ST_MES EQ '13' IF ST_TIPO_DOCUMENTO NE 'BALANCETE-ISOLADO-ENCERRAMENTO-13-CONTA-CONTABIL' MOVE 'DOCUMENTO XML NŽO CORRESPONDE AO BALANCETE ISOLADO CONTA CONTABIL MES 13' TO ST_ADVERTE
+          IF ST_MES EQ '14' IF ST_TIPO_DOCUMENTO NE 'BALANCETE-ISOLADO-ENCERRAMENTO-14-CONTA-CONTABIL' MOVE 'DOCUMENTO XML NŽO CORRESPONDE AO BALANCETE ISOLADO CONTA CONTABIL MES 14' TO ST_ADVERTE
+
+          IF ST_ADVERTE NE '' BEGIN
+                               ADVERTE ST_ADVERTE
+                               GOTO INICIO
+                              END
+         END
+
+         INDICATE LER! AS '<MovimentoMensal>'     IN ST_LINHA
+ [~LER!] INDICATE LER! AS '<ctb:MovimentoMensal>' IN ST_LINHA
+ [ LER!] BEGIN
+          IF '<ctb:MovimentoMensal>' IN ST_LINHA MOVE '</ctb:MovimentoMensal>' TO ST_FINAL
+          ELSE                                   MOVE '</MovimentoMensal>'     TO ST_FINAL
+ 
+          REPEAT
+           LER ST_LINHA
+                      PEGA_DADO '<ContaContabil>'        '</ContaContabil>'        ST_LINHA ST_CONTA
+           [~@PEGOU!] PEGA_DADO '<ctb:ContaContabil>'    '</ctb:ContaContabil>'    ST_LINHA ST_CONTA
+                      PEGA_DADO '<EntidadeCtb>'          '</EntidadeCtb>'          ST_LINHA ST_ENTIDADE_CTB
+           [~@PEGOU!] PEGA_DADO '<ctb:EntidadeCtb>'      '</ctb:EntidadeCtb>'      ST_LINHA ST_ENTIDADE_CTB
+                      PEGA_DADO '<SaldoInicial>'         '</SaldoInicial>'         ST_LINHA ST_SALDO_INICIAL
+           [~@PEGOU!] PEGA_DADO '<ctb:SaldoInicial>'     '</ctb:SaldoInicial>'     ST_LINHA ST_SALDO_INICIAL
+                      PEGA_DADO '<NatInicial>'           '</NatInicial>'           ST_LINHA ST_NATUREZA_INICIAL
+           [~@PEGOU!] PEGA_DADO '<ctb:NatInicial>'       '</ctb:NatInicial>'       ST_LINHA ST_NATUREZA_INICIAL
+                      PEGA_DADO '<MovimentoCredito>'     '</MovimentoCredito>'     ST_LINHA ST_CREDITO
+           [~@PEGOU!] PEGA_DADO '<ctb:MovimentoCredito>' '</ctb:MovimentoCredito>' ST_LINHA ST_CREDITO
+                      PEGA_DADO '<MovimentoDebito>'      '</MovimentoDebito>'      ST_LINHA ST_DEBITO
+           [~@PEGOU!] PEGA_DADO '<ctb:MovimentoDebito>'  '</ctb:MovimentoDebito>'  ST_LINHA ST_DEBITO
+                      PEGA_DADO '<SaldoFinal>'           '</SaldoFinal>'           ST_LINHA ST_SALDO_FINAL
+           [~@PEGOU!] PEGA_DADO '<ctb:SaldoFinal>'       '</ctb:SaldoFinal>'       ST_LINHA ST_SALDO_FINAL
+                      PEGA_DADO '<NatFinal>'             '</NatFinal>'             ST_LINHA ST_NATUREZA_FINAL
+           [~@PEGOU!] PEGA_DADO '<ctb:NatFinal>'         '</ctb:NatFinal>'         ST_LINHA ST_NATUREZA_FINAL
+          UNTIL ST_FINAL IN ST_LINHA
+
+          IF ST_ENTIDADE_CTB NE IT_COD_ENTIDADE MOVE 'C¢DIGO DA ENTIDADE DO DOCUMENTO XML NŽO CORRESPONDE AO CADASTRO DE ENTIDADES' TO ST_ADVERTE
+          
+          PONTUA_CONTA_CONTABIL ST_CONTA
+
+          REPLACE '.' IN ST_SALDO_INICIAL WITH ','
+          REPLACE '.' IN ST_CREDITO       WITH ','
+          REPLACE '.' IN ST_DEBITO        WITH ','
+          REPLACE '.' IN ST_SALDO_FINAL   WITH ','
+
+          MOVE ST_CREDITO       TO NB_CREDITO
+          MOVE ST_DEBITO        TO NB_DEBITO
+          MOVE ST_SALDO_INICIAL TO NB_SALDO_INICIAL
+          MOVE ST_SALDO_FINAL   TO NB_SALDO_FINAL
+
+          IF ((NB_CREDITO LT 0) OR (NB_DEBITO LT 0) OR (NB_SALDO_INICIAL LT 0) OR (NB_SALDO_FINAL LT 0)) BEGIN
+                                                                                                          ADVERTE 'EXISTEM LAN€AMENTOS COM VALORES NEGATIVO, IMPOSS¡VEL PROSSEGUIR IMPORTA€ŽO'
+                                                                                                          GOTO INICIO
+                                                                                                         END
+
+          CLEAR PLANO
+          MOVE PARGERAL.ESTADO TO PLANO.UF
+          MOVE JN_ANO          TO PLANO.ANO
+          MOVE ST_CONTA        TO PLANO.CODIGO
+          FIND EQ PLANO BY INDEX.1
+          [~FOUND] BEGIN
+                    MOVE 'CONTA NŽO CADASTRADA NO PLANO DE CONTAS AUDESP:' TO ST_MENSAGEM
+                    APPEND ST_MENSAGEM ' ' ST_CONTA
+                    ADVERTE ST_MENSAGEM
+                    GOTO INICIO
+                   END
+         END
+LOOP
+
+LB_GRAVA:
+CLOSE_INPUT
+DIRECT_INPUT ST_CAMINHO
+GOSUB LB_LIMPA_ARQUIVOS
+
+//------le e grava arquivo
+REPEAT
+ [ SEQEOF] GOTO LB_SAIDA
+
+ LER ST_LINHA
+ 
+         INDICATE LER! AS '<Descritor>'     IN ST_LINHA
+ [~LER!] INDICATE LER! AS '<ctb:Descritor>' IN ST_LINHA
+ [ LER!] BEGIN
+          IF '<ctb:Descritor>' IN ST_LINHA MOVE '</ctb:Descritor>' TO ST_FINAL
+          ELSE                             MOVE '</Descritor>'     TO ST_FINAL
+          
+          REPEAT
+           LER ST_LINHA
+           
+           PEGA_DADO '<gen:AnoExercicio>'   '</gen:AnoExercicio>'   ST_LINHA ST_ANO
+           PEGA_DADO '<gen:TipoDocumento>'  '</gen:TipoDocumento>'  ST_LINHA ST_TIPO_DOCUMENTO
+           PEGA_DADO '<gen:Entidade>'       '</gen:Entidade>'       ST_LINHA ST_ENTIDADE
+           PEGA_DADO '<gen:Municipio>'      '</gen:Municipio>'      ST_LINHA ST_COD_MUNICIPIO
+           PEGA_DADO '<gen:DataCriacaoXML>' '</gen:DataCriacaoXML>' ST_LINHA ST_DATA_CRIACAO
+           PEGA_DADO '<gen:MesExercicio>'   '</gen:MesExercicio>'   ST_LINHA ST_MES
+          UNTIL ST_FINAL IN ST_LINHA
+         END
+
+         INDICATE LER! AS '<MovimentoMensal>'     IN ST_LINHA
+ [~LER!] INDICATE LER! AS '<ctb:MovimentoMensal>' IN ST_LINHA
+ [ LER!] BEGIN
+          IF '<ctb:MovimentoMensal>' IN ST_LINHA MOVE '</ctb:MovimentoMensal>' TO ST_FINAL
+          ELSE                                   MOVE '</MovimentoMensal>'     TO ST_FINAL
+          
+          REPEAT
+           LER ST_LINHA
+           
+                      PEGA_DADO '<ContaContabil>'        '</ContaContabil>'        ST_LINHA ST_CONTA
+           [~@PEGOU!] PEGA_DADO '<ctb:ContaContabil>'    '</ctb:ContaContabil>'    ST_LINHA ST_CONTA
+                      PEGA_DADO '<SaldoInicial>'         '</SaldoInicial>'         ST_LINHA ST_SALDO_INICIAL
+           [~@PEGOU!] PEGA_DADO '<ctb:SaldoInicial>'     '</ctb:SaldoInicial>'     ST_LINHA ST_SALDO_INICIAL
+                      PEGA_DADO '<NatInicial>'           '</NatInicial>'           ST_LINHA ST_NATUREZA_INICIAL
+           [~@PEGOU!] PEGA_DADO '<ctb:NatInicial>'       '</ctb:NatInicial>'       ST_LINHA ST_NATUREZA_INICIAL
+                      PEGA_DADO '<MovimentoCredito>'     '</MovimentoCredito>'     ST_LINHA ST_CREDITO
+           [~@PEGOU!] PEGA_DADO '<ctb:MovimentoCredito>' '</ctb:MovimentoCredito>' ST_LINHA ST_CREDITO
+                      PEGA_DADO '<MovimentoDebito>'      '</MovimentoDebito>'      ST_LINHA ST_DEBITO
+           [~@PEGOU!] PEGA_DADO '<ctb:MovimentoDebito>'  '</ctb:MovimentoDebito>'  ST_LINHA ST_DEBITO
+                      PEGA_DADO '<SaldoFinal>'           '</SaldoFinal>'           ST_LINHA ST_SALDO_FINAL
+           [~@PEGOU!] PEGA_DADO '<ctb:SaldoFinal>'       '</ctb:SaldoFinal>'       ST_LINHA ST_SALDO_FINAL
+                      PEGA_DADO '<NatFinal>'             '</NatFinal>'             ST_LINHA ST_NATUREZA_FINAL
+           [~@PEGOU!] PEGA_DADO '<ctb:NatFinal>'         '</ctb:NatFinal>'         ST_LINHA ST_NATUREZA_FINAL
+          UNTIL ST_FINAL IN ST_LINHA
+          
+          PONTUA_CONTA_CONTABIL ST_CONTA
+
+          REPLACE '.' IN ST_SALDO_INICIAL WITH ','
+          REPLACE '.' IN ST_CREDITO       WITH ','
+          REPLACE '.' IN ST_DEBITO        WITH ','
+          REPLACE '.' IN ST_SALDO_FINAL   WITH ','
+
+          MOVE ST_CREDITO       TO NB_CREDITO
+          MOVE ST_DEBITO        TO NB_DEBITO
+          MOVE ST_SALDO_INICIAL TO NB_SALDO_INICIAL
+          MOVE ST_SALDO_FINAL   TO NB_SALDO_FINAL
+
+          CLEAR PLANO
+          MOVE PARGERAL.ESTADO TO PLANO.UF
+          MOVE JN_ANO          TO PLANO.ANO
+          MOVE ST_CONTA        TO PLANO.CODIGO
+          FIND EQ PLANO BY INDEX.1
+          [~FOUND] BEGIN
+                    MOVE 'CONTA NŽO CADASTRADA NO PLANO DE CONTAS AUDESP:' TO ST_MENSAGEM
+                    APPEND ST_MENSAGEM ' ' ST_CONTA
+                    ADVERTE ST_MENSAGEM
+                    GOSUB LB_LIMPA_ARQUIVOS
+                    GOTO INICIO
+                   END
+
+          CLEAR BALANCO
+          MOVE JN_COD_ENTIDADE TO BALANCO.COD_ENTIDADE
+          MOVE ST_ANO          TO BALANCO.ANO
+          MOVE JN_MES          TO BALANCO.MES
+          MOVE ST_CONTA        TO BALANCO.CONTA
+          FIND EQ BALANCO BY INDEX.1
+          [ FOUND] BEGIN
+                    MOVE 'CONTA DUPLICADA NO XML:' TO ST_MENSAGEM
+                    APPEND ST_MENSAGEM ' ' ST_CONTA
+                    ADVERTE ST_MENSAGEM
+                    GOSUB LB_LIMPA_ARQUIVOS
+                    GOTO INICIO
+                   END
+
+          INDICATE ERR FALSE
+          ON ERROR GOSUB CHECA_GRAVACAO
+          REREAD
+          CLEAR BALANCO
+          MOVE JN_COD_ENTIDADE     TO BALANCO.COD_ENTIDADE
+          MOVE ST_ANO              TO BALANCO.ANO
+          MOVE JN_MES              TO BALANCO.MES
+          MOVE ST_CONTA            TO BALANCO.CONTA
+          MOVE ST_NATUREZA_INICIAL TO BALANCO.NAT_INICIAL
+          MOVE NB_SALDO_INICIAL    TO BALANCO.SALDO_INICIAL
+          MOVE NB_DEBITO           TO BALANCO.DEBITO
+          MOVE NB_CREDITO          TO BALANCO.CREDITO
+          MOVE NB_SALDO_FINAL      TO BALANCO.SALDO_FINAL
+          MOVE ST_NATUREZA_FINAL   TO BALANCO.NAT_FINAL
+          SAVERECORD BALANCO
+          CALC (JN_GRAVANDO + 1) TO JN_GRAVANDO
+          UNLOCK
+          ON ERROR OFF
+         END
+LOOP
+
+LB_SAIDA:
+CLOSE_INPUT
+
+MOVE 'IMPORTACAO BALANCO XML ENTIDADE: ' TO ST_AUX
+APPEND ST_AUX JN_COD_ENTIDADE ' MES: ' JN_MES '/' JN_ANO ' ARQUIVO: ' JN_ARQUIVO
+GRAVAINCLUSAO 'BALANCO' ST_AUX 'I'
+ 
+GOTO LB_MES
+ABORT
+
+LB_ROTINA_PARADA:
+ CABEC 'GOSTARIA REALMENTE DE SAIR < S/N >?' CONFIRMA.1
+ PAGE CONFIRMA
+ INKEYCHECK ST_TECLA IN 'SsNn'
+ IF ST_TECLA IN 'Ss' ABORT
+ MOVE 0 TO CURRENT_IMAGE
+ PAGE TELA
+ PAGE MSG
+RETURN
+
+LB_LIMPA_ARQUIVOS:
+ CLEAR BALANCO
+ CONSTRAINT_SET 1
+ CONSTRAIN BALANCO.ANO          EQ JN_ANO
+ CONSTRAIN BALANCO.MES          EQ JN_MES
+ CONSTRAIN BALANCO.COD_ENTIDADE EQ JN_COD_ENTIDADE
+ CONSTRAINED_FIND FIRST BALANCO BY INDEX.1
+ WHILE [FOUND]
+  CALC (JN_LENDO + 1) TO JN_LENDO
+  INDICATE ERR FALSE
+  ON ERROR GOSUB CHECA_GRAVACAO
+  REREAD
+  DELETE BALANCO
+  UNLOCK
+  ON ERROR OFF
+  CONSTRAINED_FIND NEXT
+  END
+ CONSTRAINT_SET 1 CLEAR
+RETURN
+
+KEYPROC KEY.UP
+ BACKFIELD
+RETURN
+
+KEYPROC KEY.FIELD
+IF CURRENT_WINDOW EQ 5 BEGIN
+                        MOVE 'CENTIDAD 1 ' TO ST_JUNTA
+                        APPEND ST_JUNTA ST@USUARIO ' ' ST@OPCAO ' ' ST@PROGRAMA ' ' ST@CODIGO@ENTIDADE ' ' ST@EXERCICIO@FINANCEIRO
+                        CHAIN WAIT ST_JUNTA EXPORT_FILES
+                        MOVE 0 TO CURRENT_IMAGE
+                        PAGE TELA
+                        IF ENTIDADE.CODIGO NE "" BEGIN
+                                                  TRIM ENTIDADE.CODIGO    TO JN_COD_ENTIDADE
+                                                  TRIM ENTIDADE.DESCRICAO TO JN_ENTIDADE
+                                                 END
+                        ELSE ENTAGAIN
+                        RETURN
+                       END
+ELSE ENTAGAIN
+RETURN
+
+#INCLUDE INTEGRID.INC
+
+

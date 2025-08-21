@@ -1,0 +1,2868 @@
+/TELA RESIDENT
+ÚÄ SIOPE - SIOPS ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ ____ ¿
+³______________________________________________________________________________³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ __/__/____  ________________________________________________________         ³
+ÆÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍµ
+³                                                                              ³
+³                                                                              ³
+ÃÄÄÄÄÄÄÄÄÄÄ IMPORTA€ŽO DO BALANCETE ISOLADO CONTA CORRENTE - AUDESP ÄÄÄÄÄÄÄÄÄÄÄ´
+³                                                                              ³
+³                                                                              ³
+³                                                                              ³
+³                                                                              ³
+³    Informe a Entidade <F2> : __ _________________________________________    ³
+³                                                                              ³
+³                                                                              ³
+³    Mˆs / Ano desejado      : __ / ____                                       ³
+³                                                                              ³
+³                                                                              ³
+³    Arquivo : ____________________________________________________________    ³
+³                                                                              ³
+³                                                                              ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                               <ESC>  Retorna                                 ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/RODAPE
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                               <ESC>  Retorna                                 ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/CONFIRMA RESIDENT
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³______________________________________________________________________________³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/MSG RESIDENT
+ÚÄÄÄÄÄÄÄÄÄ IMPORTA€ŽO DO BALANCETE ISOLADO CONTA CORRENTE - AUDESP ÄÄÄÄÄÄÄÄÄÄ¿
+³                                                                            ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ SOLICITADO ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                                                                            ³
+³                                                                            ³
+³                        Entidade __  Mes __ / ____                          ³
+³                                                                            ³
+³                                                                            ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ PROCESSANDO ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                                                                            ³
+³                                                                            ³
+³          Lendo : ______________.        Gravando : ______________.         ³
+³                                                                            ³
+³                                                                            ³
+³                                                                            ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/MENSAGEM RESIDENT
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ A T E N € Ž O !!! ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³                                                           ³
+³     Problemas na exporta‡„o do arquivo : ________         ³
+³                                                           ³
+³                                                           ³
+³     C¢digo da Entidade n„o confere com o cadastro         ³
+³                      deste arquivo.                       ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/*
+#INCLUDE CONAM.LIB
+#INCLUDE AUDESP.LIB
+#INCLUDE ORGAOTCE.LIB
+#INCLUDE CAMINHO.LIB
+
+#COMMAND ULTIMA_SEQUENCIA
+ MOVE 1 TO !1
+ CLEAR CONTACOR
+ MOVE JN_ANO              TO CONTACOR.ANO
+ MOVE JN_MES              TO CONTACOR.MES
+ MOVE JN_COD_ENTIDADE     TO CONTACOR.COD_ENTIDADE
+ MOVE ST_XML              TO CONTACOR.XML
+ MOVE ST_DADOS            TO CONTACOR.DADOS
+ MOVE 9999999999          TO CONTACOR.SEQUENCIA
+ FIND LT CONTACOR BY INDEX.1
+ [ FOUND] INDICATE FOUND AS CONTACOR.ANO          EQ JN_ANO
+ [ FOUND] INDICATE FOUND AS CONTACOR.MES          EQ JN_MES
+ [ FOUND] INDICATE FOUND AS CONTACOR.COD_ENTIDADE EQ JN_COD_ENTIDADE
+ [ FOUND] INDICATE FOUND AS CONTACOR.XML          EQ ST_XML
+ [ FOUND] INDICATE FOUND AS CONTACOR.DADOS        EQ ST_DADOS
+ [ FOUND] CALC (CONTACOR.SEQUENCIA + 1) TO !1
+ CLEAR CONTACOR
+#ENDCOMMAND
+
+#COMMAND LER
+ READLN !1
+ TRIM !1 TO !1
+ CALC (JN_LENDO +1) TO JN_LENDO
+#ENDCOMMAND
+
+#COMMAND PEGA_DADO
+#IFDEF    IT@POS@INICIO
+#ELSE
+   INTEGER IT@POS@INICIO
+#ENDIF
+#IFDEF    IT@POS@FINAL
+#ELSE
+   INTEGER IT@POS@FINAL
+#ENDIF
+#IFDEF    IT@AUX
+#ELSE
+   INTEGER IT@AUX
+#ENDIF
+#IFDEF    IT@TAMANHO
+#ELSE
+   INTEGER IT@TAMANHO
+#ENDIF
+#IFDEF    ST@STRING
+#ELSE
+   STRING  ST@STRING 255
+#ENDIF
+ 
+ IF !1 IN !5 BEGIN
+              POS !1 IN !5 TO IT@POS@INICIO
+              POS !2 IN !5 TO IT@POS@FINAL
+             
+              LENGTH !1                               TO IT@AUX
+              CALC (IT@POS@INICIO + IT@AUX)           TO IT@POS@INICIO
+              CALC (IT@POS@FINAL  - IT@POS@INICIO)    TO IT@TAMANHO
+              MOVE (MID(!5,IT@TAMANHO,IT@POS@INICIO)) TO ST@STRING
+              TRIM ST@STRING TO ST@STRING
+             
+              MOVE (TRIM(ST@STRING)) TO !6
+             END
+ ELSE IF !3 NE '' BEGIN
+                   IF !3 IN !5 BEGIN
+                                POS !3 IN !5 TO IT@POS@INICIO
+                                POS !4 IN !5 TO IT@POS@FINAL
+                               
+                                LENGTH !3                               TO IT@AUX
+                                CALC (IT@POS@INICIO + IT@AUX)           TO IT@POS@INICIO
+                                CALC (IT@POS@FINAL  - IT@POS@INICIO)    TO IT@TAMANHO
+                                MOVE (MID(!5,IT@TAMANHO,IT@POS@INICIO)) TO ST@STRING
+                                TRIM ST@STRING TO ST@STRING
+                               
+                                MOVE (TRIM(ST@STRING)) TO !6
+                               END
+                  END
+#ENDCOMMAND
+
+#COMMAND VALIDA_DADO
+ INDICATE @VALIDO! FALSE
+ 
+ MOVE '' TO !6
+ MOVE '' TO !7
+ 
+             INDICATE @VALIDO! AS !1 IN !5
+ [~@VALIDO!] INDICATE @VALIDO! AS !2 IN !5
+ 
+ IF !1 IN !5 BEGIN
+              MOVE !1 TO !6
+              MOVE !3 TO !7
+             END
+ ELSE        BEGIN
+              MOVE !2 TO !6
+              MOVE !4 TO !7
+             END
+#ENDCOMMAND
+
+#COMMAND TRATA_EMPENHO
+ TRIM !1 TO !1
+//  MOVE !1 TO IT_N_EMPENHO
+//  MOVE IT_N_EMPENHO TO !1
+ COMBRANCOS !1 12
+#ENDCOMMAND
+ 
+STRING ST_JUNTA           ST_ARQUIVO     255 ST_N_LICITACAO         ST_LINHA           255 ST_N_INSCRICAO_CODIGO
+STRING ST_NOME_USUARIO    ST_DIRETORIO   255 ST_SAIDA           255 ST_CAMINHO         255 ST_REGIME_DESPESA_AUX
+STRING ST_DATA_INICIAL 10 ST_DATA_FINAL   10 ST_DATA_INICIAL_ANO 10 ST_FINAL               ST_INICIAL
+STRING ST_STRING      255 ST_ADVERTE     255 ST_ACERTA_XML      255 ST_CABECALHO
+STRING ST_DADOS       200 ST_AUXILIAR     15 ST_XML               2 ST_MES_ANTERIOR      2
+STRING ST_MENSAGEM    255 ST_AUX_PROCESSO    ST_AUX             255 ST_AUXILIAR_1          ST_AUXILIAR_3
+
+STRING ST_CONTA            18
+STRING ST_ANO               4
+STRING ST_TIPO_DOCUMENTO
+STRING ST_ENTIDADE
+STRING ST_DATA_CRIACAO
+STRING ST_COD_MUNICIPIO
+STRING ST_MES
+
+STRING ST_SALDO_INICIAL
+STRING ST_NATUREZA_INICIAL
+STRING ST_CREDITO
+STRING ST_DEBITO
+STRING ST_SALDO_FINAL
+STRING ST_NATUREZA_FINAL
+
+STRING ST_FONTE             5
+STRING ST_CODIGO_APLICACAO  7
+
+STRING ST_APL_FIXO          3
+STRING ST_APL_VARIAVEL      4
+
+STRING ST_N_BANCO           3
+STRING ST_N_AGENCIA         5
+STRING ST_DV_AGENCIA        1
+STRING ST_CONTA_CORRENTE   20
+STRING ST_DV_CONTA_CORRENTE 1
+
+STRING ST_N_INSCRICAO      20
+STRING ST_COD_RECEITA      16
+
+STRING ST_TIPO_INSTRUMENTO
+STRING ST_CODIGO_INSTRUMENTO
+
+STRING ST_ORGAO             ST_N_EMPENHO            12 ST_N_CONVENIO        12 ST_N_CONTRATO      12
+STRING ST_UO                ST_ANO_EMPENHO           4 ST_ANO_CONVENIO       4 ST_ANO_CONTRATO     4
+STRING ST_UE                ST_TIPO_EMPENHO          2 ST_N_PROCESSO_ANO    25 ST_TP_CREDOR        2
+STRING ST_FUNCAO          2 ST_REGIME_DESPESA       12 ST_ANO_LICITACAO      4 ST_ORGAO_RECEBEDOR
+STRING ST_SUBFUNCAO       3 ST_MODALIDADE_LICITACAO    ST_ORGAO_CONCESSOR      ST_COD_CONTRIBUICAO 2
+STRING ST_TIPO_CREDOR     2 ST_EXERCICIO_COMPETENCIA 4 ST_ECONOMICA         12 ST_GRUPO_DESPESA    1 
+STRING ST_DATA_MOVIMENTO 10 ST_PERIODO_APLICACAO       ST_NOME_CC_1            ST_NOME_CC_2
+
+STRING ST_ACAO
+STRING ST_PROGRAMA
+
+STRING ST_CONTRAPARTIDA_VP
+STRING ST_TIPO_LANCAMENTO
+STRING ST_DATA_LANCAMENTO
+
+STRING ST_TIPO_CONTRATACAO
+STRING ST_TIPO_CONVENIO
+
+NUMBER NB_CREDITO NB_DEBITO NB_SALDO_INICIAL NB_SALDO_FINAL
+
+INTEGER IT_COD_MUNICIPIO IT_COD_ENTIDADE IT_POS_INICIO IT_POS_FINAL IT_TAMANHO IT_AUX IT_RECNUM IT_SEQUENCIA IT_LINHAS IT_N_EMPENHO
+
+AUTOPAGE TELA
+NAME JN_EXERCICIO
+NAME JN_TARJA
+NAME JN_TARJA_DATA   JN_TARJA_TITULO
+NAME JN_COD_ENTIDADE JN_ENTIDADE
+NAME JN_MES          JN_ANO
+NAME JN_ARQUIVO
+
+AUTOPAGE MSG
+NAME JN_MSG_ENTIDADE JN_MSG_MES JN_MSG_ANO
+NAME JN_LENDO
+NAME JN_GRAVANDO
+
+OPEN ENTIDADE
+OPEN PLANO
+ABRE_CONTACOR ST@EXERCICIO@FINANCEIRO CONTACOR
+
+INDICATE PREFEITURA! AS PARGERAL.COD_ENTIDADE EQ '01'
+
+PAGE SET MSG       AT 05 01 COLORS IT_COR_TITULO IT_COR_TITULO
+PAGE SET TELA      AT  0  0 COLORS IT_COR_TARJA  IT_COR_MOLDURA
+PAGE SET RODAPE    AT 21  0 COLORS IT_COR_TARJA  IT_COR_MOLDURA
+PAGE SET CONFIRMA  AT 21  0 COLORS IT_COR_TARJA  IT_COR_MOLDURA
+PAGE SET MENSAGEM  AT 10 10 COLORS IT_COR_TARJA  IT_COR_TITULO
+
+MOVE ST@PREFEITURA TO ST_CABECALHO
+REPEAT
+ REPLACE '@' IN ST_CABECALHO WITH ' '
+UNTIL [~FOUND]
+
+SCREENMODE IT_COR_MOLDURA ON
+MOVE PARGERAL.EXERCICIO TO JN_EXERCICIO
+SYSDATA JN_TARJA_DATA
+SCREENMODE IT_COR_TITULO ON
+CABEC 'M¢DULO DE IMPORTA€ŽO DE DADOS - AUDESP' JN_TARJA_TITULO
+SCREENMODE IT_COR_TARJA ON
+CABEC ST_CABECALHO JN_TARJA
+
+INICIO:
+SCREENMODE IT_COR_TARJA ON
+MOVE PARGERAL.EXERCICIO TO JN_ANO
+
+INDICATE EMITE_ALERTA! FALSE
+
+MOVEALL 0 TO IT_COD_MUNICIPIO IT_COD_ENTIDADE
+
+[ PREFEITURA!] BEGIN
+                REPEAT
+                 ACCEPT JN_COD_ENTIDADE {AUTOCLEAR}
+                 [KEY.ESCAPE] ABORT
+                 IF JN_COD_ENTIDADE EQ '' MENSAGEM 1
+                 ELSE BEGIN
+                       COMZEROS JN_COD_ENTIDADE 2
+                       CLEAR ENTIDADE
+                       MOVE ST@EXERCICIO@FINANCEIRO TO ENTIDADE.EXERCICIO
+                       MOVE JN_COD_ENTIDADE         TO ENTIDADE.CODIGO
+                       FIND EQ ENTIDADE BY INDEX.1
+                       [~FOUND] BEGIN
+                                 ADVERTE 'ENTIDADE NŽO CADASTRADA'
+                                 CLEARFORM JN_COD_ENTIDADE THRU JN_ENTIDADE
+                                END
+                      END
+                UNTIL JN_COD_ENTIDADE NE ''
+                MOVE ENTIDADE.DESCRICAO TO JN_ENTIDADE
+
+                IF ENTIDADE.ORGAO_TCE EQ '' BEGIN
+                                             ADVERTE 'ATUALIZAR O CADASTRO DE ENTIDADES, CAMPO ORGAO-AUDESP'
+                                             GOTO INICIO
+                                            END
+               END
+
+[~PREFEITURA!] BEGIN
+                MOVE PARGERAL.COD_ENTIDADE TO JN_COD_ENTIDADE
+                
+                CLEAR ENTIDADE
+                MOVE ST@EXERCICIO@FINANCEIRO TO ENTIDADE.EXERCICIO
+                MOVE JN_COD_ENTIDADE         TO ENTIDADE.CODIGO
+                FIND EQ ENTIDADE BY INDEX.1
+                [~FOUND] CLEAR ENTIDADE
+                
+                MOVE ENTIDADE.DESCRICAO TO JN_ENTIDADE
+               END
+
+MOVE ENTIDADE.ORGAO_TCE TO IT_COD_ENTIDADE
+MOVE PARGERAL.COD_SIAFI TO IT_COD_MUNICIPIO
+
+//--verificar se precisa importar dados da entidade
+[ PREFEITURA!] BEGIN
+//                 VERIFICA_ENTIDADE_IMPORTACAO JN_COD_ENTIDADE JN_ANO 'MSG'
+               END
+
+LB_MES:
+ACCEPT JN_MES {AUTOCLEAR}
+[KEY.ESCAPE] ABORT
+IF JN_MES EQ '' GOTO INICIO
+COMZEROS JN_MES 2
+IF ((JN_MES LT '01') OR (JN_MES GT '14')) BEGIN
+ ADVERTE 'MˆS INV LIDO. TENTE NOVAMENTE.'
+ CLEARFORM JN_MES
+ GOTO INICIO
+ END
+
+INDICATE MES_14! AS JN_MES EQ '14'
+
+REPEAT
+ ANO_2000 JN_ANO {AUTOCLEAR}
+UNTIL JN_ANO NE ''
+
+INDICATE COD_APL_DIFERENTE! TRUE
+
+//--na conam o contacor grava 03-identificacao especial so' que envia no xml como 09-inscricao generica (inversao desde o comeco do audesp)
+//--qdo importar o XML deve inverter, pois, no XML vai estar 09 so' que no contacor estara 03
+INDICATE PROPRIO_XML! TRUE
+
+//-------------verifica se esta em linux
+VERSAO
+
+//--criar arquivo tidy.conf (configuracoes para acertar .xml (tidy.exe))
+CRIA_TIDY_CONF
+
+LB_ARQUIVO:
+
+MOVE (OBTER_PASTA_TEXTOS('TEXTOS','')) TO ST_CAMINHO
+
+ACCEPT JN_ARQUIVO {AUTOCLEAR}
+[KEY.ESCAPE] ABORT
+IF JN_ARQUIVO EQ '' BEGIN
+ MENSAGEM 1
+ GOTO INICIO
+ END
+APPEND ST_CAMINHO  (LOWERCASE(JN_ARQUIVO))
+
+DIRECT_INPUT ST_CAMINHO
+[ SEQEOF] BEGIN
+           ADVERTE 'ARQUIVO INEXISTENTE'
+           GOTO LB_ARQUIVO
+          END
+CLOSE_INPUT
+
+SCREENMODE IT_COR_TARJA ON
+MOVE JN_COD_ENTIDADE TO JN_MSG_ENTIDADE
+MOVE JN_MES          TO JN_MSG_MES
+MOVE JN_ANO          TO JN_MSG_ANO
+PAGE MSG
+
+
+INDICATE REGIME_DESPESA! AS PARGERAL.EXERCICIO GE '2021'
+[~REGIME_DESPESA!] INDICATE REGIME_DESPESA! AS ((PARGERAL.EXERCICIO EQ '2020') AND (PARGERAL.COD_SIAFI EQ 6361) AND (JN_COD_ENTIDADE EQ '02'))
+
+
+
+CONFIRMACAO 'IMPORTA€ŽO'
+
+MOVE 'tidy -m -config tidy.conf' TO ST_ACERTA_XML
+APPEND ST_ACERTA_XML ' ' ST_CAMINHO ' ' '> null'
+GOTOXY 0 0
+
+RUNPROGRAM WAIT ST_ACERTA_XML
+
+PAGE TELA
+PAGE MSG
+GOTOXY 25 0
+
+//--
+//--verifica se arquvo possui mais que 3 linhas (rodou o tidy ok)
+//--
+DIRECT_INPUT ST_CAMINHO
+
+MOVE 0 TO IT_LINHAS
+
+REPEAT
+ [ SEQEOF] GOTO LB_CONTINUA
+
+ MOVE '' TO ST_AUX
+ READLN ST_AUX
+ IF ST_AUX NE '' INCREMENT IT_LINHAS
+
+LOOP
+
+LB_CONTINUA:
+CLOSE_INPUT
+
+IF IT_LINHAS LE 3 BEGIN
+                   ADVERTE 'VERIFIQUE PERMISSAO DE ACESSO AO ARQUIVO XML NA PASTA TEXTOS'
+                   ABORT
+                  END
+//--
+
+DIRECT_INPUT ST_CAMINHO
+
+//---------verifica arquivo
+REPEAT
+ [ SEQEOF] GOTO LB_GRAVA
+
+ LER ST_LINHA
+ 
+ VALIDA_DADO '<Descritor>' '<ctb:Descritor>' '</Descritor>' '</ctb:Descritor>' ST_LINHA ST_INICIAL ST_FINAL
+ [ @VALIDO!] BEGIN
+              IF '<ctb:Descritor>' IN ST_LINHA MOVE '</ctb:Descritor>' TO ST_FINAL
+              ELSE                             MOVE '</Descritor>'     TO ST_FINAL
+     
+              REPEAT
+               LER ST_LINHA
+               PEGA_DADO '<gen:AnoExercicio>'   '</gen:AnoExercicio>'   '' '' ST_LINHA ST_ANO
+               PEGA_DADO '<gen:TipoDocumento>'  '</gen:TipoDocumento>'  '' '' ST_LINHA ST_TIPO_DOCUMENTO
+               PEGA_DADO '<gen:Entidade>'       '</gen:Entidade>'       '' '' ST_LINHA ST_ENTIDADE
+               PEGA_DADO '<gen:Municipio>'      '</gen:Municipio>'      '' '' ST_LINHA ST_COD_MUNICIPIO
+               PEGA_DADO '<gen:DataCriacaoXML>' '</gen:DataCriacaoXML>' '' '' ST_LINHA ST_DATA_CRIACAO
+               PEGA_DADO '<gen:MesExercicio>'   '</gen:MesExercicio>'   '' '' ST_LINHA ST_MES
+              UNTIL ST_FINAL IN ST_LINHA
+
+              COMZEROS ST_MES 2
+
+              MOVE '' TO ST_ADVERTE
+              
+                   IF ST_ANO           NE JN_ANO           MOVE 'ANO DO DOCUMENTO XML DIFERENTE DO EXERC¡CIO CORRENTE'                         TO ST_ADVERTE
+              ELSE IF ST_ENTIDADE      NE IT_COD_ENTIDADE  MOVE 'C¢DIGO DA ENTIDADE DO DOCUMENTO XML NŽO CORRESPONDE AO CADASTRO DE ENTIDADES' TO ST_ADVERTE
+              ELSE IF ST_COD_MUNICIPIO NE IT_COD_MUNICIPIO MOVE 'C¢DIGO DO MUNIC¡PIO DO DOCUMENTO XML DIFERENTE DO PARAMETRO DO SISTEMA'       TO ST_ADVERTE
+              ELSE IF ST_MES           NE JN_MES           MOVE 'MES DO DOCUMENTO DO XML DIFERENTE DO INFORMADO NA SELE€ŽO'                    TO ST_ADVERTE
+
+              IF ST_MES LE '12' IF ST_TIPO_DOCUMENTO NE 'BALANCETE-ISOLADO-CONTA-CORRENTE'                 MOVE 'DOCUMENTO XML NŽO CORRESPONDE AO BALANCETE ISOLADO CONTA CONTABIL'        TO ST_ADVERTE
+              IF ST_MES EQ '13' IF ST_TIPO_DOCUMENTO NE 'BALANCETE-ISOLADO-ENCERRAMENTO-13-CONTA-CORRENTE' MOVE 'DOCUMENTO XML NŽO CORRESPONDE AO BALANCETE ISOLADO CONTA CONTABIL MES 13' TO ST_ADVERTE
+              IF ST_MES EQ '14' IF ST_TIPO_DOCUMENTO NE 'BALANCETE-ISOLADO-ENCERRAMENTO-14-CONTA-CORRENTE' MOVE 'DOCUMENTO XML NŽO CORRESPONDE AO BALANCETE ISOLADO CONTA CONTABIL MES 14' TO ST_ADVERTE
+
+              IF ST_ADVERTE NE '' BEGIN
+                                   ADVERTE ST_ADVERTE
+                                   GOTO INICIO
+                                  END
+             END
+
+ VALIDA_DADO '<ContaContabil>' '<ctb:ContaContabil>' '</ContaContabil>' '</ctb:ContaContabil>' ST_LINHA ST_INICIAL ST_FINAL
+ [ @VALIDO!] BEGIN
+              PEGA_DADO '<ContaContabil>'  '</ContaContabil>'  '<ctb:ContaContabil>'  '</ctb:ContaContabil>'  ST_LINHA  ST_CONTA
+
+              PONTUA_CONTA_CONTABIL ST_CONTA
+
+              CLEAR PLANO
+              MOVE PARGERAL.ESTADO TO PLANO.UF
+              MOVE JN_ANO          TO PLANO.ANO
+              MOVE ST_CONTA        TO PLANO.CODIGO
+              FIND EQ PLANO BY INDEX.1
+              [~FOUND] BEGIN
+                        MOVE 'CONTA NŽO CADASTRADA NO PLANO DE CONTAS AUDESP:' TO ST_MENSAGEM
+                        APPEND ST_MENSAGEM ' ' ST_CONTA
+                        ADVERTE ST_MENSAGEM
+                        GOTO INICIO
+                       END
+             END
+
+ MOVEALL '' TO ST_SALDO_INICIAL ST_CREDITO ST_DEBITO ST_SALDO_FINAL
+ MOVEALL 0  TO NB_SALDO_INICIAL NB_CREDITO NB_DEBITO NB_SALDO_FINAL
+
+ VALIDA_DADO '<SaldoInicial>' '<ctb:SaldoInicial>' '</SaldoInicial>' '</ctb:SaldoInicial>' ST_LINHA ST_INICIAL ST_FINAL
+ [ @VALIDO!] BEGIN
+              PEGA_DADO '<SaldoInicial>' '</SaldoInicial>' '<ctb:SaldoInicial>' '</ctb:SaldoInicial>' ST_LINHA ST_SALDO_INICIAL
+             END
+ VALIDA_DADO '<MovimentoCredito>' '<ctb:MovimentoCredito>' '</MovimentoCredito>' '</ctb:MovimentoCredito>' ST_LINHA ST_INICIAL ST_FINAL
+ [ @VALIDO!] BEGIN
+              PEGA_DADO '<MovimentoCredito>' '</MovimentoCredito>' '<ctb:MovimentoCredito>' '</ctb:MovimentoCredito>' ST_LINHA ST_SALDO_INICIAL
+             END
+ VALIDA_DADO '<MovimentoDebito>' '<ctb:MovimentoDebito>' '</MovimentoDebito>' '</ctb:MovimentoDebito>' ST_LINHA ST_INICIAL ST_FINAL
+ [ @VALIDO!] BEGIN
+              PEGA_DADO '<MovimentoDebito>' '</MovimentoDebito>' '<ctb:MovimentoDebito>' '</ctb:MovimentoDebito>' ST_LINHA ST_SALDO_INICIAL
+             END
+ VALIDA_DADO '<SaldoFinal>' '<ctb:SaldoFinal>' '</SaldoFinal>' '</ctb:SaldoFinal>' ST_LINHA ST_INICIAL ST_FINAL
+ [ @VALIDO!] BEGIN
+              PEGA_DADO '<SaldoFinal>' '</SaldoFinal>' '<ctb:SaldoFinal>' '</ctb:SaldoFinal>' ST_LINHA ST_SALDO_INICIAL
+             END
+
+ REPLACE '.' IN ST_SALDO_INICIAL WITH ','
+ REPLACE '.' IN ST_CREDITO       WITH ','
+ REPLACE '.' IN ST_DEBITO        WITH ','
+ REPLACE '.' IN ST_SALDO_FINAL   WITH ','
+
+ MOVE ST_CREDITO       TO NB_CREDITO
+ MOVE ST_DEBITO        TO NB_DEBITO
+ MOVE ST_SALDO_INICIAL TO NB_SALDO_INICIAL
+ MOVE ST_SALDO_FINAL   TO NB_SALDO_FINAL
+
+ IF ((NB_CREDITO LT 0) OR (NB_DEBITO LT 0) OR (NB_SALDO_INICIAL LT 0) OR (NB_SALDO_FINAL LT 0)) BEGIN
+  ADVERTE 'EXISTEM LAN€AMENTOS COM VALORES NEGATIVO, IMPOSS¡VEL PROSSEGUIR IMPORTA€ŽO'
+  GOTO INICIO
+  END
+LOOP
+
+LB_GRAVA:
+
+CLOSE_INPUT
+DIRECT_INPUT ST_CAMINHO
+GOSUB LB_LIMPA_ARQUIVOS
+
+//------le e grava arquivo
+REPEAT
+ [ SEQEOF] GOTO LB_SAIDA
+
+ LER ST_LINHA
+
+ VALIDA_DADO '</ContasCorrentes>' '</ctb:ContasCorrentes>' '' '' ST_LINHA ST_INICIAL ST_FINAL
+ [ @VALIDO!] BEGIN
+              CLOSE_INPUT
+              GOTO LB_SAIDA
+             END
+
+ VALIDA_DADO '<Descritor>' '<ctb:Descritor>' '</Descritor>' '</ctb:Descritor>' ST_LINHA ST_INICIAL ST_FINAL
+ [ @VALIDO!] BEGIN
+              LER ST_LINHA
+              PEGA_DADO '<gen:AnoExercicio>'   '</gen:AnoExercicio>'   '' '' ST_LINHA ST_ANO
+              LER ST_LINHA
+              PEGA_DADO '<gen:TipoDocumento>'  '</gen:TipoDocumento>'  '' '' ST_LINHA ST_TIPO_DOCUMENTO
+              LER ST_LINHA
+              PEGA_DADO '<gen:Entidade>'       '</gen:Entidade>'       '' '' ST_LINHA ST_ENTIDADE
+              LER ST_LINHA
+              PEGA_DADO '<gen:Municipio>'      '</gen:Municipio>'      '' '' ST_LINHA ST_COD_MUNICIPIO
+              LER ST_LINHA
+              PEGA_DADO '<gen:DataCriacaoXML>' '</gen:DataCriacaoXML>' '' '' ST_LINHA ST_DATA_CRIACAO
+              LER ST_LINHA
+              PEGA_DADO '<gen:MesExercicio>'   '</gen:MesExercicio>'   '' '' ST_LINHA ST_MES
+             END
+
+ COMZEROS ST_MES 2
+
+//--conta corrente 01
+ [~MES_14!] VALIDA_DADO '<DisponibilidadeFinanceira>'    '<ctb:DisponibilidadeFinanceira>'    '</DisponibilidadeFinanceira>'    '</ctb:DisponibilidadeFinanceira>'    ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ MES_14!] VALIDA_DADO '<DisponibilidadeFinanceira_14>' '<ctb:DisponibilidadeFinanceira_14>' '</DisponibilidadeFinanceira_14>' '</ctb:DisponibilidadeFinanceira_14>' ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ @VALIDO!] BEGIN
+              MOVEALL '' TO ST_FONTE ST_CODIGO_APLICACAO ST_CONTA
+
+              REPEAT
+               LER ST_LINHA
+               PEGA_DADO '<FonteRecursos>'   '</FonteRecursos>'   '<ctb:FonteRecursos>'   '</ctb:FonteRecursos>'   ST_LINHA ST_FONTE
+               PEGA_DADO '<CodigoAplicacao>' '</CodigoAplicacao>' '<ctb:CodigoAplicacao>' '</ctb:CodigoAplicacao>' ST_LINHA ST_CODIGO_APLICACAO
+               PEGA_DADO '<ContaContabil>'   '</ContaContabil>'   '<ctb:ContaContabil>'   '</ctb:ContaContabil>'   ST_LINHA ST_CONTA
+               
+               VALIDA_DADO '<MovimentoContabil>' '<ctb:MovimentoContabil>' '</MovimentoContabil>' '</ctb:MovimentoContabil>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            GOSUB LB_PEGA_MOVIMENTO
+                           END
+              UNTIL ST_NOME_CC_2 IN ST_LINHA
+
+              PAD ST_FONTE            TO ST_FONTE            5
+              PAD ST_CODIGO_APLICACAO TO ST_CODIGO_APLICACAO 7
+
+              [ COD_APL_DIFERENTE!] BEGIN
+               MONTA_COD_APLICACAO ST_CODIGO_APLICACAO ST_CODIGO_APLICACAO
+               END
+
+              GOSUB LB_PONTUA_CONTA
+
+              MOVE ST_CONTA TO ST_DADOS
+              APPEND ST_DADOS ' ' ST_FONTE ' ' ST_CODIGO_APLICACAO
+
+              MOVE '01' TO ST_XML
+              GOSUB LB_GRAVA_MOVIMENTO
+             END
+
+//--conta corrente 02
+ [~MES_14!] VALIDA_DADO '<DomicilioBancario>'    '<ctb:DomicilioBancario>'    '</DomicilioBancario>'    '</ctb:DomicilioBancario>'    ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ MES_14!] VALIDA_DADO '<DomicilioBancario_14>' '<ctb:DomicilioBancario_14>' '</DomicilioBancario_14>' '</ctb:DomicilioBancario_14>' ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ @VALIDO!] BEGIN
+              MOVEALL '' TO ST_N_BANCO ST_N_AGENCIA ST_DV_AGENCIA ST_CONTA_CORRENTE ST_DV_CONTA_CORRENTE ST_CONTA ST_AUXILIAR ST_FONTE ST_CODIGO_APLICACAO
+
+              REPEAT
+               LER ST_LINHA
+               PEGA_DADO '<Banco>'           '</Banco>'           '<ctb:Banco>'           '</ctb:Banco>'           ST_LINHA ST_N_BANCO
+               PEGA_DADO '<Agencia>'         '</Agencia>'         '<ctb:Agencia>'         '</ctb:Agencia>'         ST_LINHA ST_N_AGENCIA
+               PEGA_DADO '<DVAgencia>'       '</DVAgencia>'       '<ctb:DVAgencia>'       '</ctb:DVAgencia>'       ST_LINHA ST_DV_AGENCIA
+               PEGA_DADO '<ContaCorrente>'   '</ContaCorrente>'   '<ctb:ContaCorrente>'   '</ctb:ContaCorrente>'   ST_LINHA ST_CONTA_CORRENTE
+               PEGA_DADO '<DVContaCorrente>' '</DVContaCorrente>' '<ctb:DVContaCorrente>' '</ctb:DVContaCorrente>' ST_LINHA ST_DV_CONTA_CORRENTE
+               
+               IF JN_ANO GE '2018' BEGIN
+                                    PEGA_DADO '<FonteRecursos>'   '</FonteRecursos>'   '<ctb:FonteRecursos>'   '</ctb:FonteRecursos>'   ST_LINHA ST_FONTE
+                                    PEGA_DADO '<CodigoAplicacao>' '</CodigoAplicacao>' '<ctb:CodigoAplicacao>' '</ctb:CodigoAplicacao>' ST_LINHA ST_CODIGO_APLICACAO
+                                   END
+                                
+               PEGA_DADO '<ContaContabil>'   '</ContaContabil>'   '<ctb:ContaContabil>'   '</ctb:ContaContabil>'   ST_LINHA ST_CONTA
+
+               VALIDA_DADO '<MovimentoContabil>' '<ctb:MovimentoContabil>' '</MovimentoContabil>' '</ctb:MovimentoContabil>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            GOSUB LB_PEGA_MOVIMENTO
+                           END
+              UNTIL ST_NOME_CC_2 IN ST_LINHA
+
+              COMBRANCOS ST_N_BANCO           3
+              COMBRANCOS ST_N_AGENCIA         5
+              COMBRANCOS ST_CONTA_CORRENTE   20
+              COMBRANCOS ST_DV_AGENCIA        1
+              COMBRANCOS ST_DV_CONTA_CORRENTE 1
+
+              MOVE ST_DV_AGENCIA TO ST_AUXILIAR
+              APPEND ST_AUXILIAR ' ' ST_DV_CONTA_CORRENTE
+              
+              PAD ST_FONTE            TO ST_FONTE            5
+              PAD ST_CODIGO_APLICACAO TO ST_CODIGO_APLICACAO 7
+              
+              [ COD_APL_DIFERENTE!] BEGIN
+                                     MONTA_COD_APLICACAO ST_CODIGO_APLICACAO ST_CODIGO_APLICACAO
+                                    END
+              
+              GOSUB LB_PONTUA_CONTA
+
+              MOVE ST_CONTA TO ST_DADOS
+              APPEND ST_DADOS ' ' ST_N_BANCO ' ' ST_N_AGENCIA ' ' ST_DV_AGENCIA ' ' ST_CONTA_CORRENTE ' ' ST_DV_CONTA_CORRENTE ' ' ST_FONTE ' ' ST_CODIGO_APLICACAO
+
+              MOVE '02' TO ST_XML
+              GOSUB LB_GRAVA_MOVIMENTO
+             END
+
+//--conta corrente 03
+ [~MES_14!] VALIDA_DADO '<CredorFornecedor>'    '<ctb:CredorFornecedor>'    '</CredorFornecedor>'    '</ctb:CredorFornecedor>'    ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ MES_14!] VALIDA_DADO '<CredorFornecedor_14>' '<ctb:CredorFornecedor_14>' '</CredorFornecedor_14>' '</ctb:CredorFornecedor_14>' ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ @VALIDO!] BEGIN
+              MOVEALL '' TO ST_N_INSCRICAO ST_AUXILIAR ST_TIPO_CREDOR ST_N_INSCRICAO_CODIGO
+
+              REPEAT
+               LER ST_LINHA
+
+               IF 'Tipo="' IN ST_LINHA BEGIN
+                                        PEGA_DADO 'Tipo="' '">' '' '' ST_LINHA ST_TIPO_CREDOR
+                                       END
+               ELSE IF "Tipo='" IN ST_LINHA BEGIN
+                                             PEGA_DADO "Tipo='" "'>" '' '' ST_LINHA ST_TIPO_CREDOR
+                                            END
+
+               IF '<gen:CNPJ' IN ST_LINHA BEGIN
+                                           LER ST_LINHA
+                                           PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                           MOVE 'CNPJ' TO ST_AUXILIAR
+                                           MOVE '01'   TO ST_N_INSCRICAO_CODIGO
+                                          END
+               IF '<gen:CPF' IN ST_LINHA BEGIN
+                                          LER ST_LINHA
+                                          PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                          MOVE 'CPF' TO ST_AUXILIAR
+                                          MOVE '02'  TO ST_N_INSCRICAO_CODIGO
+                                         END
+               IF '<gen:InscricaoGenerica' IN ST_LINHA BEGIN
+                                                        LER ST_LINHA
+                                                        PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                                        MOVE 'OUT' TO ST_AUXILIAR
+                                                        MOVE '09'  TO ST_N_INSCRICAO_CODIGO
+                                                       END
+               IF '<gen:IdentificacaoEspecial' IN ST_LINHA BEGIN
+                                                            LER ST_LINHA
+                                                            PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                                            MOVE 'IDE' TO ST_AUXILIAR
+                                                            MOVE '03'  TO ST_N_INSCRICAO_CODIGO
+                                                           END
+               
+               PEGA_DADO '<ContaContabil>'   '</ContaContabil>'   '<ctb:ContaContabil>'   '</ctb:ContaContabil>'   ST_LINHA ST_CONTA
+
+               VALIDA_DADO '<MovimentoContabil>' '<ctb:MovimentoContabil>' '</MovimentoContabil>' '</ctb:MovimentoContabil>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            GOSUB LB_PEGA_MOVIMENTO
+                           END
+              UNTIL ST_NOME_CC_2 IN ST_LINHA
+
+              GOSUB LB_PONTUA_CONTA
+
+              PAD ST_N_INSCRICAO TO ST_N_INSCRICAO 20
+              APPEND ST_N_INSCRICAO_CODIGO ' ' ST_N_INSCRICAO
+
+              MOVE ST_CONTA TO ST_DADOS
+              APPEND ST_DADOS ' ' ST_N_INSCRICAO_CODIGO //-- ' ' ST_TIPO_CREDOR
+
+              MOVE '03' TO ST_XML
+              GOSUB LB_GRAVA_MOVIMENTO
+             END
+
+//--conta corrente 04
+ [~MES_14!] VALIDA_DADO '<IdentificadorReceitas>'    '<ctb:IdentificadorReceitas>'    '</IdentificadorReceitas>'    '</ctb:IdentificadorReceitas>'    ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ MES_14!] VALIDA_DADO '<IdentificadorReceitas_14>' '<ctb:IdentificadorReceitas_14>' '</IdentificadorReceitas_14>' '</ctb:IdentificadorReceitas_14>' ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ @VALIDO!] BEGIN
+              MOVEALL '' TO ST_COD_RECEITA ST_CONTA
+              MOVEALL '' TO ST_AUXILIAR
+
+              REPEAT
+               LER ST_LINHA
+               PEGA_DADO '<ClassificacaoEconomicaReceita>' '</ClassificacaoEconomicaReceita>' '<ctb:ClassificacaoEconomicaReceita>' '</ctb:ClassificacaoEconomicaReceita>' ST_LINHA ST_COD_RECEITA
+               PEGA_DADO '<ContaContabil>'                 '</ContaContabil>'                 '<ctb:ContaContabil>'                 '</ctb:ContaContabil>'                 ST_LINHA ST_CONTA
+
+               VALIDA_DADO '<MovimentoContabil>' '<ctb:MovimentoContabil>' '</MovimentoContabil>' '</ctb:MovimentoContabil>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            GOSUB LB_PEGA_MOVIMENTO
+                           END
+              UNTIL ST_NOME_CC_2 IN ST_LINHA
+
+              GOSUB LB_PONTUA_CONTA
+              GOSUB LB_PONTUA_CONTA_RECEITA
+
+              MOVE ST_CONTA TO ST_DADOS
+              APPEND ST_DADOS ' ' ST_COD_RECEITA
+
+              MOVE '04' TO ST_XML
+              GOSUB LB_GRAVA_MOVIMENTO
+             END
+
+//--conta corrente 05
+ [~MES_14!] VALIDA_DADO '<ReceitaArrecadar>'    '<ctb:ReceitaArrecadar>'    '</ReceitaArrecadar>'    '</ctb:ReceitaArrecadar>'    ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ MES_14!] VALIDA_DADO '<ReceitaArrecadar_14>' '<ctb:ReceitaArrecadar_14>' '</ReceitaArrecadar_14>' '</ctb:ReceitaArrecadar_14>' ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ @VALIDO!] BEGIN
+              MOVEALL '' TO ST_COD_RECEITA ST_FONTE ST_CODIGO_APLICACAO ST_CONTA
+              MOVEALL '' TO ST_AUXILIAR
+
+              REPEAT
+               LER ST_LINHA
+               PEGA_DADO '<ClassificacaoEconomicaReceita>' '</ClassificacaoEconomicaReceita>' '<ctb:ClassificacaoEconomicaReceita>' '</ctb:ClassificacaoEconomicaReceita>' ST_LINHA ST_COD_RECEITA
+               PEGA_DADO '<FonteRecursos>'                 '</FonteRecursos>'                 '<ctb:FonteRecursos>'                 '</ctb:FonteRecursos>'                 ST_LINHA ST_FONTE
+               PEGA_DADO '<CodigoAplicacao>'               '</CodigoAplicacao>'               '<ctb:CodigoAplicacao>'               '</ctb:CodigoAplicacao>'               ST_LINHA ST_CODIGO_APLICACAO
+               PEGA_DADO '<ContaContabil>'                 '</ContaContabil>'                 '<ctb:ContaContabil>'                 '</ctb:ContaContabil>'                 ST_LINHA ST_CONTA
+
+               VALIDA_DADO '<MovimentoContabil>' '<ctb:MovimentoContabil>' '</MovimentoContabil>' '</ctb:MovimentoContabil>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            GOSUB LB_PEGA_MOVIMENTO
+                           END
+              UNTIL ST_NOME_CC_2 IN ST_LINHA
+
+              PAD ST_FONTE            TO ST_FONTE            5
+              PAD ST_CODIGO_APLICACAO TO ST_CODIGO_APLICACAO 7
+
+              [ COD_APL_DIFERENTE!] BEGIN
+                                     MONTA_COD_APLICACAO ST_CODIGO_APLICACAO ST_CODIGO_APLICACAO
+                                    END
+
+              GOSUB LB_PONTUA_CONTA
+              GOSUB LB_PONTUA_CONTA_RECEITA
+
+              MOVE ST_CONTA TO ST_DADOS
+              APPEND ST_DADOS ' ' ST_COD_RECEITA '   ' ST_FONTE ' ' ST_CODIGO_APLICACAO
+
+              MOVE '05' TO ST_XML
+              GOSUB LB_GRAVA_MOVIMENTO
+             END
+
+//--conta corrente 06
+ [~MES_14!] VALIDA_DADO '<PrevisaoReceitaOrcamentaria>'    '<ctb:PrevisaoReceitaOrcamentaria>'    '</PrevisaoReceitaOrcamentaria>'    '</ctb:PrevisaoReceitaOrcamentaria>'    ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ MES_14!] VALIDA_DADO '<PrevisaoReceitaOrcamentaria_14>' '<ctb:PrevisaoReceitaOrcamentaria_14>' '</PrevisaoReceitaOrcamentaria_14>' '</ctb:PrevisaoReceitaOrcamentaria_14>' ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ @VALIDO!] BEGIN
+              MOVEALL '' TO ST_COD_RECEITA ST_FONTE ST_CODIGO_APLICACAO ST_MES ST_CONTA
+              MOVEALL '' TO ST_AUXILIAR
+
+              REPEAT
+               LER ST_LINHA
+               PEGA_DADO '<ClassificacaoEconomicaReceita>' '</ClassificacaoEconomicaReceita>' '<ctb:ClassificacaoEconomicaReceita>' '</ctb:ClassificacaoEconomicaReceita>' ST_LINHA ST_COD_RECEITA
+               PEGA_DADO '<FonteRecursos>'                 '</FonteRecursos>'                 '<ctb:FonteRecursos>'                 '</ctb:FonteRecursos>'                 ST_LINHA ST_FONTE
+               PEGA_DADO '<CodigoAplicacao>'               '</CodigoAplicacao>'               '<ctb:CodigoAplicacao>'               '</ctb:CodigoAplicacao>'               ST_LINHA ST_CODIGO_APLICACAO
+               PEGA_DADO '<Mes>'                           '</Mes>'                           '<ctb:Mes>'                           '</ctb:Mes>'                           ST_LINHA ST_MES
+               PEGA_DADO '<ContaContabil>'                 '</ContaContabil>'                 '<ctb:ContaContabil>'                 '</ctb:ContaContabil>'                 ST_LINHA ST_CONTA
+
+               VALIDA_DADO '<MovimentoContabil>' '<ctb:MovimentoContabil>' '</MovimentoContabil>' '</ctb:MovimentoContabil>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            GOSUB LB_PEGA_MOVIMENTO
+                           END
+              UNTIL ST_NOME_CC_2 IN ST_LINHA
+
+              COMZEROS ST_MES 2
+
+              PAD ST_FONTE            TO ST_FONTE            5
+              PAD ST_CODIGO_APLICACAO TO ST_CODIGO_APLICACAO 7
+
+              [ COD_APL_DIFERENTE!] BEGIN
+                                     MONTA_COD_APLICACAO ST_CODIGO_APLICACAO ST_CODIGO_APLICACAO
+                                    END
+
+              GOSUB LB_PONTUA_CONTA
+              GOSUB LB_PONTUA_CONTA_RECEITA
+
+              MOVE ST_CONTA TO ST_DADOS
+              APPEND ST_DADOS ' ' ST_COD_RECEITA '   ' ST_FONTE ' ' ST_CODIGO_APLICACAO ' ' ST_MES
+
+              MOVE '06' TO ST_XML
+              GOSUB LB_GRAVA_MOVIMENTO
+             END
+
+//--conta corrente 07
+ [~MES_14!] VALIDA_DADO '<DotacaoOrcamentaria>'    '<ctb:DotacaoOrcamentaria>'    '</DotacaoOrcamentaria>'    '</ctb:DotacaoOrcamentaria>'    ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ MES_14!] VALIDA_DADO '<DotacaoOrcamentaria_14>' '<ctb:DotacaoOrcamentaria_14>' '</DotacaoOrcamentaria_14>' '</ctb:DotacaoOrcamentaria_14>' ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ @VALIDO!] BEGIN
+              MOVEALL '' TO ST_ORGAO ST_UO ST_UE ST_FUNCAO ST_SUBFUNCAO ST_PROGRAMA ST_ACAO
+              MOVEALL '' TO ST_ECONOMICA ST_FONTE ST_CODIGO_APLICACAO ST_CONTA
+              MOVEALL '' TO ST_AUXILIAR
+
+              REPEAT
+               LER ST_LINHA
+               PEGA_DADO '<gen:Orgao>'                     '</gen:Orgao>'                     ''                                    ''                                     ST_LINHA ST_ORGAO
+               PEGA_DADO '<gen:UO>'                        '</gen:UO>'                        ''                                    ''                                     ST_LINHA ST_UO
+               PEGA_DADO '<gen:UE>'                        '</gen:UE>'                        ''                                    ''                                     ST_LINHA ST_UE
+               
+               PEGA_DADO '<Funcao>'                        '</Funcao>'                        '<ctb:Funcao>'                        '</ctb:Funcao>'                        ST_LINHA ST_FUNCAO
+               PEGA_DADO '<SubFuncao>'                     '</SubFuncao>'                     '<ctb:SubFuncao>'                     '</ctb:SubFuncao>'                     ST_LINHA ST_SUBFUNCAO
+               PEGA_DADO '<Programa>'                      '</Programa>'                      '<ctb:Programa>'                      '</ctb:Programa>'                      ST_LINHA ST_PROGRAMA
+               PEGA_DADO '<Acao>'                          '</Acao>'                          '<ctb:Acao>'                          '</ctb:Acao>'                          ST_LINHA ST_ACAO
+               PEGA_DADO '<ClassificacaoEconomicaDespesa>' '</ClassificacaoEconomicaDespesa>' '<ctb:ClassificacaoEconomicaDespesa>' '</ctb:ClassificacaoEconomicaDespesa>' ST_LINHA ST_ECONOMICA
+               PEGA_DADO '<FonteRecursos>'                 '</FonteRecursos>'                 '<ctb:FonteRecursos>'                 '</ctb:FonteRecursos>'                 ST_LINHA ST_FONTE
+               PEGA_DADO '<CodigoAplicacao>'               '</CodigoAplicacao>'               '<ctb:CodigoAplicacao>'               '</ctb:CodigoAplicacao>'               ST_LINHA ST_CODIGO_APLICACAO
+               PEGA_DADO '<ContaContabil>'                 '</ContaContabil>'                 '<ctb:ContaContabil>'                 '</ctb:ContaContabil>'                 ST_LINHA ST_CONTA
+
+               VALIDA_DADO '<MovimentoContabil>' '<ctb:MovimentoContabil>' '</MovimentoContabil>' '</ctb:MovimentoContabil>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            GOSUB LB_PEGA_MOVIMENTO
+                           END
+              UNTIL ST_NOME_CC_2 IN ST_LINHA
+
+              PAD ST_FONTE            TO ST_FONTE            5
+              PAD ST_CODIGO_APLICACAO TO ST_CODIGO_APLICACAO 7
+
+              [ COD_APL_DIFERENTE!] BEGIN
+                                     MONTA_COD_APLICACAO ST_CODIGO_APLICACAO ST_CODIGO_APLICACAO
+                                    END
+
+              COMZEROS ST_ORGAO     5
+              COMZEROS ST_UO        5
+              COMZEROS ST_UE        5
+              COMZEROS ST_FUNCAO    2
+              COMZEROS ST_SUBFUNCAO 3
+              COMZEROS ST_PROGRAMA  4
+
+              COMZEROS ST_ACAO 4
+
+              GOSUB LB_PONTUA_CONTA
+              GOSUB LB_PONTUA_CONTA_DESPESA
+
+              MOVE ST_CONTA TO ST_DADOS
+              APPEND ST_DADOS ' ' ST_ORGAO ' ' ST_UO ' ' ST_UE ' ' ST_FUNCAO ' ' ST_SUBFUNCAO ' ' ST_PROGRAMA ' ' ST_ACAO ' ' ST_ECONOMICA ' ' ST_FONTE ' ' ST_CODIGO_APLICACAO
+
+              MOVE '07' TO ST_XML
+              GOSUB LB_GRAVA_MOVIMENTO
+             END
+
+//--conta corrente 08
+ [~MES_14!] VALIDA_DADO '<AlteracaoDotacaoOrcamentaria>'    '<ctb:AlteracaoDotacaoOrcamentaria>'    '</AlteracaoDotacaoOrcamentaria>'    '</ctb:AlteracaoDotacaoOrcamentaria>'    ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ MES_14!] VALIDA_DADO '<AlteracaoDotacaoOrcamentaria_14>' '<ctb:AlteracaoDotacaoOrcamentaria_14>' '</AlteracaoDotacaoOrcamentaria_14>' '</ctb:AlteracaoDotacaoOrcamentaria_14>' ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ @VALIDO!] BEGIN
+              MOVEALL '' TO ST_ORGAO ST_UO ST_UE ST_FUNCAO ST_SUBFUNCAO ST_PROGRAMA ST_ACAO
+              MOVEALL '' TO ST_ECONOMICA ST_FONTE ST_CODIGO_APLICACAO ST_DATA_MOVIMENTO ST_CONTA
+              MOVEALL '' TO ST_AUXILIAR
+
+              REPEAT
+               LER ST_LINHA
+               PEGA_DADO '<gen:Orgao>'                     '</gen:Orgao>'                     ''                                    ''                                     ST_LINHA ST_ORGAO
+               PEGA_DADO '<gen:UO>'                        '</gen:UO>'                        ''                                    ''                                     ST_LINHA ST_UO
+               PEGA_DADO '<gen:UE>'                        '</gen:UE>'                        ''                                    ''                                     ST_LINHA ST_UE
+               
+               PEGA_DADO '<Funcao>'                        '</Funcao>'                        '<ctb:Funcao>'                        '</ctb:Funcao>'                        ST_LINHA ST_FUNCAO
+               PEGA_DADO '<SubFuncao>'                     '</SubFuncao>'                     '<ctb:SubFuncao>'                     '</ctb:SubFuncao>'                     ST_LINHA ST_SUBFUNCAO
+               PEGA_DADO '<Programa>'                      '</Programa>'                      '<ctb:Programa>'                      '</ctb:Programa>'                      ST_LINHA ST_PROGRAMA
+               PEGA_DADO '<Acao>'                          '</Acao>'                          '<ctb:Acao>'                          '</ctb:Acao>'                          ST_LINHA ST_ACAO
+               PEGA_DADO '<ClassificacaoEconomicaDespesa>' '</ClassificacaoEconomicaDespesa>' '<ctb:ClassificacaoEconomicaDespesa>' '</ctb:ClassificacaoEconomicaDespesa>' ST_LINHA ST_ECONOMICA
+               PEGA_DADO '<FonteRecursos>'                 '</FonteRecursos>'                 '<ctb:FonteRecursos>'                 '</ctb:FonteRecursos>'                 ST_LINHA ST_FONTE
+               PEGA_DADO '<CodigoAplicacao>'               '</CodigoAplicacao>'               '<ctb:CodigoAplicacao>'               '</ctb:CodigoAplicacao>'               ST_LINHA ST_CODIGO_APLICACAO
+               
+               IF 'Ato Tipo="' IN ST_LINHA BEGIN
+                                            PEGA_DADO 'Ato Tipo="' '">' '' '' ST_LINHA ST_TIPO_INSTRUMENTO
+                                            LER ST_LINHA
+                                            PEGA_DADO '<aux:Numero>' '</aux:Numero>' '' '' ST_LINHA ST_CODIGO_INSTRUMENTO
+                                           END
+               
+               PEGA_DADO '<DataPublicacaoAto>'  '</DataPublicacaoAto>' '<ctb:DataPublicacaoAto>'  '</ctb:DataPublicacaoAto>'  ST_LINHA ST_DATA_MOVIMENTO
+               PEGA_DADO '<ContaContabil>'      '</ContaContabil>'     '<ctb:ContaContabil>'      '</ctb:ContaContabil>'      ST_LINHA ST_CONTA
+
+               VALIDA_DADO '<MovimentoContabil>' '<ctb:MovimentoContabil>' '</MovimentoContabil>' '</ctb:MovimentoContabil>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            GOSUB LB_PEGA_MOVIMENTO
+                           END
+              UNTIL ST_NOME_CC_2 IN ST_LINHA
+
+              PAD ST_FONTE            TO ST_FONTE            5
+              PAD ST_CODIGO_APLICACAO TO ST_CODIGO_APLICACAO 7
+
+              [ COD_APL_DIFERENTE!] BEGIN
+                                     MONTA_COD_APLICACAO ST_CODIGO_APLICACAO ST_CODIGO_APLICACAO
+                                    END
+
+              [ PROPRIO_XML!] BEGIN
+                               IF (LEFT(ST_ECONOMICA,1)) EQ '9' MOVE '99990000' TO ST_ECONOMICA
+                               IF (LEFT(ST_ECONOMICA,1)) EQ '7' MOVE '79990000' TO ST_ECONOMICA
+                              END
+              
+              COMZEROS ST_ORGAO     5
+              COMZEROS ST_UO        5
+              COMZEROS ST_UE        5
+              COMZEROS ST_FUNCAO    2
+              COMZEROS ST_SUBFUNCAO 3
+              COMZEROS ST_PROGRAMA  4
+
+              COMZEROS ST_ACAO 4
+
+              TRIM ST_TIPO_INSTRUMENTO   TO ST_TIPO_INSTRUMENTO
+              TRIM ST_CODIGO_INSTRUMENTO TO ST_CODIGO_INSTRUMENTO
+              PAD  ST_CODIGO_INSTRUMENTO TO ST_CODIGO_INSTRUMENTO  25
+              
+              GOSUB LB_PONTUA_CONTA
+              GOSUB LB_PONTUA_CONTA_DESPESA
+
+              MOVE ST_CONTA TO ST_DADOS
+              APPEND ST_DADOS ' ' ST_ORGAO ' ' ST_UO ' ' ST_UE ' ' ST_FUNCAO ' ' ST_SUBFUNCAO ' ' ST_PROGRAMA ' ' ST_ACAO ' ' ST_ECONOMICA ' ' ST_FONTE ' ' ST_CODIGO_APLICACAO ' ' ST_DATA_MOVIMENTO ' ' ST_TIPO_INSTRUMENTO ' ' ST_CODIGO_INSTRUMENTO
+
+              MOVE '08' TO ST_XML
+              GOSUB LB_GRAVA_MOVIMENTO
+             END
+
+//--conta corrente 09
+ [~MES_14!] VALIDA_DADO '<EmissaoEmpenho>'    '<ctb:EmissaoEmpenho>'    '</EmissaoEmpenho>'    '</ctb:EmissaoEmpenho>'    ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ MES_14!] VALIDA_DADO '<EmissaoEmpenho_14>' '<ctb:EmissaoEmpenho_14>' '</EmissaoEmpenho_14>' '</ctb:EmissaoEmpenho_14>' ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ @VALIDO!] BEGIN
+              MOVEALL '' TO ST_ORGAO ST_UO ST_UE ST_FUNCAO ST_SUBFUNCAO ST_PROGRAMA ST_ACAO ST_REGIME_DESPESA_AUX
+              MOVEALL '' TO ST_ECONOMICA ST_FONTE ST_CODIGO_APLICACAO ST_N_EMPENHO ST_ANO_EMPENHO ST_TIPO_CONTRATACAO ST_TIPO_CONVENIO
+              MOVEALL '' TO ST_TIPO_EMPENHO ST_N_INSCRICAO ST_TIPO_CREDOR ST_REGIME_DESPESA
+              MOVEALL '' TO ST_MODALIDADE_LICITACAO ST_DATA_MOVIMENTO ST_CONTA
+              MOVEALL '' TO ST_N_LICITACAO ST_AUX_PROCESSO
+              MOVEALL '' TO ST_AUXILIAR
+
+              REPEAT
+               LER ST_LINHA
+               PEGA_DADO '<gen:Orgao>'            '</gen:Orgao>'            ''                           ''                            ST_LINHA ST_ORGAO
+               PEGA_DADO '<gen:UO>'               '</gen:UO>'               ''                           ''                            ST_LINHA ST_UO
+               PEGA_DADO '<gen:UE>'               '</gen:UE>'               ''                           ''                            ST_LINHA ST_UE
+               
+               PEGA_DADO '<Funcao>'               '</Funcao>'               '<ctb:Funcao>'               '</ctb:Funcao>'               ST_LINHA ST_FUNCAO
+               PEGA_DADO '<SubFuncao>'            '</SubFuncao>'            '<ctb:SubFuncao>'            '</ctb:SubFuncao>'            ST_LINHA ST_SUBFUNCAO
+               PEGA_DADO '<Programa>'             '</Programa>'             '<ctb:Programa>'             '</ctb:Programa>'             ST_LINHA ST_PROGRAMA
+               PEGA_DADO '<Acao>'                 '</Acao>'                 '<ctb:Acao>'                 '</ctb:Acao>'                 ST_LINHA ST_ACAO
+               PEGA_DADO '<ClassificacaoDespesa>' '</ClassificacaoDespesa>' '<ctb:ClassificacaoDespesa>' '</ctb:ClassificacaoDespesa>' ST_LINHA ST_ECONOMICA
+               PEGA_DADO '<FonteRecursos>'        '</FonteRecursos>'        '<ctb:FonteRecursos>'        '</ctb:FonteRecursos>'        ST_LINHA ST_FONTE
+               PEGA_DADO '<CodigoAplicacao>'      '</CodigoAplicacao>'      '<ctb:CodigoAplicacao>'      '</ctb:CodigoAplicacao>'      ST_LINHA ST_CODIGO_APLICACAO
+
+               VALIDA_DADO '<NumeroEmpenho>' '<ctb:NumeroEmpenho>' '</NumeroEmpenho>' '</ctb:NumeroEmpenho>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            LER ST_LINHA
+                            PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_EMPENHO
+                            LER ST_LINHA
+                            PEGA_DADO '<gen:Ano>'    '</gen:Ano>'    '' '' ST_LINHA ST_ANO_EMPENHO
+                           END
+
+               PEGA_DADO '<TipoEmpenho>'     '</TipoEmpenho>'     '<ctb:TipoEmpenho>'     '</ctb:TipoEmpenho>'     ST_LINHA ST_TIPO_EMPENHO
+               PEGA_DADO '<TipoContratacao>' '</TipoContratacao>' '<ctb:TipoContratacao>' '</ctb:TipoContratacao>' ST_LINHA ST_TIPO_CONTRATACAO
+               PEGA_DADO '<TipoConvenio>'    '</TipoConvenio>'    '<ctb:TipoConvenio>'    '</ctb:TipoConvenio>'    ST_LINHA ST_TIPO_CONVENIO
+
+               IF 'Tipo="' IN ST_LINHA BEGIN
+                                        PEGA_DADO 'Tipo="' '">' '' '' ST_LINHA ST_TIPO_CREDOR
+                                       END
+               ELSE IF "Tipo='" IN ST_LINHA BEGIN
+                                             PEGA_DADO "Tipo='" "'>" '' '' ST_LINHA ST_TIPO_CREDOR
+                                            END
+
+               IF '<gen:CNPJ' IN ST_LINHA BEGIN
+                                           LER ST_LINHA
+                                           PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                          END
+               IF '<gen:CPF' IN ST_LINHA BEGIN
+                                          LER ST_LINHA
+                                          PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                         END
+               IF '<gen:InscricaoGenerica' IN ST_LINHA BEGIN
+                                                        LER ST_LINHA
+                                                        PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                                       END
+               IF '<gen:IdentificacaoEspecial' IN ST_LINHA BEGIN
+                                                            LER ST_LINHA
+                                                            PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                                           END
+
+               PEGA_DADO '<RegimeDespesa>'          '</RegimeDespesa>'          '<ctb:RegimeDespesa>'          '</ctb:RegimeDespesa>'          ST_LINHA ST_REGIME_DESPESA
+               PEGA_DADO '<DespesaSemLicitacao>'    '</DespesaSemLicitacao>'    '<ctb:DespesaSemLicitacao>'    '</ctb:DespesaSemLicitacao>'    ST_LINHA ST_MODALIDADE_LICITACAO
+               PEGA_DADO '<aux:CodigoComLicitacao>' '</aux:CodigoComLicitacao>' '<ctb:aux:CodigoComLicitacao>' '</ctb:aux:CodigoComLicitacao>' ST_LINHA ST_MODALIDADE_LICITACAO
+               PEGA_DADO '<aux:NumeroLicitacao>'    '</aux:NumeroLicitacao>'    '<ctb:aux:NumeroLicitacao>'    '</ctb:aux:NumeroLicitacao>'    ST_LINHA ST_N_LICITACAO
+               PEGA_DADO '<DataEmissao>'            '</DataEmissao>'            '<ctb:DataEmissao>'            '</ctb:DataEmissao>'            ST_LINHA ST_DATA_MOVIMENTO
+               PEGA_DADO '<ContaContabil>'          '</ContaContabil>'          '<ctb:ContaContabil>'          '</ctb:ContaContabil>'          ST_LINHA ST_CONTA
+
+               VALIDA_DADO '<MovimentoContabil>' '<ctb:MovimentoContabil>' '</MovimentoContabil>' '</ctb:MovimentoContabil>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            GOSUB LB_PEGA_MOVIMENTO
+                           END
+              UNTIL ST_NOME_CC_2 IN ST_LINHA
+
+              PAD ST_FONTE            TO ST_FONTE            5
+              PAD ST_CODIGO_APLICACAO TO ST_CODIGO_APLICACAO 7
+              PAD ST_REGIME_DESPESA   TO ST_REGIME_DESPESA  12
+              
+              [ REGIME_DESPESA!] BEGIN
+                                  MOVE (TRIM(ST_REGIME_DESPESA)) TO ST_REGIME_DESPESA_AUX
+                                  MOVE '            '            TO ST_REGIME_DESPESA
+                                 END
+
+              [ COD_APL_DIFERENTE!] BEGIN
+                                     MONTA_COD_APLICACAO ST_CODIGO_APLICACAO ST_CODIGO_APLICACAO
+                                    END
+
+              COMZEROS ST_ORGAO        5
+              COMZEROS ST_UO           5
+              COMZEROS ST_UE           5
+              COMZEROS ST_FUNCAO       2
+              COMZEROS ST_SUBFUNCAO    3
+              COMZEROS ST_PROGRAMA     4
+
+              COMZEROS ST_ACAO 4
+              
+              TRATA_EMPENHO ST_N_EMPENHO
+              
+              TRIM ST_N_LICITACAO  TO ST_N_LICITACAO
+              PAD  ST_N_LICITACAO  TO ST_N_LICITACAO  24
+              PAD  ST_AUX_PROCESSO TO ST_AUX_PROCESSO 24
+
+              IF PARGERAL.EXERCICIO LE '2008' BEGIN
+                                               MOVE '' TO ST_AUX_PROCESSO
+                                               MOVE ST_N_LICITACAO  TO ST_AUX_PROCESSO
+                                               PAD  ST_AUX_PROCESSO TO ST_AUX_PROCESSO 24
+                                              END
+
+              GOSUB LB_PONTUA_CONTA
+              GOSUB LB_PONTUA_CONTA_DESPESA
+              
+              [ PROPRIO_XML!] BEGIN
+                                    IF ST_TIPO_CREDOR EQ '09' MOVE '03' TO ST_TIPO_CREDOR
+                               ELSE IF ST_TIPO_CREDOR EQ '03' MOVE '09' TO ST_TIPO_CREDOR
+                              END
+
+              MOVE ST_CONTA TO ST_DADOS
+              APPEND ST_DADOS ' ' ST_ORGAO ' ' ST_UO ' ' ST_UE ' ' ST_FUNCAO ' ' ST_SUBFUNCAO ' ' ST_PROGRAMA ' ' ST_ACAO ' ' ST_ECONOMICA ' ' ST_FONTE ' ' ST_CODIGO_APLICACAO
+              APPEND ST_DADOS ' ' ST_N_EMPENHO ' ' ST_ANO_EMPENHO ' ' ST_TIPO_EMPENHO ' ' ST_REGIME_DESPESA ' ' (PAD(ST_MODALIDADE_LICITACAO,2)) ' ' ST_AUX_PROCESSO ' ' ST_DATA_MOVIMENTO ' ' ST_TIPO_CREDOR ' ' ST_N_INSCRICAO
+
+              MOVE '' TO ST_AUXILIAR
+              APPEND ST_AUXILIAR ' ' (PAD(ST_TIPO_CONTRATACAO,2)) ' ' (PAD(ST_TIPO_CONVENIO,2))
+              
+              MOVE '09' TO ST_XML
+              GOSUB LB_GRAVA_MOVIMENTO
+
+              //--limpar para nao gravar nos proxs registros
+              MOVEALL '' TO ST_N_LICITACAO ST_AUX_PROCESSO
+             END
+
+//--conta corrente 10
+ [~MES_14!] VALIDA_DADO '<ReforcoEmpenho>'    '<ctb:ReforcoEmpenho>'    '</ReforcoEmpenho>'    '</ctb:ReforcoEmpenho>'    ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ MES_14!] VALIDA_DADO '<ReforcoEmpenho_14>' '<ctb:ReforcoEmpenho_14>' '</ReforcoEmpenho_14>' '</ctb:ReforcoEmpenho_14>' ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ @VALIDO!] BEGIN
+              MOVEALL '' TO ST_ORGAO ST_UO ST_UE ST_N_EMPENHO ST_ANO_EMPENHO ST_DATA_MOVIMENTO ST_CONTA
+              MOVEALL '' TO ST_AUXILIAR
+
+              REPEAT
+               LER ST_LINHA
+               PEGA_DADO '<gen:Orgao>'          '</gen:Orgao>'          ''                         ''                          ST_LINHA ST_ORGAO
+               PEGA_DADO '<gen:UO>'             '</gen:UO>'             ''                         ''                          ST_LINHA ST_UO
+               PEGA_DADO '<gen:UE>'             '</gen:UE>'             ''                         ''                          ST_LINHA ST_UE
+               PEGA_DADO '<gen:Numero>'         '</gen:Numero>'         ''                         ''                          ST_LINHA ST_N_EMPENHO
+               PEGA_DADO '<gen:Ano>'            '</gen:Ano>'            ''                         ''                          ST_LINHA ST_ANO_EMPENHO
+               
+               PEGA_DADO '<DataEmissaoReforco>' '</DataEmissaoReforco>' '<ctb:DataEmissaoReforco>' '</ctb:DataEmissaoReforco>' ST_LINHA ST_DATA_MOVIMENTO
+               PEGA_DADO '<ContaContabil>'      '</ContaContabil>'      '<ctb:ContaContabil>'      '</ctb:ContaContabil>'      ST_LINHA ST_CONTA
+
+               VALIDA_DADO '<MovimentoContabil>' '<ctb:MovimentoContabil>' '</MovimentoContabil>' '</ctb:MovimentoContabil>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            GOSUB LB_PEGA_MOVIMENTO
+                           END
+              UNTIL ST_NOME_CC_2 IN ST_LINHA
+
+              COMZEROS ST_ORGAO        5
+              COMZEROS ST_UO           5
+              COMZEROS ST_UE           5
+
+              TRATA_EMPENHO ST_N_EMPENHO
+
+              GOSUB LB_PONTUA_CONTA
+
+              MOVE ST_CONTA TO ST_DADOS
+              APPEND ST_DADOS ' ' ST_ORGAO ' ' ST_UO ' ' ST_UE ' '  ST_N_EMPENHO ' ' ST_ANO_EMPENHO ' ' ST_DATA_MOVIMENTO
+
+              MOVE '10' TO ST_XML
+              GOSUB LB_GRAVA_MOVIMENTO
+             END
+
+//--conta corrente 11
+ [~MES_14!] VALIDA_DADO '<AnulacaoEmpenho>'    '<ctb:AnulacaoEmpenho>'    '</AnulacaoEmpenho>'    '</ctb:AnulacaoEmpenho>'    ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ MES_14!] VALIDA_DADO '<AnulacaoEmpenho_14>' '<ctb:AnulacaoEmpenho_14>' '</AnulacaoEmpenho_14>' '</ctb:AnulacaoEmpenho_14>' ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ @VALIDO!] BEGIN
+              MOVEALL '' TO ST_ORGAO ST_UO ST_UE ST_N_EMPENHO ST_ANO_EMPENHO ST_DATA_MOVIMENTO ST_CONTA
+              MOVEALL '' TO ST_AUXILIAR
+
+              REPEAT
+               LER ST_LINHA
+               PEGA_DADO '<gen:Orgao>'           '</gen:Orgao>'           ''                          ''                           ST_LINHA ST_ORGAO
+               PEGA_DADO '<gen:UO>'              '</gen:UO>'              ''                          ''                           ST_LINHA ST_UO
+               PEGA_DADO '<gen:UE>'              '</gen:UE>'              ''                          ''                           ST_LINHA ST_UE
+               PEGA_DADO '<gen:Numero>'          '</gen:Numero>'          ''                          ''                           ST_LINHA ST_N_EMPENHO
+               PEGA_DADO '<gen:Ano>'             '</gen:Ano>'             ''                          ''                           ST_LINHA ST_ANO_EMPENHO
+               
+               PEGA_DADO '<DataEmissaoAnulacao>' '</DataEmissaoAnulacao>' '<ctb:DataEmissaoAnulacao>' '</ctb:DataEmissaoAnulacao>' ST_LINHA ST_DATA_MOVIMENTO
+               PEGA_DADO '<ContaContabil>'       '</ContaContabil>'       '<ctb:ContaContabil>'       '</ctb:ContaContabil>'       ST_LINHA ST_CONTA
+
+               VALIDA_DADO '<MovimentoContabil>' '<ctb:MovimentoContabil>' '</MovimentoContabil>' '</ctb:MovimentoContabil>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            GOSUB LB_PEGA_MOVIMENTO
+                           END
+              UNTIL ST_NOME_CC_2 IN ST_LINHA
+
+              COMZEROS ST_ORGAO        5
+              COMZEROS ST_UO           5
+              COMZEROS ST_UE           5
+
+              TRATA_EMPENHO ST_N_EMPENHO
+
+              GOSUB LB_PONTUA_CONTA
+
+              MOVE ST_CONTA TO ST_DADOS
+              APPEND ST_DADOS ' ' ST_ORGAO ' ' ST_UO ' ' ST_UE ' '  ST_N_EMPENHO ' ' ST_ANO_EMPENHO ' ' ST_DATA_MOVIMENTO
+
+              MOVE '11' TO ST_XML
+              GOSUB LB_GRAVA_MOVIMENTO
+             END
+
+//--conta corrente 12
+ [~MES_14!] VALIDA_DADO '<CronogramaDesembolsoMensal>'    '<ctb:CronogramaDesembolsoMensal>'    '</CronogramaDesembolsoMensal>'    '</ctb:CronogramaDesembolsoMensal>'    ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ MES_14!] VALIDA_DADO '<CronogramaDesembolsoMensal_14>' '<ctb:CronogramaDesembolsoMensal_14>' '</CronogramaDesembolsoMensal_14>' '</ctb:CronogramaDesembolsoMensal_14>' ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ @VALIDO!] BEGIN
+              MOVEALL '' TO ST_GRUPO_DESPESA ST_FONTE ST_CODIGO_APLICACAO ST_MES ST_CONTA
+              MOVEALL '' TO ST_AUXILIAR
+
+              REPEAT
+               LER ST_LINHA
+               PEGA_DADO '<GrupoDespesa>'    '</GrupoDespesa>'    '<ctb:GrupoDespesa>'    '</ctb:GrupoDespesa>'    ST_LINHA ST_GRUPO_DESPESA
+               PEGA_DADO '<FonteRecursos>'   '</FonteRecursos>'   '<ctb:FonteRecursos>'   '</ctb:FonteRecursos>'   ST_LINHA ST_FONTE
+               PEGA_DADO '<CodigoAplicacao>' '</CodigoAplicacao>' '<ctb:CodigoAplicacao>' '</ctb:CodigoAplicacao>' ST_LINHA ST_CODIGO_APLICACAO
+               PEGA_DADO '<Mes>'             '</Mes>'             '<ctb:Mes>'             '</ctb:Mes>'             ST_LINHA ST_MES
+               PEGA_DADO '<ContaContabil>'   '</ContaContabil>'   '<ctb:ContaContabil>'   '</ctb:ContaContabil>'   ST_LINHA ST_CONTA
+
+               VALIDA_DADO '<MovimentoContabil>' '<ctb:MovimentoContabil>' '</MovimentoContabil>' '</ctb:MovimentoContabil>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            GOSUB LB_PEGA_MOVIMENTO
+                           END
+              UNTIL ST_NOME_CC_2 IN ST_LINHA
+
+              COMZEROS ST_MES 2
+
+              PAD ST_FONTE            TO ST_FONTE            5
+              PAD ST_CODIGO_APLICACAO TO ST_CODIGO_APLICACAO 7
+
+              [ COD_APL_DIFERENTE!] BEGIN
+                                     MONTA_COD_APLICACAO ST_CODIGO_APLICACAO ST_CODIGO_APLICACAO
+                                    END
+
+              COMZEROS ST_MES 2
+
+              GOSUB LB_PONTUA_CONTA
+
+              MOVE ST_CONTA TO ST_DADOS
+              APPEND ST_DADOS ' ' ST_GRUPO_DESPESA ' ' ST_FONTE ' ' ST_CODIGO_APLICACAO ' ' ST_MES
+
+              MOVE '12' TO ST_XML
+              GOSUB LB_GRAVA_MOVIMENTO
+             END
+
+//--conta corrente 14
+ [~MES_14!] VALIDA_DADO '<VencimentoEmpenho>'    '<ctb:VencimentoEmpenho>'    '</VencimentoEmpenho>'    '</ctb:VencimentoEmpenho>'    ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ MES_14!] VALIDA_DADO '<VencimentoEmpenho_14>' '<ctb:VencimentoEmpenho_14>' '</VencimentoEmpenho_14>' '</ctb:VencimentoEmpenho_14>' ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ @VALIDO!] BEGIN
+              MOVEALL '' TO ST_ORGAO ST_UO ST_UE ST_N_EMPENHO ST_ANO_EMPENHO ST_DATA_MOVIMENTO ST_CONTA
+              MOVEALL '' TO ST_AUXILIAR
+
+              REPEAT
+               LER ST_LINHA
+               PEGA_DADO '<gen:Orgao>'       '</gen:Orgao>'      ''                      ''                      ST_LINHA ST_ORGAO
+               PEGA_DADO '<gen:UO>'          '</gen:UO>'         ''                      ''                      ST_LINHA ST_UO
+               PEGA_DADO '<gen:UE>'          '</gen:UE>'         ''                      ''                      ST_LINHA ST_UE
+               PEGA_DADO '<gen:Numero>'      '</gen:Numero>'     ''                      ''                      ST_LINHA ST_N_EMPENHO
+               PEGA_DADO '<gen:Ano>'         '</gen:Ano>'        ''                      ''                      ST_LINHA ST_ANO_EMPENHO
+               
+               PEGA_DADO '<DataVencimento>'  '</DataVencimento>' '<ctb:DataVencimento>'  '</ctb:DataVencimento>' ST_LINHA ST_DATA_MOVIMENTO
+               PEGA_DADO '<ContaContabil>'   '</ContaContabil>'  '<ctb:ContaContabil>'   '</ctb:ContaContabil>'  ST_LINHA ST_CONTA
+
+               VALIDA_DADO '<MovimentoContabil>' '<ctb:MovimentoContabil>' '</MovimentoContabil>' '</ctb:MovimentoContabil>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            GOSUB LB_PEGA_MOVIMENTO
+                           END
+              UNTIL ST_NOME_CC_2 IN ST_LINHA
+
+              COMZEROS ST_ORGAO        5
+              COMZEROS ST_UO           5
+              COMZEROS ST_UE           5
+
+              TRATA_EMPENHO ST_N_EMPENHO
+
+              GOSUB LB_PONTUA_CONTA
+
+              MOVE ST_CONTA TO ST_DADOS
+              APPEND ST_DADOS ' ' ST_ORGAO ' ' ST_UO ' ' ST_UE ' ' ST_N_EMPENHO ' ' ST_ANO_EMPENHO ' ' ST_DATA_MOVIMENTO
+
+              MOVE '14' TO ST_XML
+              GOSUB LB_GRAVA_MOVIMENTO
+             END
+
+//--conta corrente 15
+ [~MES_14!] VALIDA_DADO '<InscricaoRPNaoProcessado>'    '<ctb:InscricaoRPNaoProcessado>'    '</InscricaoRPNaoProcessado>'    '</ctb:InscricaoRPNaoProcessado>'    ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ MES_14!] VALIDA_DADO '<InscricaoRPNaoProcessado_14>' '<ctb:InscricaoRPNaoProcessado_14>' '</InscricaoRPNaoProcessado_14>' '</ctb:InscricaoRPNaoProcessado_14>' ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ @VALIDO!] BEGIN
+              MOVEALL '' TO ST_ORGAO ST_UO ST_UE ST_N_EMPENHO ST_ANO_EMPENHO ST_DATA_MOVIMENTO ST_CONTA
+              MOVEALL '' TO ST_AUXILIAR
+
+              REPEAT
+               LER ST_LINHA
+               PEGA_DADO '<gen:Orgao>'       '</gen:Orgao>'      ''                     ''                       ST_LINHA ST_ORGAO
+               PEGA_DADO '<gen:UO>'          '</gen:UO>'         ''                     ''                       ST_LINHA ST_UO
+               PEGA_DADO '<gen:UE>'          '</gen:UE>'         ''                     ''                       ST_LINHA ST_UE
+               PEGA_DADO '<gen:Numero>'      '</gen:Numero>'     ''                     ''                       ST_LINHA ST_N_EMPENHO
+               PEGA_DADO '<gen:Ano>'         '</gen:Ano>'        ''                     ''                       ST_LINHA ST_ANO_EMPENHO
+               
+               PEGA_DADO '<DataInscricao>'   '</DataInscricao>'  '<ctb:DataInscricao>'  '</ctb:DataInscricao>'   ST_LINHA ST_DATA_MOVIMENTO
+               PEGA_DADO '<ContaContabil>'   '</ContaContabil>'  '<ctb:ContaContabil>'  '</ctb:ContaContabil>'   ST_LINHA ST_CONTA
+
+               VALIDA_DADO '<MovimentoContabil>' '<ctb:MovimentoContabil>' '</MovimentoContabil>' '</ctb:MovimentoContabil>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            GOSUB LB_PEGA_MOVIMENTO
+                           END
+              UNTIL ST_NOME_CC_2 IN ST_LINHA
+
+              COMZEROS ST_ORGAO        5
+              COMZEROS ST_UO           5
+              COMZEROS ST_UE           5
+
+              TRATA_EMPENHO ST_N_EMPENHO
+
+              GOSUB LB_PONTUA_CONTA
+
+              MOVE ST_CONTA TO ST_DADOS
+              APPEND ST_DADOS ' ' ST_ORGAO ' ' ST_UO ' ' ST_UE ' ' ST_N_EMPENHO ' ' ST_ANO_EMPENHO ' ' ST_DATA_MOVIMENTO
+
+              MOVE '15' TO ST_XML
+              GOSUB LB_GRAVA_MOVIMENTO
+              END
+
+//--conta corrente 16
+ [~MES_14!] VALIDA_DADO '<PagamentoEmpenho>'    '<ctb:PagamentoEmpenho>'    '</PagamentoEmpenho>'    '</ctb:PagamentoEmpenho>'    ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ MES_14!] VALIDA_DADO '<PagamentoEmpenho_14>' '<ctb:PagamentoEmpenho_14>' '</PagamentoEmpenho_14>' '</ctb:PagamentoEmpenho_14>' ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ @VALIDO!] BEGIN
+              MOVEALL '' TO ST_ORGAO ST_UO ST_UE ST_N_EMPENHO ST_ANO_EMPENHO ST_DATA_MOVIMENTO ST_CONTA
+              MOVEALL '' TO ST_AUXILIAR
+
+              REPEAT
+               LER ST_LINHA
+               PEGA_DADO '<gen:Orgao>'       '</gen:Orgao>'       ''                      ''                     ST_LINHA ST_ORGAO
+               PEGA_DADO '<gen:UO>'          '</gen:UO>'          ''                      ''                     ST_LINHA ST_UO
+               PEGA_DADO '<gen:UE>'          '</gen:UE>'          ''                      ''                     ST_LINHA ST_UE
+               PEGA_DADO '<gen:Numero>'      '</gen:Numero>'      ''                      ''                     ST_LINHA ST_N_EMPENHO
+               PEGA_DADO '<gen:Ano>'         '</gen:Ano>'         ''                      ''                     ST_LINHA ST_ANO_EMPENHO
+               PEGA_DADO '<DataPagamento>'   '</DataPagamento>'   '<ctb:DataPagamento>'   '</ctb:DataPagamento>' ST_LINHA ST_DATA_MOVIMENTO
+               PEGA_DADO '<ContaContabil>'   '</ContaContabil>'   '<ctb:ContaContabil>'   '</ctb:ContaContabil>' ST_LINHA ST_CONTA
+
+               VALIDA_DADO '<MovimentoContabil>' '<ctb:MovimentoContabil>' '</MovimentoContabil>' '</ctb:MovimentoContabil>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            GOSUB LB_PEGA_MOVIMENTO
+                           END
+              UNTIL ST_NOME_CC_2 IN ST_LINHA
+
+              COMZEROS ST_ORGAO        5
+              COMZEROS ST_UO           5
+              COMZEROS ST_UE           5
+
+              TRATA_EMPENHO ST_N_EMPENHO
+
+              GOSUB LB_PONTUA_CONTA
+
+              MOVE ST_CONTA TO ST_DADOS
+              APPEND ST_DADOS ' ' ST_ORGAO ' ' ST_UO ' ' ST_UE ' ' ST_N_EMPENHO ' ' ST_ANO_EMPENHO ' ' ST_DATA_MOVIMENTO
+
+              MOVE '16' TO ST_XML
+              GOSUB LB_GRAVA_MOVIMENTO
+             END
+
+//--conta corrente 17
+ [~MES_14!] VALIDA_DADO '<CancelamentoRP>'    '<ctb:CancelamentoRP>'    '</CancelamentoRP>'    '</ctb:CancelamentoRP>'    ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ MES_14!] VALIDA_DADO '<CancelamentoRP_14>' '<ctb:CancelamentoRP_14>' '</CancelamentoRP_14>' '</ctb:CancelamentoRP_14>' ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ @VALIDO!] BEGIN
+              MOVEALL '' TO ST_ORGAO ST_UO ST_UE ST_N_EMPENHO ST_ANO_EMPENHO ST_DATA_MOVIMENTO ST_CONTA
+              MOVEALL '' TO ST_AUXILIAR
+
+              REPEAT
+               LER ST_LINHA
+               PEGA_DADO '<gen:Orgao>'        '</gen:Orgao>'        ''                       ''                        ST_LINHA ST_ORGAO
+               PEGA_DADO '<gen:UO>'           '</gen:UO>'           ''                       ''                        ST_LINHA ST_UO
+               PEGA_DADO '<gen:UE>'           '</gen:UE>'           ''                       ''                        ST_LINHA ST_UE
+               PEGA_DADO '<gen:Numero>'       '</gen:Numero>'       ''                       ''                        ST_LINHA ST_N_EMPENHO
+               PEGA_DADO '<gen:Ano>'          '</gen:Ano>'          ''                       ''                        ST_LINHA ST_ANO_EMPENHO
+               
+               PEGA_DADO '<DataCancelamento>' '</DataCancelamento>' '<ctb:DataCancelamento>' '</ctb:DataCancelamento>' ST_LINHA ST_DATA_MOVIMENTO
+               PEGA_DADO '<ContaContabil>'    '</ContaContabil>'    '<ctb:ContaContabil>'    '</ctb:ContaContabil>'    ST_LINHA ST_CONTA
+
+               VALIDA_DADO '<MovimentoContabil>' '<ctb:MovimentoContabil>' '</MovimentoContabil>' '</ctb:MovimentoContabil>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            GOSUB LB_PEGA_MOVIMENTO
+                           END
+              UNTIL ST_NOME_CC_2 IN ST_LINHA
+
+              COMZEROS ST_ORGAO        5
+              COMZEROS ST_UO           5
+              COMZEROS ST_UE           5
+
+              TRATA_EMPENHO ST_N_EMPENHO
+
+              GOSUB LB_PONTUA_CONTA
+
+              MOVE ST_CONTA TO ST_DADOS
+              APPEND ST_DADOS ' ' ST_ORGAO ' ' ST_UO ' ' ST_UE ' ' ST_N_EMPENHO ' ' ST_ANO_EMPENHO ' ' ST_DATA_MOVIMENTO
+
+              MOVE '17' TO ST_XML
+              GOSUB LB_GRAVA_MOVIMENTO
+             END
+
+//--conta corrente 18
+ [~MES_14!] VALIDA_DADO '<ArrecadacaoDiaria>'    '<ctb:ArrecadacaoDiaria>'    '</ArrecadacaoDiaria>'    '</ctb:ArrecadacaoDiaria>'    ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ MES_14!] VALIDA_DADO '<ArrecadacaoDiaria_14>' '<ctb:ArrecadacaoDiaria_14>' '</ArrecadacaoDiaria_14>' '</ctb:ArrecadacaoDiaria_14>' ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ @VALIDO!] BEGIN
+              MOVEALL '' TO ST_COD_RECEITA ST_FONTE ST_CODIGO_APLICACAO ST_DATA_MOVIMENTO ST_CONTA
+              MOVEALL '' TO ST_AUXILIAR
+
+              REPEAT
+               LER ST_LINHA
+               PEGA_DADO '<ClassificacaoEconomicaReceita>' '</ClassificacaoEconomicaReceita>' '<ctb:ClassificacaoEconomicaReceita>' '</ctb:ClassificacaoEconomicaReceita>' ST_LINHA ST_COD_RECEITA
+               PEGA_DADO '<FonteRecursos>'                 '</FonteRecursos>'                 '<ctb:FonteRecursos>'                 '</ctb:FonteRecursos>'                 ST_LINHA ST_FONTE
+               PEGA_DADO '<CodigoAplicacao>'               '</CodigoAplicacao>'               '<ctb:CodigoAplicacao>'               '</ctb:CodigoAplicacao>'               ST_LINHA ST_CODIGO_APLICACAO
+               PEGA_DADO '<MesDia>'                        '</Mesdia>'                        '<ctb:MesDia>'                        '</ctb:Mesdia>'                        ST_LINHA ST_DATA_MOVIMENTO
+               PEGA_DADO '<ContaContabil>'                 '</ContaContabil>'                 '<ctb:ContaContabil>'                 '</ctb:ContaContabil>'                 ST_LINHA ST_CONTA
+
+               VALIDA_DADO '<MovimentoContabil>' '<ctb:MovimentoContabil>' '</MovimentoContabil>' '</ctb:MovimentoContabil>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            GOSUB LB_PEGA_MOVIMENTO
+                           END
+              UNTIL ST_NOME_CC_2 IN ST_LINHA
+
+              PAD ST_FONTE            TO ST_FONTE            5
+              PAD ST_CODIGO_APLICACAO TO ST_CODIGO_APLICACAO 7
+
+              [ COD_APL_DIFERENTE!] BEGIN
+                                     MONTA_COD_APLICACAO ST_CODIGO_APLICACAO ST_CODIGO_APLICACAO
+                                    END
+
+              GOSUB LB_PONTUA_CONTA_RECEITA
+              GOSUB LB_PONTUA_CONTA
+
+              MOVE ST_CONTA TO ST_DADOS
+              APPEND ST_DADOS ' ' ST_COD_RECEITA '   ' ST_FONTE ' ' ST_CODIGO_APLICACAO ' ' ST_DATA_MOVIMENTO
+
+              MOVE '18' TO ST_XML
+              GOSUB LB_GRAVA_MOVIMENTO
+             END
+
+//--conta corrente 19
+ [~MES_14!] VALIDA_DADO '<ConcessaoAdiantamentos>'    '<ctb:ConcessaoAdiantamentos>'    '</ConcessaoAdiantamentos>'    '</ctb:ConcessaoAdiantamentos>'    ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ MES_14!] VALIDA_DADO '<ConcessaoAdiantamentos_14>' '<ctb:ConcessaoAdiantamentos_14>' '</ConcessaoAdiantamentos_14>' '</ctb:ConcessaoAdiantamentos_14>' ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ @VALIDO!] BEGIN
+              MOVEALL '' TO ST_ORGAO ST_UO ST_UE ST_N_EMPENHO ST_ANO_EMPENHO ST_PERIODO_APLICACAO
+              MOVEALL '' TO ST_DATA_MOVIMENTO ST_CONTA ST_N_INSCRICAO ST_AUXILIAR ST_TP_CREDOR
+              MOVEALL '' TO ST_AUXILIAR
+
+              REPEAT
+               LER ST_LINHA
+               PEGA_DADO '<gen:Orgao>' '</gen:Orgao>' '' '' ST_LINHA ST_ORGAO
+               PEGA_DADO '<gen:UO>'    '</gen:UO>'    '' '' ST_LINHA ST_UO
+               PEGA_DADO '<gen:UE>'    '</gen:UE>'    '' '' ST_LINHA ST_UE
+
+               VALIDA_DADO '<NumeroEmpenho>' '<ctb:NumeroEmpenho>' '</NumeroEmpenho>' '</ctb:NumeroEmpenho>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            LER ST_LINHA
+                            PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_EMPENHO
+                            LER ST_LINHA
+                            PEGA_DADO '<gen:Ano>'    '</gen:Ano>'    '' '' ST_LINHA ST_ANO_EMPENHO
+                           END
+
+               PEGA_DADO '<PeriodoAplicacao>' '</PeriodoAplicacao>' '<ctb:PeriodoAplicacao>' '</ctb:PeriodoAplicacao>' ST_LINHA ST_PERIODO_APLICACAO
+               PEGA_DADO '<DataPagamento>'    '</DataPagamento>'    '<ctb:DataPagamento>'    '</ctb:DataPagamento>'    ST_LINHA ST_DATA_MOVIMENTO
+
+               IF '<gen:CNPJ' IN ST_LINHA BEGIN
+                                           LER ST_LINHA
+                                           PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                           MOVE 'CNPJ' TO ST_AUXILIAR
+                                           MOVE '01'   TO ST_TP_CREDOR
+                                          END
+               IF '<gen:CPF' IN ST_LINHA BEGIN
+                                          LER ST_LINHA
+                                          PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                          MOVE 'CPF' TO ST_AUXILIAR
+                                          MOVE '02'  TO ST_TP_CREDOR
+                                         END
+               IF '<gen:InscricaoGenerica' IN ST_LINHA BEGIN
+                                                        LER ST_LINHA
+                                                        PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                                        MOVE 'OUT' TO ST_AUXILIAR
+                                                        MOVE '03'  TO ST_TP_CREDOR
+                                                       END
+               IF '<gen:IdentificacaoEspecial' IN ST_LINHA BEGIN
+                                                            LER ST_LINHA
+                                                            PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                                            MOVE 'IDE' TO ST_AUXILIAR
+                                                            MOVE '09'  TO ST_TP_CREDOR
+                                                           END
+
+               PEGA_DADO '<ContaContabil>'   '</ContaContabil>'   '<ctb:ContaContabil>'   '</ctb:ContaContabil>'   ST_LINHA ST_CONTA
+
+               VALIDA_DADO '<MovimentoContabil>' '<ctb:MovimentoContabil>' '</MovimentoContabil>' '</ctb:MovimentoContabil>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            GOSUB LB_PEGA_MOVIMENTO
+                           END
+              UNTIL ST_NOME_CC_2 IN ST_LINHA
+
+              COMZEROS ST_ORGAO             5
+              COMZEROS ST_UO                5
+              COMZEROS ST_UE                5
+
+              TRATA_EMPENHO ST_N_EMPENHO
+              
+              MOVE ST_PERIODO_APLICACAO TO IT_AUX
+              MOVE IT_AUX               TO ST_PERIODO_APLICACAO
+              TRIM ST_PERIODO_APLICACAO TO ST_PERIODO_APLICACAO
+              PAD ST_PERIODO_APLICACAO  TO ST_PERIODO_APLICACAO 5
+
+              GOSUB LB_PONTUA_CONTA
+
+              MOVE ST_CONTA TO ST_DADOS
+              APPEND ST_DADOS ' ' ST_ORGAO ' ' ST_UO ' ' ST_UE ' ' ST_N_EMPENHO ' ' ST_ANO_EMPENHO ' ' ST_PERIODO_APLICACAO ' ' ST_DATA_MOVIMENTO ' ' ST_TP_CREDOR ' ' ST_N_INSCRICAO
+
+              MOVE '19' TO ST_XML
+              GOSUB LB_GRAVA_MOVIMENTO
+             END
+
+//--conta corrente 20
+ [~MES_14!] VALIDA_DADO '<UtilizadoAdiantamentos>'    '<ctb:UtilizadoAdiantamentos>'    '</UtilizadoAdiantamentos>'    '</ctb:UtilizadoAdiantamentos>'    ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ MES_14!] VALIDA_DADO '<UtilizadoAdiantamentos_14>' '<ctb:UtilizadoAdiantamentos_14>' '</UtilizadoAdiantamentos_14>' '</ctb:UtilizadoAdiantamentos_14>' ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ @VALIDO!] BEGIN
+              MOVEALL '' TO ST_ORGAO ST_UO ST_UE ST_N_EMPENHO ST_ANO_EMPENHO ST_TP_CREDOR
+              MOVEALL '' TO ST_DATA_MOVIMENTO ST_CONTA ST_N_INSCRICAO ST_AUXILIAR
+              MOVEALL '' TO ST_AUXILIAR
+
+              REPEAT
+               LER ST_LINHA
+               PEGA_DADO '<gen:Orgao>' '</gen:Orgao>' '' '' ST_LINHA ST_ORGAO
+               PEGA_DADO '<gen:UO>'    '</gen:UO>'    '' '' ST_LINHA ST_UO
+               PEGA_DADO '<gen:UE>'    '</gen:UE>'    '' '' ST_LINHA ST_UE
+
+               VALIDA_DADO '<NumeroEmpenho>' '<ctb:NumeroEmpenho>' '</NumeroEmpenho>' '</ctb:NumeroEmpenho>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            LER ST_LINHA
+                            PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_EMPENHO
+                            LER ST_LINHA
+                            PEGA_DADO '<gen:Ano>'    '</gen:Ano>'    '' '' ST_LINHA ST_ANO_EMPENHO
+                           END
+
+               PEGA_DADO '<DataPrestacaoContas>' '</DataPrestacaoContas>' '<ctb:DataPrestacaoContas>' '</ctb:DataPrestacaoContas>' ST_LINHA ST_DATA_MOVIMENTO
+
+               IF '<gen:CNPJ' IN ST_LINHA BEGIN
+                                           LER ST_LINHA
+                                           PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                           MOVE 'CNPJ' TO ST_AUXILIAR
+                                           MOVE '01'   TO ST_TP_CREDOR
+                                          END
+               IF '<gen:CPF' IN ST_LINHA BEGIN
+                                          LER ST_LINHA
+                                          PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                          MOVE 'CPF' TO ST_AUXILIAR
+                                          MOVE '02'  TO ST_TP_CREDOR
+                                         END
+               IF '<gen:InscricaoGenerica' IN ST_LINHA BEGIN
+                                                        LER ST_LINHA
+                                                        PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                                        MOVE 'OUT' TO ST_AUXILIAR
+                                                        MOVE '03'  TO ST_TP_CREDOR
+                                                       END
+               IF '<gen:IdentificacaoEspecial' IN ST_LINHA BEGIN
+                                                            LER ST_LINHA
+                                                            PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                                            MOVE 'IDE' TO ST_AUXILIAR
+                                                            MOVE '09'  TO ST_TP_CREDOR
+                                                           END
+
+               PEGA_DADO '<ContaContabil>'   '</ContaContabil>'   '<ctb:ContaContabil>'   '</ctb:ContaContabil>'   ST_LINHA ST_CONTA
+
+               VALIDA_DADO '<MovimentoContabil>' '<ctb:MovimentoContabil>' '</MovimentoContabil>' '</ctb:MovimentoContabil>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            GOSUB LB_PEGA_MOVIMENTO
+                           END
+              UNTIL ST_NOME_CC_2 IN ST_LINHA
+
+              COMZEROS ST_ORGAO             5
+              COMZEROS ST_UO                5
+              COMZEROS ST_UE                5
+
+              TRATA_EMPENHO ST_N_EMPENHO
+
+              GOSUB LB_PONTUA_CONTA
+
+              MOVE ST_CONTA TO ST_DADOS
+              IF JN_ANO LE '2018' APPEND ST_DADOS ' ' ST_ORGAO ' ' ST_UO ' ' ST_UE ' ' ST_N_EMPENHO ' ' ST_ANO_EMPENHO ' ' '30'    ' ' ST_DATA_MOVIMENTO ' ' ST_TP_CREDOR ' ' ST_N_INSCRICAO
+              ELSE                APPEND ST_DADOS ' ' ST_ORGAO ' ' ST_UO ' ' ST_UE ' ' ST_N_EMPENHO ' ' ST_ANO_EMPENHO ' ' '     ' ' ' ST_DATA_MOVIMENTO ' ' ST_TP_CREDOR ' ' ST_N_INSCRICAO
+
+              MOVE '20' TO ST_XML
+              GOSUB LB_GRAVA_MOVIMENTO
+             END
+
+//--conta corrente 21
+ [~MES_14!] VALIDA_DADO '<DevolucaoAdiantamentos>'    '<ctb:DevolucaoAdiantamentos>'    '</DevolucaoAdiantamentos>'    '</ctb:DevolucaoAdiantamentos>'    ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ MES_14!] VALIDA_DADO '<DevolucaoAdiantamentos_14>' '<ctb:DevolucaoAdiantamentos_14>' '</DevolucaoAdiantamentos_14>' '</ctb:DevolucaoAdiantamentos_14>' ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ @VALIDO!] BEGIN
+              MOVEALL '' TO ST_ORGAO ST_UO ST_UE ST_N_EMPENHO ST_ANO_EMPENHO ST_TP_CREDOR
+              MOVEALL '' TO ST_DATA_MOVIMENTO ST_CONTA ST_N_INSCRICAO ST_AUXILIAR
+              MOVEALL '' TO ST_AUXILIAR
+
+              REPEAT
+               LER ST_LINHA
+               PEGA_DADO '<gen:Orgao>' '</gen:Orgao>' '' '' ST_LINHA ST_ORGAO
+               PEGA_DADO '<gen:UO>'    '</gen:UO>'    '' '' ST_LINHA ST_UO
+               PEGA_DADO '<gen:UE>'    '</gen:UE>'    '' '' ST_LINHA ST_UE
+
+               VALIDA_DADO '<NumeroEmpenho>' '<ctb:NumeroEmpenho>' '</NumeroEmpenho>' '</ctb:NumeroEmpenho>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            LER ST_LINHA
+                            PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_EMPENHO
+                            LER ST_LINHA
+                            PEGA_DADO '<gen:Ano>'    '</gen:Ano>'    '' '' ST_LINHA ST_ANO_EMPENHO
+                           END
+
+               PEGA_DADO '<DataDevolucao>' '</DataDevolucao>' '<ctb:DataDevolucao>' '</ctb:DataDevolucao>' ST_LINHA ST_DATA_MOVIMENTO
+
+               IF '<gen:CNPJ' IN ST_LINHA BEGIN
+                                           LER ST_LINHA
+                                           PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                           MOVE 'CNPJ' TO ST_AUXILIAR
+                                           MOVE '01'   TO ST_TP_CREDOR
+                                          END
+               IF '<gen:CPF' IN ST_LINHA BEGIN
+                                          LER ST_LINHA
+                                          PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                          MOVE 'CPF' TO ST_AUXILIAR
+                                          MOVE '02'  TO ST_TP_CREDOR
+                                         END
+               IF '<gen:InscricaoGenerica' IN ST_LINHA BEGIN
+                                                        LER ST_LINHA
+                                                        PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                                        MOVE 'OUT' TO ST_AUXILIAR
+                                                        MOVE '03'  TO ST_TP_CREDOR
+                                                       END
+               IF '<gen:IdentificacaoEspecial' IN ST_LINHA BEGIN
+                                                            LER ST_LINHA
+                                                            PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                                            MOVE 'IDE' TO ST_AUXILIAR
+                                                            MOVE '09'  TO ST_TP_CREDOR
+                                                           END
+
+               PEGA_DADO '<ContaContabil>'   '</ContaContabil>'   '<ctb:ContaContabil>'   '</ctb:ContaContabil>'   ST_LINHA ST_CONTA
+
+               VALIDA_DADO '<MovimentoContabil>' '<ctb:MovimentoContabil>' '</MovimentoContabil>' '</ctb:MovimentoContabil>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            GOSUB LB_PEGA_MOVIMENTO
+                           END
+              UNTIL ST_NOME_CC_2 IN ST_LINHA
+
+              COMZEROS ST_ORGAO             5
+              COMZEROS ST_UO                5
+              COMZEROS ST_UE                5
+
+              TRATA_EMPENHO ST_N_EMPENHO
+
+              GOSUB LB_PONTUA_CONTA
+
+              MOVE ST_CONTA TO ST_DADOS
+              IF JN_ANO LE '2018' APPEND ST_DADOS ' ' ST_ORGAO ' ' ST_UO ' ' ST_UE ' ' ST_N_EMPENHO ' ' ST_ANO_EMPENHO ' ' '30'    ' ' ST_DATA_MOVIMENTO ' ' ST_TP_CREDOR ' ' ST_N_INSCRICAO
+              ELSE                APPEND ST_DADOS ' ' ST_ORGAO ' ' ST_UO ' ' ST_UE ' ' ST_N_EMPENHO ' ' ST_ANO_EMPENHO ' ' '     ' ' ' ST_DATA_MOVIMENTO ' ' ST_TP_CREDOR ' ' ST_N_INSCRICAO
+
+              MOVE '21' TO ST_XML
+              GOSUB LB_GRAVA_MOVIMENTO
+             END
+
+//--conta corrente 22
+ [~MES_14!] VALIDA_DADO '<ConcessaoConvenios>'    '<ctb:ConcessaoConvenios>'    '</ConcessaoConvenios>'    '</ctb:ConcessaoConvenios>'    ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ MES_14!] VALIDA_DADO '<ConcessaoConvenios_14>' '<ctb:ConcessaoConvenios_14>' '</ConcessaoConvenios_14>' '</ctb:ConcessaoConvenios_14>' ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ @VALIDO!] BEGIN
+              MOVEALL '' TO ST_N_INSCRICAO ST_AUXILIAR ST_N_CONVENIO ST_ANO_CONVENIO
+              MOVEALL '' TO ST_DATA_MOVIMENTO ST_CONTA
+              MOVEALL '' TO ST_AUXILIAR ST_TIPO_CREDOR
+              MOVEALL '' TO ST_FONTE ST_CODIGO_APLICACAO
+
+              REPEAT
+               LER ST_LINHA
+               
+               IF 'Tipo="' IN ST_LINHA BEGIN
+                                        PEGA_DADO 'Tipo="' '">' '' '' ST_LINHA ST_TIPO_CREDOR
+                                       END
+               ELSE IF "Tipo='" IN ST_LINHA BEGIN
+                                             PEGA_DADO "Tipo='" "'>" '' '' ST_LINHA ST_TIPO_CREDOR
+                                            END
+
+               IF '<gen:CNPJ' IN ST_LINHA BEGIN
+                                           LER ST_LINHA
+                                           PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                           MOVE 'CNPJ' TO ST_AUXILIAR
+                                          END
+               IF '<gen:CPF' IN ST_LINHA BEGIN
+                                          LER ST_LINHA
+                                          PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                          MOVE 'CPF' TO ST_AUXILIAR
+                                         END
+               IF '<gen:InscricaoGenerica' IN ST_LINHA BEGIN
+                                                        LER ST_LINHA
+                                                        PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                                        MOVE 'OUT' TO ST_AUXILIAR
+                                                       END
+               IF '<gen:IdentificacaoEspecial' IN ST_LINHA BEGIN
+                                                            LER ST_LINHA
+                                                            PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                                            MOVE 'IDE' TO ST_AUXILIAR
+                                                           END
+
+               VALIDA_DADO '<NumeroConvenio>' '<ctb:NumeroConvenio>' '</NumeroConvenio>' '</ctb:NumeroConvenio>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            LER ST_LINHA
+                            PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_CONVENIO
+                            LER ST_LINHA
+                            PEGA_DADO '<gen:Ano>'    '</gen:Ano>'    '' '' ST_LINHA ST_ANO_CONVENIO
+                           END
+
+               PEGA_DADO '<DataConcessao>'   '</DataConcessao>'   '<ctb:DataConcessao>'   '</ctb:DataConcessao>'   ST_LINHA ST_DATA_MOVIMENTO
+               PEGA_DADO '<FonteRecursos>'   '</FonteRecursos>'   '<ctb:FonteRecursos>'   '</ctb:FonteRecursos>'   ST_LINHA ST_FONTE
+               PEGA_DADO '<CodigoAplicacao>' '</CodigoAplicacao>' '<ctb:CodigoAplicacao>' '</ctb:CodigoAplicacao>' ST_LINHA ST_CODIGO_APLICACAO
+               PEGA_DADO '<ContaContabil>'   '</ContaContabil>'   '<ctb:ContaContabil>'   '</ctb:ContaContabil>'   ST_LINHA ST_CONTA
+
+               VALIDA_DADO '<MovimentoContabil>' '<ctb:MovimentoContabil>' '</MovimentoContabil>' '</ctb:MovimentoContabil>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            GOSUB LB_PEGA_MOVIMENTO
+                           END
+              UNTIL ST_NOME_CC_2 IN ST_LINHA
+
+              IF PARGERAL.EXERCICIO LE '2008' COMZEROS   ST_N_CONVENIO 12
+              ELSE                            COMBRANCOS ST_N_CONVENIO 12
+
+              PAD ST_FONTE            TO ST_FONTE            5
+              PAD ST_CODIGO_APLICACAO TO ST_CODIGO_APLICACAO 7
+              
+              GOSUB LB_PONTUA_CONTA
+
+              [ PROPRIO_XML!] BEGIN
+                                    IF ST_TIPO_CREDOR EQ '09' MOVE '03' TO ST_TIPO_CREDOR
+                               ELSE IF ST_TIPO_CREDOR EQ '03' MOVE '09' TO ST_TIPO_CREDOR
+                              END
+             
+              MOVE ST_CONTA TO ST_DADOS
+              APPEND ST_DADOS ' ' ST_N_CONVENIO ' ' ST_ANO_CONVENIO ' ' ST_DATA_MOVIMENTO ' ' ST_TIPO_CREDOR ' ' (PAD(ST_N_INSCRICAO,20)) ' ' ST_FONTE ' ' ST_CODIGO_APLICACAO
+
+              MOVE '22' TO ST_XML
+              GOSUB LB_GRAVA_MOVIMENTO
+             END
+
+//--conta corrente 23
+ [~MES_14!] VALIDA_DADO '<RecebimentoConvenios>'    '<ctb:RecebimentoConvenios>'    '</RecebimentoConvenios>'    '</ctb:RecebimentoConvenios>'    ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ MES_14!] VALIDA_DADO '<RecebimentoConvenios_14>' '<ctb:RecebimentoConvenios_14>' '</RecebimentoConvenios_14>' '</ctb:RecebimentoConvenios_14>' ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ @VALIDO!] BEGIN
+              MOVEALL '' TO ST_N_INSCRICAO ST_AUXILIAR ST_N_CONVENIO ST_ANO_CONVENIO
+              MOVEALL '' TO ST_DATA_MOVIMENTO ST_CONTA
+              MOVEALL '' TO ST_AUXILIAR ST_TIPO_CREDOR
+              MOVEALL '' TO ST_FONTE ST_CODIGO_APLICACAO
+
+              REPEAT
+               LER ST_LINHA
+               
+               IF 'Tipo="' IN ST_LINHA BEGIN
+                                        PEGA_DADO 'Tipo="' '">' '' '' ST_LINHA ST_TIPO_CREDOR
+                                       END
+               ELSE IF "Tipo='" IN ST_LINHA BEGIN
+                                             PEGA_DADO "Tipo='" "'>" '' '' ST_LINHA ST_TIPO_CREDOR
+                                            END
+
+               IF '<gen:CNPJ' IN ST_LINHA BEGIN
+                                           LER ST_LINHA
+                                           PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                           MOVE 'CNPJ' TO ST_AUXILIAR
+                                          END
+               IF '<gen:CPF' IN ST_LINHA BEGIN
+                                          LER ST_LINHA
+                                          PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                          MOVE 'CPF' TO ST_AUXILIAR
+                                         END
+               IF '<gen:InscricaoGenerica' IN ST_LINHA BEGIN
+                                                        LER ST_LINHA
+                                                        PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                                        MOVE 'OUT' TO ST_AUXILIAR
+                                                       END
+               IF '<gen:IdentificacaoEspecial' IN ST_LINHA BEGIN
+                                                            LER ST_LINHA
+                                                            PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                                            MOVE 'IDE' TO ST_AUXILIAR
+                                                           END
+
+               VALIDA_DADO '<NumeroConvenio>' '<ctb:NumeroConvenio>' '</NumeroConvenio>' '</ctb:NumeroConvenio>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            LER ST_LINHA
+                            PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_CONVENIO
+                            LER ST_LINHA
+                            PEGA_DADO '<gen:Ano>'    '</gen:Ano>'    '' '' ST_LINHA ST_ANO_CONVENIO
+                           END
+
+               PEGA_DADO '<DataRecebimento>' '</DataRecebimento>' '<ctb:DataRecebimento>' '</ctb:DataRecebimento>' ST_LINHA ST_DATA_MOVIMENTO
+               PEGA_DADO '<FonteRecursos>'   '</FonteRecursos>'   '<ctb:FonteRecursos>'   '</ctb:FonteRecursos>'   ST_LINHA ST_FONTE
+               PEGA_DADO '<CodigoAplicacao>' '</CodigoAplicacao>' '<ctb:CodigoAplicacao>' '</ctb:CodigoAplicacao>' ST_LINHA ST_CODIGO_APLICACAO
+               PEGA_DADO '<ContaContabil>'   '</ContaContabil>'   '<ctb:ContaContabil>'   '</ctb:ContaContabil>'   ST_LINHA ST_CONTA
+
+               VALIDA_DADO '<MovimentoContabil>' '<ctb:MovimentoContabil>' '</MovimentoContabil>' '</ctb:MovimentoContabil>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            GOSUB LB_PEGA_MOVIMENTO
+                           END
+              UNTIL ST_NOME_CC_2 IN ST_LINHA
+
+              IF PARGERAL.EXERCICIO LE '2008' COMZEROS   ST_N_CONVENIO 12
+              ELSE                            COMBRANCOS ST_N_CONVENIO 12
+
+              TRIM ST_FONTE            TO ST_FONTE
+              TRIM ST_CODIGO_APLICACAO TO ST_CODIGO_APLICACAO
+              
+              PAD ST_FONTE             TO ST_FONTE            2
+              PAD ST_CODIGO_APLICACAO  TO ST_CODIGO_APLICACAO 7
+              
+              GOSUB LB_PONTUA_CONTA
+              
+              [ PROPRIO_XML!] BEGIN
+                                    IF ST_TIPO_CREDOR EQ '09' MOVE '03' TO ST_TIPO_CREDOR
+                               ELSE IF ST_TIPO_CREDOR EQ '03' MOVE '09' TO ST_TIPO_CREDOR
+                              END
+
+              MOVE ST_CONTA TO ST_DADOS
+              APPEND ST_DADOS ' ' ST_N_CONVENIO ' ' ST_ANO_CONVENIO ' ' ST_DATA_MOVIMENTO ' ' ST_TIPO_CREDOR ' ' (PAD(ST_N_INSCRICAO,20)) ' ' ST_FONTE ' ' ST_CODIGO_APLICACAO
+
+              MOVE '23' TO ST_XML
+              GOSUB LB_GRAVA_MOVIMENTO
+             END
+
+//--conta corrente 24
+ [~MES_14!] VALIDA_DADO '<QuitacaoConvenios>'    '<ctb:QuitacaoConvenios>'    '</QuitacaoConvenios>'    '</ctb:QuitacaoConvenios>'    ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ MES_14!] VALIDA_DADO '<QuitacaoConvenios_14>' '<ctb:QuitacaoConvenios_14>' '</QuitacaoConvenios_14>' '</ctb:QuitacaoConvenios_14>' ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ @VALIDO!] BEGIN
+              MOVEALL '' TO ST_N_INSCRICAO ST_AUXILIAR ST_N_CONVENIO ST_ANO_CONVENIO
+              MOVEALL '' TO ST_DATA_MOVIMENTO ST_CONTA
+              MOVEALL '' TO ST_AUXILIAR ST_TIPO_CREDOR
+              MOVEALL '' TO ST_FONTE ST_CODIGO_APLICACAO
+
+              REPEAT
+               LER ST_LINHA
+               
+               IF 'Tipo="' IN ST_LINHA BEGIN
+                                        PEGA_DADO 'Tipo="' '">' '' '' ST_LINHA ST_TIPO_CREDOR
+                                       END
+               ELSE IF "Tipo='" IN ST_LINHA BEGIN
+                                             PEGA_DADO "Tipo='" "'>" '' '' ST_LINHA ST_TIPO_CREDOR
+                                            END
+
+               IF '<gen:CNPJ' IN ST_LINHA BEGIN
+                                           LER ST_LINHA
+                                           PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                           MOVE 'CNPJ' TO ST_AUXILIAR
+                                          END
+               IF '<gen:CPF' IN ST_LINHA BEGIN
+                                          LER ST_LINHA
+                                          PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                          MOVE 'CPF' TO ST_AUXILIAR
+                                         END
+               IF '<gen:InscricaoGenerica' IN ST_LINHA BEGIN
+                                                        LER ST_LINHA
+                                                        PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                                        MOVE 'OUT' TO ST_AUXILIAR
+                                                       END
+               IF '<gen:IdentificacaoEspecial' IN ST_LINHA BEGIN
+                                                            LER ST_LINHA
+                                                            PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                                            MOVE 'IDE' TO ST_AUXILIAR
+                                                           END
+
+               VALIDA_DADO '<NumeroConvenio>' '<ctb:NumeroConvenio>' '</NumeroConvenio>' '</ctb:NumeroConvenio>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            LER ST_LINHA
+                            PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_CONVENIO
+                            LER ST_LINHA
+                            PEGA_DADO '<gen:Ano>'    '</gen:Ano>'    '' '' ST_LINHA ST_ANO_CONVENIO
+                           END
+
+               PEGA_DADO '<DataQuitacao>'    '</DataQuitacao>'    '<ctb:DataQuitacao>'    '</ctb:DataQuitacao>'    ST_LINHA ST_DATA_MOVIMENTO
+               PEGA_DADO '<FonteRecursos>'   '</FonteRecursos>'   '<ctb:FonteRecursos>'   '</ctb:FonteRecursos>'   ST_LINHA ST_FONTE
+               PEGA_DADO '<CodigoAplicacao>' '</CodigoAplicacao>' '<ctb:CodigoAplicacao>' '</ctb:CodigoAplicacao>' ST_LINHA ST_CODIGO_APLICACAO
+               PEGA_DADO '<ContaContabil>'   '</ContaContabil>'   '<ctb:ContaContabil>'   '</ctb:ContaContabil>'   ST_LINHA ST_CONTA
+
+               VALIDA_DADO '<MovimentoContabil>' '<ctb:MovimentoContabil>' '</MovimentoContabil>' '</ctb:MovimentoContabil>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            GOSUB LB_PEGA_MOVIMENTO
+                           END
+              UNTIL ST_NOME_CC_2 IN ST_LINHA
+
+              IF PARGERAL.EXERCICIO LE '2008' COMZEROS   ST_N_CONVENIO 12
+              ELSE                            COMBRANCOS ST_N_CONVENIO 12
+
+              TRIM ST_FONTE            TO ST_FONTE
+              TRIM ST_CODIGO_APLICACAO TO ST_CODIGO_APLICACAO
+              
+              PAD ST_FONTE             TO ST_FONTE            2
+              PAD ST_CODIGO_APLICACAO  TO ST_CODIGO_APLICACAO 7
+              
+              GOSUB LB_PONTUA_CONTA
+              
+              [ PROPRIO_XML!] BEGIN
+                                    IF ST_TIPO_CREDOR EQ '09' MOVE '03' TO ST_TIPO_CREDOR
+                               ELSE IF ST_TIPO_CREDOR EQ '03' MOVE '09' TO ST_TIPO_CREDOR
+                              END
+
+              MOVE ST_CONTA TO ST_DADOS
+              APPEND ST_DADOS ' ' ST_N_CONVENIO ' ' ST_ANO_CONVENIO ' ' ST_DATA_MOVIMENTO ' ' ST_TIPO_CREDOR ' ' (PAD(ST_N_INSCRICAO,20)) ' ' ST_FONTE ' ' ST_CODIGO_APLICACAO
+
+              MOVE '24' TO ST_XML
+              GOSUB LB_GRAVA_MOVIMENTO
+             END
+
+//--conta corrente 25
+ [~MES_14!] VALIDA_DADO '<Contratos>'    '<ctb:Contratos>'    '</Contratos>'    '</ctb:Contratos>'    ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ MES_14!] VALIDA_DADO '<Contratos_14>' '<ctb:Contratos_14>' '</Contratos_14>' '</ctb:Contratos_14>' ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ @VALIDO!] BEGIN
+              MOVEALL '' TO ST_N_INSCRICAO ST_AUXILIAR ST_N_CONTRATO ST_ANO_CONTRATO ST_TIPO_CREDOR
+              MOVEALL '' TO ST_CONTA
+              MOVEALL '' TO ST_AUXILIAR
+
+              REPEAT
+               LER ST_LINHA
+
+               IF 'Tipo="' IN ST_LINHA BEGIN
+                                        PEGA_DADO 'Tipo="' '">' '' '' ST_LINHA ST_TIPO_CREDOR
+                                       END
+               ELSE IF "Tipo='" IN ST_LINHA BEGIN
+                                             PEGA_DADO "Tipo='" "'>" '' '' ST_LINHA ST_TIPO_CREDOR
+                                            END
+
+               IF '<gen:CNPJ' IN ST_LINHA BEGIN
+                                           LER ST_LINHA
+                                           PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                           MOVE 'CNPJ' TO ST_AUXILIAR
+                                          END
+               IF '<gen:CPF' IN ST_LINHA BEGIN
+                                          LER ST_LINHA
+                                          PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                          MOVE 'CPF' TO ST_AUXILIAR
+                                         END
+               IF '<gen:InscricaoGenerica' IN ST_LINHA BEGIN
+                                                        LER ST_LINHA
+                                                        PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                                        MOVE 'OUT' TO ST_AUXILIAR
+                                                       END
+               IF '<gen:IdentificacaoEspecial' IN ST_LINHA BEGIN
+                                                            LER ST_LINHA
+                                                            PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                                            MOVE 'IDE' TO ST_AUXILIAR
+                                                           END
+
+               VALIDA_DADO '<NumeroContrato>' '<ctb:NumeroContrato>' '</NumeroContrato>' '</ctb:NumeroContrato>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            LER ST_LINHA
+                            PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_CONTRATO
+                            LER ST_LINHA
+                            PEGA_DADO '<gen:Ano>'    '</gen:Ano>'    '' '' ST_LINHA ST_ANO_CONTRATO
+                           END
+
+               PEGA_DADO '<ContaContabil>'   '</ContaContabil>'   '<ctb:ContaContabil>'   '</ctb:ContaContabil>'   ST_LINHA ST_CONTA
+
+               VALIDA_DADO '<MovimentoContabil>' '<ctb:MovimentoContabil>' '</MovimentoContabil>' '</ctb:MovimentoContabil>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            GOSUB LB_PEGA_MOVIMENTO
+                           END
+              UNTIL ST_NOME_CC_2 IN ST_LINHA
+
+              IF PARGERAL.EXERCICIO LE '2008' COMZEROS   ST_N_CONTRATO       12
+              ELSE                            COMBRANCOS ST_N_CONTRATO       12
+
+              GOSUB LB_PONTUA_CONTA
+
+              [ PROPRIO_XML!] BEGIN
+                                    IF ST_TIPO_CREDOR EQ '09' MOVE '03' TO ST_TIPO_CREDOR
+                               ELSE IF ST_TIPO_CREDOR EQ '03' MOVE '09' TO ST_TIPO_CREDOR
+                              END
+
+              MOVE ST_CONTA TO ST_DADOS
+              APPEND ST_DADOS ' ' ST_N_CONTRATO ' ' ST_ANO_CONTRATO ' ' ST_TIPO_CREDOR ' ' ST_N_INSCRICAO
+
+              MOVE '25' TO ST_XML
+              GOSUB LB_GRAVA_MOVIMENTO
+             END
+
+//--conta corrente 26
+ [~MES_14!] VALIDA_DADO '<PreEmpenho>'    '<ctb:PreEmpenho>'    '</PreEmpenho>'    '</ctb:PreEmpenho>'    ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ MES_14!] VALIDA_DADO '<PreEmpenho_14>' '<ctb:PreEmpenho_14>' '</PreEmpenho_14>' '</ctb:PreEmpenho_14>' ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ @VALIDO!] BEGIN
+              MOVEALL '' TO ST_ORGAO ST_UO ST_UE ST_FUNCAO ST_SUBFUNCAO ST_PROGRAMA ST_ACAO ST_CONTA
+              MOVEALL '' TO ST_ECONOMICA ST_N_PROCESSO_ANO ST_DATA_MOVIMENTO ST_FONTE ST_CODIGO_APLICACAO
+              MOVEALL '' TO ST_AUXILIAR
+
+              REPEAT
+               LER ST_LINHA
+               PEGA_DADO '<gen:Orgao>'                     '</gen:Orgao>'                     ''                                    ''                                     ST_LINHA ST_ORGAO
+               PEGA_DADO '<gen:UO>'                        '</gen:UO>'                        ''                                    ''                                     ST_LINHA ST_UO
+               PEGA_DADO '<gen:UE>'                        '</gen:UE>'                        ''                                    ''                                     ST_LINHA ST_UE
+               
+               PEGA_DADO '<Funcao>'                        '</Funcao>'                        '<ctb:Funcao>'                        '</ctb:Funcao>'                        ST_LINHA ST_FUNCAO
+               PEGA_DADO '<SubFuncao>'                     '</SubFuncao>'                     '<ctb:SubFuncao>'                     '</ctb:SubFuncao>'                     ST_LINHA ST_SUBFUNCAO
+               PEGA_DADO '<Programa>'                      '</Programa>'                      '<ctb:Programa>'                      '</ctb:Programa>'                      ST_LINHA ST_PROGRAMA
+               PEGA_DADO '<Acao>'                          '</Acao>'                          '<ctb:Acao>'                          '</ctb:Acao>'                          ST_LINHA ST_ACAO
+               PEGA_DADO '<ClassificacaoEconomicaDespesa>' '</ClassificacaoEconomicaDespesa>' '<ctb:ClassificacaoEconomicaDespesa>' '</ctb:ClassificacaoEconomicaDespesa>' ST_LINHA ST_ECONOMICA
+               PEGA_DADO '<FonteRecursos>'                 '</FonteRecursos>'                 '<ctb:FonteRecursos>'                 '</ctb:FonteRecursos>'                 ST_LINHA ST_FONTE
+               PEGA_DADO '<CodigoAplicacao>'               '</CodigoAplicacao>'               '<ctb:CodigoAplicacao>'               '</ctb:CodigoAplicacao>'               ST_LINHA ST_CODIGO_APLICACAO
+               PEGA_DADO '<NumeroProcessoNoOrgao>'         '</NumeroProcessoNoOrgao>'         '<ctb:NumeroProcessoNoOrgao>'         '</ctb:NumeroProcessoNoOrgao>'         ST_LINHA ST_N_PROCESSO_ANO
+               PEGA_DADO '<DataEmissao>'                   '</DataEmissao>'                   '<ctb:DataEmissao>'                   '</ctb:DataEmissao>'                   ST_LINHA ST_DATA_MOVIMENTO
+               PEGA_DADO '<ContaContabil>'                 '</ContaContabil>'                 '<ctb:ContaContabil>'                 '</ctb:ContaContabil>'                 ST_LINHA ST_CONTA
+
+               VALIDA_DADO '<MovimentoContabil>' '<ctb:MovimentoContabil>' '</MovimentoContabil>' '</ctb:MovimentoContabil>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            GOSUB LB_PEGA_MOVIMENTO
+                           END
+              UNTIL ST_NOME_CC_2 IN ST_LINHA
+
+              COMZEROS ST_ORGAO             5
+              COMZEROS ST_UO                5
+              COMZEROS ST_UE                5
+
+              TRATA_EMPENHO ST_N_EMPENHO
+
+              COMBRANCOS ST_N_PROCESSO_ANO   25
+
+              COMZEROS ST_FUNCAO            2
+              COMZEROS ST_SUBFUNCAO         3
+              COMZEROS ST_PROGRAMA          4
+
+              COMZEROS ST_ACAO 4
+
+              PAD ST_FONTE            TO ST_FONTE            5
+              PAD ST_CODIGO_APLICACAO TO ST_CODIGO_APLICACAO 7
+
+              [ COD_APL_DIFERENTE!] BEGIN
+                                     MONTA_COD_APLICACAO ST_CODIGO_APLICACAO ST_CODIGO_APLICACAO
+                                    END
+
+              GOSUB LB_PONTUA_CONTA
+              GOSUB LB_PONTUA_CONTA_DESPESA
+
+              MOVE ST_CONTA TO ST_DADOS
+              APPEND ST_DADOS ' ' ST_ORGAO ' ' ST_UO ' ' ST_UE ' ' ST_FUNCAO ' ' ST_SUBFUNCAO ' ' ST_PROGRAMA ' ' ST_ACAO ' ' ST_ECONOMICA ' ' ST_N_PROCESSO_ANO ' ' ST_DATA_MOVIMENTO ' ' ST_FONTE ' ' ST_CODIGO_APLICACAO
+
+              MOVE '26' TO ST_XML
+              GOSUB LB_GRAVA_MOVIMENTO
+             END
+
+//--conta corrente 27
+ [~MES_14!] VALIDA_DADO '<DotacaoUtilizada>'    '<ctb:DotacaoUtilizada>'    '</DotacaoUtilizada>'    '</ctb:DotacaoUtilizada>'    ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ MES_14!] VALIDA_DADO '<DotacaoUtilizada_14>' '<ctb:DotacaoUtilizada_14>' '</DotacaoUtilizada_14>' '</ctb:DotacaoUtilizada_14>' ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ @VALIDO!] BEGIN
+              MOVEALL '' TO ST_ORGAO ST_UO ST_UE ST_FUNCAO ST_SUBFUNCAO ST_PROGRAMA ST_ACAO ST_CONTA ST_TIPO_CONVENIO
+              MOVEALL '' TO ST_ECONOMICA ST_FONTE ST_CODIGO_APLICACAO
+              MOVEALL '' TO ST_AUXILIAR
+
+              REPEAT
+               LER ST_LINHA
+               PEGA_DADO '<gen:Orgao>'            '</gen:Orgao>'            ''                           ''                            ST_LINHA ST_ORGAO
+               PEGA_DADO '<gen:UO>'               '</gen:UO>'               ''                           ''                            ST_LINHA ST_UO
+               PEGA_DADO '<gen:UE>'               '</gen:UE>'               ''                           ''                            ST_LINHA ST_UE
+               
+               PEGA_DADO '<Funcao>'               '</Funcao>'               '<ctb:Funcao>'               '</ctb:Funcao>'               ST_LINHA ST_FUNCAO
+               PEGA_DADO '<SubFuncao>'            '</SubFuncao>'            '<ctb:SubFuncao>'            '</ctb:SubFuncao>'            ST_LINHA ST_SUBFUNCAO
+               PEGA_DADO '<Programa>'             '</Programa>'             '<ctb:Programa>'             '</ctb:Programa>'             ST_LINHA ST_PROGRAMA
+               PEGA_DADO '<Acao>'                 '</Acao>'                 '<ctb:Acao>'                 '</ctb:Acao>'                 ST_LINHA ST_ACAO
+               PEGA_DADO '<ClassificacaoDespesa>' '</ClassificacaoDespesa>' '<ctb:ClassificacaoDespesa>' '</ctb:ClassificacaoDespesa>' ST_LINHA ST_ECONOMICA
+               PEGA_DADO '<FonteRecursos>'        '</FonteRecursos>'        '<ctb:FonteRecursos>'        '</ctb:FonteRecursos>'        ST_LINHA ST_FONTE
+               PEGA_DADO '<CodigoAplicacao>'      '</CodigoAplicacao>'      '<ctb:CodigoAplicacao>'      '</ctb:CodigoAplicacao>'      ST_LINHA ST_CODIGO_APLICACAO
+               PEGA_DADO '<TipoConvenio>'         '</TipoConvenio>'         '<ctb:TipoConvenio>'         '</ctb:TipoConvenio>'         ST_LINHA ST_TIPO_CONVENIO
+               PEGA_DADO '<ContaContabil>'        '</ContaContabil>'        '<ctb:ContaContabil>'        '</ctb:ContaContabil>'        ST_LINHA ST_CONTA
+
+               VALIDA_DADO '<MovimentoContabil>' '<ctb:MovimentoContabil>' '</MovimentoContabil>' '</ctb:MovimentoContabil>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            GOSUB LB_PEGA_MOVIMENTO
+                           END
+              UNTIL ST_NOME_CC_2 IN ST_LINHA
+
+              COMZEROS ST_ORGAO             5
+              COMZEROS ST_UO                5
+              COMZEROS ST_UE                5
+
+              COMZEROS ST_N_PROCESSO_ANO   25
+              COMZEROS ST_FUNCAO            2
+              COMZEROS ST_SUBFUNCAO         3
+              COMZEROS ST_PROGRAMA          4
+
+              COMZEROS ST_ACAO 4
+
+              TRIM ST_TIPO_CONVENIO   TO ST_TIPO_CONVENIO
+              
+              PAD ST_FONTE            TO ST_FONTE            5
+              PAD ST_CODIGO_APLICACAO TO ST_CODIGO_APLICACAO 7
+              PAD ST_TIPO_CONVENIO    TO ST_TIPO_CONVENIO    2
+              
+              IF ((PARGERAL.COD_ENTIDADE EQ JN_COD_ENTIDADE) OR (PARGERAL.COD_ENTIDADE EQ '01')) BEGIN
+                                                                                                  MOVE ST_TIPO_CONVENIO TO ST_AUXILIAR
+                                                                                                  MOVE ''               TO ST_TIPO_CONVENIO
+                                                                                                 END
+              ELSE IF PARGERAL.EXERCICIO GE '2022' BEGIN
+                                                    MOVE ST_TIPO_CONVENIO TO ST_AUXILIAR
+                                                    MOVE ''               TO ST_TIPO_CONVENIO
+                                                   END
+              
+              [ COD_APL_DIFERENTE!] BEGIN
+                                     MONTA_COD_APLICACAO ST_CODIGO_APLICACAO ST_CODIGO_APLICACAO
+                                    END
+
+              GOSUB LB_PONTUA_CONTA
+              GOSUB LB_PONTUA_CONTA_DESPESA
+
+              MOVE ST_CONTA TO ST_DADOS
+              APPEND ST_DADOS ' ' ST_ORGAO ' ' ST_UO ' ' ST_UE ' ' ST_FUNCAO ' ' ST_SUBFUNCAO ' ' ST_PROGRAMA ' ' ST_ACAO ' ' ST_ECONOMICA ' ' ST_FONTE ' ' ST_CODIGO_APLICACAO ' ' ST_TIPO_CONVENIO
+              
+              MOVE '27' TO ST_XML
+              GOSUB LB_GRAVA_MOVIMENTO
+             END
+
+//--conta corrente 28
+ [~MES_14!] VALIDA_DADO '<EmpenhoEmitido>'    '<ctb:EmpenhoEmitido>'    '</EmpenhoEmitido>'    '</ctb:EmpenhoEmitido>'    ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ MES_14!] VALIDA_DADO '<EmpenhoEmitido_14>' '<ctb:EmpenhoEmitido_14>' '</EmpenhoEmitido_14>' '</ctb:EmpenhoEmitido_14>' ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ @VALIDO!] BEGIN
+              MOVEALL '' TO ST_ORGAO ST_UO ST_UE ST_N_EMPENHO ST_ANO_EMPENHO ST_CONTA
+              MOVEALL '' TO ST_AUXILIAR
+
+              REPEAT
+               LER ST_LINHA
+               PEGA_DADO '<gen:Orgao>'       '</gen:Orgao>'       ''                      ''                       ST_LINHA ST_ORGAO
+               PEGA_DADO '<gen:UO>'          '</gen:UO>'          ''                      ''                       ST_LINHA ST_UO
+               PEGA_DADO '<gen:UE>'          '</gen:UE>'          ''                      ''                       ST_LINHA ST_UE
+               PEGA_DADO '<gen:Numero>'      '</gen:Numero>'      ''                      ''                       ST_LINHA ST_N_EMPENHO
+               PEGA_DADO '<gen:Ano>'         '</gen:Ano>'         ''                      ''                       ST_LINHA ST_ANO_EMPENHO
+               
+               PEGA_DADO '<ContaContabil>'   '</ContaContabil>'   '<ctb:ContaContabil>'   '</ctb:ContaContabil>'   ST_LINHA ST_CONTA
+
+               VALIDA_DADO '<MovimentoContabil>' '<ctb:MovimentoContabil>' '</MovimentoContabil>' '</ctb:MovimentoContabil>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            GOSUB LB_PEGA_MOVIMENTO
+                           END
+              UNTIL ST_NOME_CC_2 IN ST_LINHA
+
+              COMZEROS ST_ORGAO             5
+              COMZEROS ST_UO                5
+              COMZEROS ST_UE                5
+
+              TRATA_EMPENHO ST_N_EMPENHO
+
+              GOSUB LB_PONTUA_CONTA
+
+              MOVE ST_CONTA TO ST_DADOS
+              APPEND ST_DADOS ' ' ST_ORGAO ' ' ST_UO ' ' ST_UE ' ' ST_N_EMPENHO ' ' ST_ANO_EMPENHO
+
+              MOVE '28' TO ST_XML
+              GOSUB LB_GRAVA_MOVIMENTO
+             END
+
+//--conta corrente 29
+ [~MES_14!] VALIDA_DADO '<LiquidacaoEmpenho>'    '<ctb:LiquidacaoEmpenho>'    '</LiquidacaoEmpenho>'    '</ctb:LiquidacaoEmpenho>'    ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ MES_14!] VALIDA_DADO '<LiquidacaoEmpenho_14>' '<ctb:LiquidacaoEmpenho_14>' '</LiquidacaoEmpenho_14>' '</ctb:LiquidacaoEmpenho_14>' ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ @VALIDO!] BEGIN
+              MOVEALL '' TO ST_ORGAO ST_UO ST_UE ST_N_EMPENHO ST_ANO_EMPENHO ST_CONTA ST_DATA_MOVIMENTO
+              MOVEALL '' TO ST_AUXILIAR
+
+              REPEAT
+               LER ST_LINHA
+               PEGA_DADO '<gen:Orgao>'       '</gen:Orgao>'       ''                      ''                       ST_LINHA ST_ORGAO
+               PEGA_DADO '<gen:UO>'          '</gen:UO>'          ''                      ''                       ST_LINHA ST_UO
+               PEGA_DADO '<gen:UE>'          '</gen:UE>'          ''                      ''                       ST_LINHA ST_UE
+               PEGA_DADO '<gen:Numero>'      '</gen:Numero>'      ''                      ''                       ST_LINHA ST_N_EMPENHO
+               PEGA_DADO '<gen:Ano>'         '</gen:Ano>'         ''                      ''                       ST_LINHA ST_ANO_EMPENHO
+               
+               PEGA_DADO '<DataLiquidacao>'  '</DataLiquidacao>'  '<ctb:DataLiquidacao>'  '</ctb:DataLiquidacao>'  ST_LINHA ST_DATA_MOVIMENTO
+               PEGA_DADO '<ContaContabil>'   '</ContaContabil>'   '<ctb:ContaContabil>'   '</ctb:ContaContabil>'   ST_LINHA ST_CONTA
+
+               VALIDA_DADO '<MovimentoContabil>' '<ctb:MovimentoContabil>' '</MovimentoContabil>' '</ctb:MovimentoContabil>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            GOSUB LB_PEGA_MOVIMENTO
+                           END
+              UNTIL ST_NOME_CC_2 IN ST_LINHA
+
+              COMZEROS ST_ORGAO        5
+              COMZEROS ST_UO           5
+              COMZEROS ST_UE           5
+
+              TRATA_EMPENHO ST_N_EMPENHO
+
+              GOSUB LB_PONTUA_CONTA
+
+              MOVE ST_CONTA TO ST_DADOS
+              APPEND ST_DADOS ' ' ST_ORGAO ' ' ST_UO ' ' ST_UE ' ' ST_N_EMPENHO ' ' ST_ANO_EMPENHO ' ' ST_DATA_MOVIMENTO
+
+              MOVE '29' TO ST_XML
+              GOSUB LB_GRAVA_MOVIMENTO
+             END
+
+//--conta corrente 30
+ [~MES_14!] VALIDA_DADO '<OrgaoRecebedor>'    '<ctb:OrgaoRecebedor>'    '</OrgaoRecebedor>'    '</ctb:OrgaoRecebedor>'    ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ MES_14!] VALIDA_DADO '<OrgaoRecebedor_14>' '<ctb:OrgaoRecebedor_14>' '</OrgaoRecebedor_14>' '</ctb:OrgaoRecebedor_14>' ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ @VALIDO!] BEGIN
+              MOVEALL '' TO ST_ORGAO ST_ENTIDADE ST_CONTA ST_CONTRAPARTIDA_VP ST_TIPO_LANCAMENTO ST_DATA_LANCAMENTO
+              MOVEALL '' TO ST_AUXILIAR
+
+              REPEAT
+               LER ST_LINHA
+               PEGA_DADO '<Entidade>'        '</Entidade>'        '<ctb:Entidade>'        '</ctb:Entidade>'        ST_LINHA ST_ENTIDADE
+               PEGA_DADO '<Orgao>'           '</Orgao>'           '<ctb:Orgao>'           '</ctb:Orgao>'           ST_LINHA ST_ORGAO
+               
+               IF PARGERAL.EXERCICIO GE '2020' BEGIN
+                                                PEGA_DADO '<ContrapartidaVP>'        '</ContrapartidaVP>'        '<ctb:ContrapartidaVP>'        '</ctb:ContrapartidaVP>'        ST_LINHA ST_CONTRAPARTIDA_VP
+                                                PEGA_DADO '<CodigoTipoLancamento>'   '</CodigoTipoLancamento>'   '<ctb:CodigoTipoLancamento>'   '</ctb:CodigoTipoLancamento>'   ST_LINHA ST_TIPO_LANCAMENTO
+                                                PEGA_DADO '<DataLancamento>'         '</DataLancamento>'         '<ctb:DataLancamento>'         '</ctb:DataLancamento>'         ST_LINHA ST_DATA_LANCAMENTO
+                                               END
+               
+               
+               PEGA_DADO '<ContaContabil>'   '</ContaContabil>'   '<ctb:ContaContabil>'   '</ctb:ContaContabil>'   ST_LINHA ST_CONTA
+
+               VALIDA_DADO '<MovimentoContabil>' '<ctb:MovimentoContabil>' '</MovimentoContabil>' '</ctb:MovimentoContabil>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            GOSUB LB_PEGA_MOVIMENTO
+                           END
+              UNTIL ST_NOME_CC_2 IN ST_LINHA
+
+              COMZEROS ST_ENTIDADE        5
+              COMZEROS ST_ORGAO           5
+
+              GOSUB LB_PONTUA_CONTA
+              GOSUB LB_PONTUA_CONTA_CONTRAPARTIDA_VP
+
+              IF PARGERAL.EXERCICIO LE '2019' BEGIN
+                                               MOVE ST_CONTA TO ST_DADOS
+                                               APPEND ST_DADOS ' ' ST_ENTIDADE ' ' ST_ORGAO
+                                              END
+              ELSE BEGIN
+                    MOVE ST_CONTA TO ST_DADOS
+                    APPEND ST_DADOS ' ' ST_CONTRAPARTIDA_VP ' ' ST_DATA_LANCAMENTO ' ' ST_ENTIDADE ' ' ST_ORGAO ' ' ST_TIPO_LANCAMENTO
+                    MOVE ST_TIPO_LANCAMENTO TO ST_AUXILIAR
+                   END
+
+              MOVE '30' TO ST_XML
+              GOSUB LB_GRAVA_MOVIMENTO
+             END
+
+//--conta corrente 31
+ [~MES_14!] VALIDA_DADO '<TransferenciaPrevidenciaria>'    '<ctb:TransferenciaPrevidenciaria>'    '</TransferenciaPrevidenciaria>'    '</ctb:TransferenciaPrevidenciaria>'    ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ MES_14!] VALIDA_DADO '<TransferenciaPrevidenciaria_14>' '<ctb:TransferenciaPrevidenciaria_14>' '</TransferenciaPrevidenciaria_14>' '</ctb:TransferenciaPrevidenciaria_14>' ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ @VALIDO!] BEGIN
+              MOVEALL '' TO ST_ENTIDADE ST_CONTA ST_FUNCAO ST_SUBFUNCAO
+              MOVEALL '' TO ST_PROGRAMA ST_ACAO ST_FONTE ST_CODIGO_APLICACAO
+              MOVEALL '' TO ST_AUXILIAR
+
+              REPEAT
+               LER ST_LINHA
+               PEGA_DADO '<Entidade>'        '</Entidade>'        '<ctb:Entidade>'        '</ctb:Entidade>'        ST_LINHA ST_ENTIDADE
+               PEGA_DADO '<Funcao>'          '</Funcao>'          '<ctb:Funcao>'          '</ctb:Funcao>'          ST_LINHA ST_FUNCAO
+               PEGA_DADO '<SubFuncao>'       '</SubFuncao>'       '<ctb:SubFuncao>'       '</ctb:SubFuncao>'       ST_LINHA ST_SUBFUNCAO
+               PEGA_DADO '<Programa>'        '</Programa>'        '<ctb:Programa>'        '</ctb:Programa>'        ST_LINHA ST_PROGRAMA
+               PEGA_DADO '<Acao>'            '</Acao>'            '<ctb:Acao>'            '</ctb:Acao>'            ST_LINHA ST_ACAO
+               PEGA_DADO '<FonteRecursos>'   '</FonteRecursos>'   '<ctb:FonteRecursos>'   '</ctb:FonteRecursos>'   ST_LINHA ST_FONTE
+               PEGA_DADO '<CodigoAplicacao>' '</CodigoAplicacao>' '<ctb:CodigoAplicacao>' '</ctb:CodigoAplicacao>' ST_LINHA ST_CODIGO_APLICACAO
+               PEGA_DADO '<ContaContabil>'   '</ContaContabil>'   '<ctb:ContaContabil>'   '</ctb:ContaContabil>'   ST_LINHA ST_CONTA
+              
+               VALIDA_DADO '<MovimentoContabil>' '<ctb:MovimentoContabil>' '</MovimentoContabil>' '</ctb:MovimentoContabil>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            GOSUB LB_PEGA_MOVIMENTO
+                           END
+              UNTIL ST_NOME_CC_2 IN ST_LINHA
+
+              COMZEROS ST_ENTIDADE    5
+              COMZEROS ST_FUNCAO      2
+              COMZEROS ST_SUBFUNCAO   3
+              COMZEROS ST_PROGRAMA    4
+              COMZEROS ST_ACAO        4
+
+              PAD ST_FONTE            TO ST_FONTE            5
+              PAD ST_CODIGO_APLICACAO TO ST_CODIGO_APLICACAO 7
+
+              [ COD_APL_DIFERENTE!] BEGIN
+                                     MONTA_COD_APLICACAO ST_CODIGO_APLICACAO ST_CODIGO_APLICACAO
+                                    END
+
+              GOSUB LB_PONTUA_CONTA
+
+              MOVE ST_CONTA TO ST_DADOS
+              APPEND ST_DADOS ' ' ST_ENTIDADE ' ' ST_FONTE ' ' ST_CODIGO_APLICACAO ' ' ST_FUNCAO ' ' ST_SUBFUNCAO ' ' ST_PROGRAMA ' ' ST_ACAO
+
+              MOVE '31' TO ST_XML
+              GOSUB LB_GRAVA_MOVIMENTO
+             END
+
+//--conta corrente 32
+ [~MES_14!] VALIDA_DADO '<OrgaoConcessor>'    '<ctb:OrgaoConcessor>'    '</OrgaoConcessor>'    '</ctb:OrgaoConcessor>'    ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ MES_14!] VALIDA_DADO '<OrgaoConcessor_14>' '<ctb:OrgaoConcessor_14>' '</OrgaoConcessor_14>' '</ctb:OrgaoConcessor_14>' ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ @VALIDO!] BEGIN
+             MOVEALL '' TO ST_ORGAO ST_ENTIDADE ST_CONTA
+             MOVEALL '' TO ST_AUXILIAR
+
+             REPEAT
+              LER ST_LINHA
+              PEGA_DADO '<Entidade>'        '</Entidade>'        '<ctb:Entidade>'        '</ctb:Entidade>'        ST_LINHA ST_ENTIDADE
+              PEGA_DADO '<Orgao>'           '</Orgao>'           '<ctb:Orgao>'           '</ctb:Orgao>'           ST_LINHA ST_ORGAO
+              PEGA_DADO '<ContaContabil>'   '</ContaContabil>'   '<ctb:ContaContabil>'   '</ctb:ContaContabil>'   ST_LINHA ST_CONTA
+
+               VALIDA_DADO '<MovimentoContabil>' '<ctb:MovimentoContabil>' '</MovimentoContabil>' '</ctb:MovimentoContabil>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            GOSUB LB_PEGA_MOVIMENTO
+                           END
+             UNTIL ST_NOME_CC_2 IN ST_LINHA
+
+             COMZEROS ST_ENTIDADE        5
+             COMZEROS ST_ORGAO           5
+
+             GOSUB LB_PONTUA_CONTA
+
+             MOVE ST_CONTA TO ST_DADOS
+             APPEND ST_DADOS ' ' ST_ENTIDADE ' ' ST_ORGAO
+
+             MOVE '32' TO ST_XML
+             GOSUB LB_GRAVA_MOVIMENTO
+            END
+
+//--conta corrente 33
+ [~MES_14!] VALIDA_DADO '<CronogramaTransferenciasFinanceiras>'    '<ctb:CronogramaTransferenciasFinanceiras>'    '</CronogramaTransferenciasFinanceiras>'    '</ctb:CronogramaTransferenciasFinanceiras>'    ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ MES_14!] VALIDA_DADO '<CronogramaTransferenciasFinanceiras_14>' '<ctb:CronogramaTransferenciasFinanceiras_14>' '</CronogramaTransferenciasFinanceiras_14>' '</ctb:CronogramaTransferenciasFinanceiras_14>' ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ @VALIDO!] BEGIN
+              MOVEALL '' TO ST_ENTIDADE ST_CONTA ST_ORGAO_CONCESSOR  ST_ORGAO_RECEBEDOR
+              MOVEALL '' TO ST_AUXILIAR ST_FONTE ST_CODIGO_APLICACAO ST_MES
+
+              REPEAT
+               LER ST_LINHA
+               PEGA_DADO '<Entidade>'        '</Entidade>'        '<ctb:Entidade>'        '</ctb:Entidade>'        ST_LINHA ST_ENTIDADE
+               PEGA_DADO '<OrgaoConcessor>'  '</OrgaoConcessor>'  '<ctb:OrgaoConcessor>'  '</ctb:OrgaoConcessor>'  ST_LINHA ST_ORGAO_CONCESSOR
+               PEGA_DADO '<OrgaoRecebedor>'  '</OrgaoRecebedor>'  '<ctb:OrgaoRecebedor>'  '</ctb:OrgaoRecebedor>'  ST_LINHA ST_ORGAO_RECEBEDOR
+               PEGA_DADO '<FonteRecursos>'   '</FonteRecursos>'   '<ctb:FonteRecursos>'   '</ctb:FonteRecursos>'   ST_LINHA ST_FONTE
+               PEGA_DADO '<CodigoAplicacao>' '</CodigoAplicacao>' '<ctb:CodigoAplicacao>' '</ctb:CodigoAplicacao>' ST_LINHA ST_CODIGO_APLICACAO
+               PEGA_DADO '<Mes>'             '</Mes>'             '<ctb:Mes>'             '</ctb:Mes>'             ST_LINHA ST_MES
+               PEGA_DADO '<ContaContabil>'   '</ContaContabil>'   '<ctb:ContaContabil>'   '</ctb:ContaContabil>'   ST_LINHA ST_CONTA
+
+               VALIDA_DADO '<MovimentoContabil>' '<ctb:MovimentoContabil>' '</MovimentoContabil>' '</ctb:MovimentoContabil>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            GOSUB LB_PEGA_MOVIMENTO
+                           END
+              UNTIL ST_NOME_CC_2 IN ST_LINHA
+
+              COMZEROS ST_MES                       2
+
+              TRATA_ORGAO_AUDESP ST_ENTIDADE        5
+              TRATA_ORGAO_AUDESP ST_ORGAO_CONCESSOR 5
+              TRATA_ORGAO_AUDESP ST_ORGAO_RECEBEDOR 5
+
+              PAD ST_FONTE            TO ST_FONTE            5
+              PAD ST_CODIGO_APLICACAO TO ST_CODIGO_APLICACAO 7
+
+              [ COD_APL_DIFERENTE!] BEGIN
+                                     MONTA_COD_APLICACAO ST_CODIGO_APLICACAO ST_CODIGO_APLICACAO
+                                    END
+
+              GOSUB LB_PONTUA_CONTA
+
+              MOVE ST_CONTA TO ST_DADOS
+              APPEND ST_DADOS ' ' ST_ENTIDADE ' ' ST_ORGAO_CONCESSOR ' ' ST_ORGAO_RECEBEDOR ' ' ST_FONTE ' ' ST_CODIGO_APLICACAO ' ' ST_MES
+
+              MOVE '33' TO ST_XML
+              GOSUB LB_GRAVA_MOVIMENTO
+             END
+
+//--conta corrente 34
+ [~MES_14!] VALIDA_DADO '<CronogramaTransferenciasPrevidenciarias>'    '<ctb:CronogramaTransferenciasPrevidenciarias>'    '</CronogramaTransferenciasPrevidenciarias>'    '</ctb:CronogramaTransferenciasPrevidenciarias>'    ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ MES_14!] VALIDA_DADO '<CronogramaTransferenciasPrevidenciarias_14>' '<ctb:CronogramaTransferenciasPrevidenciarias_14>' '</CronogramaTransferenciasPrevidenciarias_14>' '</ctb:CronogramaTransferenciasPrevidenciarias_14>' ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ @VALIDO!] BEGIN
+              MOVEALL '' TO ST_ENTIDADE ST_CONTA ST_ORGAO_CONCESSOR  ST_ORGAO_RECEBEDOR  ST_EXERCICIO_COMPETENCIA
+              MOVEALL '' TO ST_AUXILIAR ST_FONTE ST_CODIGO_APLICACAO ST_COD_CONTRIBUICAO ST_MES
+
+              REPEAT
+               LER ST_LINHA
+               PEGA_DADO '<Entidade>'             '</Entidade>'             '<ctb:Entidade>'             '</ctb:Entidade>'             ST_LINHA ST_ENTIDADE
+               PEGA_DADO '<OrgaoConcessor>'       '</OrgaoConcessor>'       '<ctb:OrgaoConcessor>'       '</ctb:OrgaoConcessor>'       ST_LINHA ST_ORGAO_CONCESSOR
+               PEGA_DADO '<OrgaoRecebedor>'       '</OrgaoRecebedor>'       '<ctb:OrgaoRecebedor>'       '</ctb:OrgaoRecebedor>'       ST_LINHA ST_ORGAO_RECEBEDOR
+               PEGA_DADO '<FonteRecursos>'        '</FonteRecursos>'        '<ctb:FonteRecursos>'        '</ctb:FonteRecursos>'        ST_LINHA ST_FONTE
+               PEGA_DADO '<CodigoAplicacao>'      '</CodigoAplicacao>'      '<ctb:CodigoAplicacao>'      '</ctb:CodigoAplicacao>'      ST_LINHA ST_CODIGO_APLICACAO
+               PEGA_DADO '<CodigoContribuicao>'   '</CodigoContribuicao>'   '<ctb:CodigoContribuicao>'   '</ctb:CodigoContribuicao>'   ST_LINHA ST_COD_CONTRIBUICAO
+               PEGA_DADO '<ExercicioCompetencia>' '</ExercicioCompetencia>' '<ctb:ExercicioCompetencia>' '</ctb:ExercicioCompetencia>' ST_LINHA ST_EXERCICIO_COMPETENCIA
+               PEGA_DADO '<Mes>'                  '</Mes>'                  '<ctb:Mes>'                  '</ctb:Mes>'                  ST_LINHA ST_MES
+               PEGA_DADO '<ContaContabil>'        '</ContaContabil>'        '<ctb:ContaContabil>'        '</ctb:ContaContabil>'        ST_LINHA ST_CONTA
+
+               VALIDA_DADO '<MovimentoContabil>' '<ctb:MovimentoContabil>' '</MovimentoContabil>' '</ctb:MovimentoContabil>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            GOSUB LB_PEGA_MOVIMENTO
+                           END
+              UNTIL ST_NOME_CC_2 IN ST_LINHA
+
+              COMZEROS ST_MES                       2
+
+              TRATA_ORGAO_AUDESP ST_ENTIDADE        5
+              TRATA_ORGAO_AUDESP ST_ORGAO_CONCESSOR 5
+              TRATA_ORGAO_AUDESP ST_ORGAO_RECEBEDOR 5
+
+              COMZEROS ST_COD_CONTRIBUICAO          2
+
+              PAD ST_FONTE            TO ST_FONTE            5
+              PAD ST_CODIGO_APLICACAO TO ST_CODIGO_APLICACAO 7
+
+              [ COD_APL_DIFERENTE!] BEGIN
+                                     MONTA_COD_APLICACAO ST_CODIGO_APLICACAO ST_CODIGO_APLICACAO
+                                    END
+
+              GOSUB LB_PONTUA_CONTA
+
+              MOVE ST_CONTA TO ST_DADOS
+              APPEND ST_DADOS ' ' ST_ENTIDADE ' ' ST_ORGAO_CONCESSOR ' ' ST_ORGAO_RECEBEDOR ' ' ST_FONTE ' ' ST_CODIGO_APLICACAO ' ' ST_COD_CONTRIBUICAO ' ' ST_EXERCICIO_COMPETENCIA ' ' ST_MES
+
+              MOVE '34' TO ST_XML
+              GOSUB LB_GRAVA_MOVIMENTO
+             END
+
+//--conta corrente 35
+ [~MES_14!] VALIDA_DADO '<AntecipacaoReceitaOrcamentaria>'    '<ctb:AntecipacaoReceitaOrcamentaria>'    '</AntecipacaoReceitaOrcamentaria>'    '</ctb:AntecipacaoReceitaOrcamentaria>'    ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ MES_14!] VALIDA_DADO '<AntecipacaoReceitaOrcamentaria_14>' '<ctb:AntecipacaoReceitaOrcamentaria_14>' '</AntecipacaoReceitaOrcamentaria_14>' '</ctb:AntecipacaoReceitaOrcamentaria_14>' ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ @VALIDO!] BEGIN
+              MOVEALL '' TO ST_ENTIDADE ST_CONTA ST_N_INSCRICAO ST_AUXILIAR ST_FONTE ST_CODIGO_APLICACAO
+              MOVEALL '' TO ST_N_CONTRATO ST_ANO_CONTRATO ST_DATA_MOVIMENTO
+              MOVEALL '' TO ST_AUXILIAR
+
+              REPEAT
+               LER ST_LINHA
+
+               IF 'Tipo="' IN ST_LINHA BEGIN
+                                        PEGA_DADO 'Tipo="' '">' '' '' ST_LINHA ST_TIPO_CREDOR
+                                       END
+               ELSE IF "Tipo='" IN ST_LINHA BEGIN
+                                             PEGA_DADO "Tipo='" "'>" '' '' ST_LINHA ST_TIPO_CREDOR
+                                            END
+
+               IF '<gen:CNPJ' IN ST_LINHA BEGIN
+                                           LER ST_LINHA
+                                           PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                          END
+               IF '<gen:CPF' IN ST_LINHA BEGIN
+                                          LER ST_LINHA
+                                          PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                         END
+               IF '<gen:InscricaoGenerica' IN ST_LINHA BEGIN
+                                                        LER ST_LINHA
+                                                        PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                                       END
+               IF '<gen:IdentificacaoEspecial' IN ST_LINHA BEGIN
+                                                            LER ST_LINHA
+                                                            PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_INSCRICAO
+                                                           END
+
+               PEGA_DADO '<FonteRecursos>'   '</FonteRecursos>'   '<ctb:FonteRecursos>'   '</ctb:FonteRecursos>'   ST_LINHA ST_FONTE
+               PEGA_DADO '<CodigoAplicacao>' '</CodigoAplicacao>' '<ctb:CodigoAplicacao>' '</ctb:CodigoAplicacao>' ST_LINHA ST_CODIGO_APLICACAO
+
+               VALIDA_DADO '<NumeroContrato>' '<ctb:NumeroContrato>' '</NumeroContrato>' '</ctb:NumeroContrato>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            LER ST_LINHA
+                            PEGA_DADO '<gen:Numero>' '</gen:Numero>' '' '' ST_LINHA ST_N_CONTRATO
+                            LER ST_LINHA
+                            PEGA_DADO '<gen:Ano>'    '</gen:Ano>'    '' '' ST_LINHA ST_ANO_CONTRATO
+                           END
+
+               PEGA_DADO '<Data>'            '</Data>'            '<ctb:Data>'            '</ctb:Data>'           ST_LINHA ST_DATA_MOVIMENTO
+               PEGA_DADO '<ContaContabil>'   '</ContaContabil>'   '<ctb:ContaContabil>'   '</ctb:ContaContabil>'  ST_LINHA ST_CONTA
+
+               VALIDA_DADO '<MovimentoContabil>' '<ctb:MovimentoContabil>' '</MovimentoContabil>' '</ctb:MovimentoContabil>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            GOSUB LB_PEGA_MOVIMENTO
+                           END
+              UNTIL ST_NOME_CC_2 IN ST_LINHA
+
+              COMZEROS ST_ENTIDADE 5
+
+              IF PARGERAL.EXERCICIO LE '2008' COMZEROS   ST_N_CONTRATO       12
+              ELSE                            COMBRANCOS ST_N_CONTRATO       12
+
+              PAD ST_FONTE            TO ST_FONTE            5
+              PAD ST_CODIGO_APLICACAO TO ST_CODIGO_APLICACAO 7
+
+              [ COD_APL_DIFERENTE!] BEGIN
+                                     MONTA_COD_APLICACAO ST_CODIGO_APLICACAO ST_CODIGO_APLICACAO
+                                    END
+
+              GOSUB LB_PONTUA_CONTA
+
+              [ PROPRIO_XML!] BEGIN
+                    IF ST_TIPO_CREDOR EQ '09' MOVE '03' TO ST_TIPO_CREDOR
+               ELSE IF ST_TIPO_CREDOR EQ '03' MOVE '09' TO ST_TIPO_CREDOR
+               END
+             
+              MOVE ST_CONTA TO ST_DADOS
+              APPEND ST_DADOS ' ' ST_ENTIDADE ' ' ST_FONTE ' ' ST_CODIGO_APLICACAO ' ' ST_N_CONTRATO ' ' ST_ANO_CONTRATO ' ' ST_DATA_MOVIMENTO ' ' ST_TIPO_CREDOR ' ' ST_N_INSCRICAO
+
+              MOVE '35' TO ST_XML
+              GOSUB LB_GRAVA_MOVIMENTO
+             END
+
+//--conta corrente 36
+ [~MES_14!] VALIDA_DADO '<ContrapartidaVariacoesPatrimoniais>'    '<ctb:ContrapartidaVariacoesPatrimoniais>'    '</ContrapartidaVariacoesPatrimoniais>'    '</ctb:ContrapartidaVariacoesPatrimoniais>'    ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ MES_14!] VALIDA_DADO '<ContrapartidaVariacoesPatrimoniais_14>' '<ctb:ContrapartidaVariacoesPatrimoniais_14>' '</ContrapartidaVariacoesPatrimoniais_14>' '</ctb:ContrapartidaVariacoesPatrimoniais_14>' ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ @VALIDO!] BEGIN
+              MOVEALL '' TO ST_ENTIDADE ST_CONTA ST_CONTRAPARTIDA_VP ST_TIPO_LANCAMENTO ST_DATA_LANCAMENTO
+              MOVEALL '' TO ST_AUXILIAR
+
+              REPEAT
+               LER ST_LINHA
+               PEGA_DADO '<Entidade>'               '</Entidade>'               '<ctb:Entidade>'               '</ctb:Entidade>'               ST_LINHA ST_ENTIDADE
+               PEGA_DADO '<ContrapartidaVP>'        '</ContrapartidaVP>'        '<ctb:ContrapartidaVP>'        '</ctb:ContrapartidaVP>'        ST_LINHA ST_CONTRAPARTIDA_VP
+               PEGA_DADO '<CodigoTipoLancamento>'   '</CodigoTipoLancamento>'   '<ctb:CodigoTipoLancamento>'   '</ctb:CodigoTipoLancamento>'   ST_LINHA ST_TIPO_LANCAMENTO
+               PEGA_DADO '<DataLancamento>'         '</DataLancamento>'         '<ctb:DataLancamento>'         '</ctb:DataLancamento>'         ST_LINHA ST_DATA_LANCAMENTO
+               
+               PEGA_DADO '<ContaContabil>'          '</ContaContabil>'          '<ctb:ContaContabil>'          '</ctb:ContaContabil>'          ST_LINHA ST_CONTA
+
+               VALIDA_DADO '<MovimentoContabil>' '<ctb:MovimentoContabil>' '</MovimentoContabil>' '</ctb:MovimentoContabil>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            GOSUB LB_PEGA_MOVIMENTO
+                           END
+              UNTIL ST_NOME_CC_2 IN ST_LINHA
+
+              COMZEROS ST_ENTIDADE        5
+
+              GOSUB LB_PONTUA_CONTA
+              GOSUB LB_PONTUA_CONTA_CONTRAPARTIDA_VP
+
+              MOVE ST_CONTA TO ST_DADOS
+              APPEND ST_DADOS ' ' ST_CONTRAPARTIDA_VP ' ' ST_DATA_LANCAMENTO ' ' ST_TIPO_LANCAMENTO
+              MOVE ST_TIPO_LANCAMENTO TO ST_AUXILIAR
+
+              MOVE '36' TO ST_XML
+              GOSUB LB_GRAVA_MOVIMENTO
+             END
+
+//--conta corrente 37
+ [~MES_14!] VALIDA_DADO '<ContratosGestao>'    '<ctb:ContratosGestao>'    '</ContratosGestao>'    '</ctb:ContratosGestao>'    ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ MES_14!] VALIDA_DADO '<ContratosGestao_14>' '<ctb:ContratosGestao_14>' '</ContratosGestao_14>' '</ctb:ContratosGestao_14>' ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ @VALIDO!] BEGIN
+              MOVEALL '' TO ST_ENTIDADE 
+              MOVEALL '' TO ST_AUXILIAR
+
+              REPEAT
+               LER ST_LINHA
+               PEGA_DADO '<Entidade>'               '</Entidade>'               '<ctb:Entidade>'               '</ctb:Entidade>'               ST_LINHA ST_ENTIDADE
+               
+               PEGA_DADO '<ContaContabil>'          '</ContaContabil>'          '<ctb:ContaContabil>'          '</ctb:ContaContabil>'          ST_LINHA ST_CONTA
+
+               VALIDA_DADO '<MovimentoContabil>' '<ctb:MovimentoContabil>' '</MovimentoContabil>' '</ctb:MovimentoContabil>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            GOSUB LB_PEGA_MOVIMENTO
+                           END
+              UNTIL ST_NOME_CC_2 IN ST_LINHA
+
+              COMZEROS ST_ENTIDADE        5
+
+              GOSUB LB_PONTUA_CONTA
+
+              MOVE ST_CONTA TO ST_DADOS
+              APPEND ST_DADOS ' ' 
+
+              MOVE '37' TO ST_XML
+              GOSUB LB_GRAVA_MOVIMENTO
+             END
+
+//--conta corrente 38
+ [~MES_14!] VALIDA_DADO '<PrestacaoContasContratosGestao>'    '<ctb:PrestacaoContasContratosGestao>'    '</PrestacaoContasContratosGestao>'    '</ctb:PrestacaoContasContratosGestao>'    ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ MES_14!] VALIDA_DADO '<PrestacaoContasContratosGestao_14>' '<ctb:PrestacaoContasContratosGestao_14>' '</PrestacaoContasContratosGestao_14>' '</ctb:PrestacaoContasContratosGestao_14>' ST_LINHA ST_NOME_CC_1 ST_NOME_CC_2
+ [ @VALIDO!] BEGIN
+              MOVEALL '' TO ST_ENTIDADE ST_CONTA
+              MOVEALL '' TO ST_AUXILIAR
+
+              REPEAT
+               LER ST_LINHA
+               PEGA_DADO '<Entidade>'               '</Entidade>'               '<ctb:Entidade>'               '</ctb:Entidade>'               ST_LINHA ST_ENTIDADE
+               
+               PEGA_DADO '<ContaContabil>'          '</ContaContabil>'          '<ctb:ContaContabil>'          '</ctb:ContaContabil>'          ST_LINHA ST_CONTA
+
+               VALIDA_DADO '<MovimentoContabil>' '<ctb:MovimentoContabil>' '</MovimentoContabil>' '</ctb:MovimentoContabil>' ST_LINHA ST_INICIAL ST_FINAL
+               [ @VALIDO!] BEGIN
+                            GOSUB LB_PEGA_MOVIMENTO
+                           END
+              UNTIL ST_NOME_CC_2 IN ST_LINHA
+
+              COMZEROS ST_ENTIDADE        5
+
+              GOSUB LB_PONTUA_CONTA
+
+              MOVE ST_CONTA TO ST_DADOS
+              APPEND ST_DADOS ' ' 
+
+              MOVE '38' TO ST_XML
+              GOSUB LB_GRAVA_MOVIMENTO
+             END
+
+LOOP
+
+LB_SAIDA:
+CLOSE_INPUT
+
+//--rotina para gravar contas sem movimento no mes somente com saldos
+
+IF ((JN_MES GT '01') AND (JN_MES LE '14')) BEGIN
+                                            IF JN_MES LE 12 BEGIN
+                                                             CALC (JN_MES - 1) TO ST_MES_ANTERIOR
+                                                             COMZEROS ST_MES_ANTERIOR 2
+                                                            END
+                                            ELSE BEGIN
+                                                  IF JN_MES EQ '13' MOVE ST@MES@ENCERRADO TO ST_MES_ANTERIOR
+                                                  ELSE              MOVE '13'             TO ST_MES_ANTERIOR
+                                                 END
+
+                                            CLEAR CONTACOR
+                                            MOVE JN_ANO          TO CONTACOR.ANO
+                                            MOVE ST_MES_ANTERIOR TO CONTACOR.MES
+                                            MOVE JN_COD_ENTIDADE TO CONTACOR.COD_ENTIDADE
+                                            REPEAT
+                                             FIND GT CONTACOR BY INDEX.1
+                                             [ FOUND] INDICATE FOUND AS CONTACOR.ANO          EQ JN_ANO
+                                             [ FOUND] INDICATE FOUND AS CONTACOR.MES          EQ ST_MES_ANTERIOR
+                                             [ FOUND] INDICATE FOUND AS CONTACOR.COD_ENTIDADE EQ JN_COD_ENTIDADE
+                                             [ FOUND] IF CONTACOR.VALOR_3 NE 0 BEGIN
+                                                       CALC (JN_LENDO + 1) TO JN_LENDO
+
+                                                       MOVEALL 0  TO IT_RECNUM NB_SALDO_INICIAL NB_DEBITO NB_CREDITO  NB_SALDO_FINAL      IT_SEQUENCIA
+                                                       MOVEALL '' TO ST_XML    ST_CONTA         ST_DADOS  ST_AUXILIAR ST_NATUREZA_INICIAL ST_NATUREZA_FINAL
+                                                       
+                                                       INDICATE FAZ! TRUE
+                                                       
+                                                       //--rotina especial para apagar contas que no mes 14 nÆo devem emitir conta corrente
+                                                       //--verificar possibilidade de gravar informacao no arquivo plano.dat das contas abaixo
+                                                       [ MES_14!] BEGIN
+                                                                           INDICATE FAZ! AS CONTACOR.CONTA NE '6.2.1.1.1.00.00.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '6.2.1.1.2.00.00.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '6.2.1.2.0.00.00.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '6.2.1.3.1.00.00.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '5.2.2.1.1.00.00.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '5.2.2.1.3.01.00.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '1.9.2.1.2.02.00.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '5.2.2.1.3.04.00.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '1.9.2.1.2.04.00.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '5.2.2.1.3.03.00.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '1.9.2.1.3.01.00.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '5.2.2.1.3.01.00.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '5.2.2.1.3.04.00.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '5.2.2.1.3.02.00.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '5.2.2.1.3.03.00.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '5.2.2.1.2.02.02.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '5.2.2.1.2.03.01.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '5.2.2.1.2.03.02.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '5.2.2.1.9.04.00.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '1.9.2.1.9.01.01.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '1.9.2.1.9.01.09.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '5.2.2.9.1.01.00.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '5.2.2.9.1.02.00.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '5.2.2.9.1.09.00.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '8.2.2.1.1.01.01.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '8.2.2.1.1.01.02.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '8.2.2.1.1.01.03.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '8.2.2.1.1.01.04.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '8.2.2.1.1.02.01.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '8.2.2.1.1.02.02.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '7.2.2.1.1.03.01.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '7.2.2.1.1.03.02.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '7.2.2.1.1.03.09.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '8.2.2.1.1.04.01.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '8.2.2.1.1.04.02.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '7.2.2.1.1.05.01.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '7.2.2.1.1.05.02.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '7.2.2.1.1.05.09.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '8.2.2.1.2.01.01.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '8.2.2.1.2.01.02.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '6.2.2.1.3.03.00.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '6.2.2.1.3.04.00.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '7.9.1.1.9.00.00.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '8.9.4.1.1.01.00.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '8.9.4.1.1.02.00.00'
+                                                                   
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '5.2.1.2.1.00.00.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '5.2.1.2.9.00.00.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '6.2.2.1.1.00.00.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '6.2.2.1.2.01.00.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '6.2.2.1.2.02.00.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '6.2.2.1.3.01.00.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '6.2.2.1.3.03.00.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '6.2.2.9.1.03.00.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '7.2.2.1.1.01.01.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '7.2.2.1.1.01.02.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '7.2.2.1.1.01.09.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '7.2.2.1.1.02.01.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '7.2.2.1.1.02.02.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '7.2.2.1.1.02.09.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '8.2.2.1.1.03.01.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '8.2.2.1.1.03.02.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '7.2.2.1.1.04.01.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '7.2.2.1.1.04.02.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '7.2.2.1.1.04.09.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '8.2.2.1.1.05.01.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '8.2.2.1.1.05.02.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '7.2.2.1.2.01.00.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '8.9.1.1.1.00.00.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '8.9.1.1.2.00.00.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '8.9.1.1.9.00.00.00'
+                                                                   [ FAZ!] INDICATE FAZ! AS CONTACOR.CONTA NE '7.9.4.1.0.00.00.00'
+                                                                  END
+
+                                                       [ FAZ!] BEGIN
+                                                                MOVE CONTACOR.RECNUM      TO IT_RECNUM
+
+                                                                MOVE CONTACOR.XML         TO ST_XML
+                                                                MOVE CONTACOR.CONTA       TO ST_CONTA
+                                                                MOVE CONTACOR.DADOS       TO ST_DADOS
+                                                                MOVE CONTACOR.AUXILIAR    TO ST_AUXILIAR
+                                                                MOVE CONTACOR.AUXILIAR_1  TO ST_AUXILIAR_1
+                                                                MOVE CONTACOR.AUXILIAR_3  TO ST_AUXILIAR_3
+
+                                                                MOVE 0                    TO NB_DEBITO
+                                                                MOVE 0                    TO NB_CREDITO
+
+                                                                MOVE CONTACOR.NAT_FINAL   TO ST_NATUREZA_INICIAL
+                                                                MOVE CONTACOR.NAT_FINAL   TO ST_NATUREZA_FINAL
+                                                                MOVE CONTACOR.VALOR_3     TO NB_SALDO_INICIAL
+                                                                MOVE CONTACOR.VALOR_3     TO NB_SALDO_FINAL
+
+                                                                MOVE CONTACOR.SEQUENCIA   TO IT_SEQUENCIA
+
+                                                                CLEAR CONTACOR
+                                                                MOVE JN_ANO          TO CONTACOR.ANO
+                                                                MOVE JN_MES          TO CONTACOR.MES
+                                                                MOVE JN_COD_ENTIDADE TO CONTACOR.COD_ENTIDADE
+                                                                MOVE ST_XML          TO CONTACOR.XML
+                                                                MOVE ST_DADOS        TO CONTACOR.DADOS
+                                                                MOVE IT_SEQUENCIA    TO CONTACOR.SEQUENCIA
+                                                                FIND EQ CONTACOR BY INDEX.1
+                                                                [~FOUND] BEGIN
+                                                                          INDICATE ERR FALSE
+                                                                          ON ERROR GOSUB CHECA_GRAVACAO
+                                                                          REREAD
+                                                                          CLEAR CONTACOR
+                                                                          MOVE JN_ANO              TO CONTACOR.ANO
+                                                                          MOVE JN_MES              TO CONTACOR.MES
+                                                                          MOVE JN_COD_ENTIDADE     TO CONTACOR.COD_ENTIDADE
+                                                                          MOVE ST_XML              TO CONTACOR.XML
+                                                                          MOVE ST_CONTA            TO CONTACOR.CONTA
+                                                                          MOVE ST_DADOS            TO CONTACOR.DADOS
+
+                                                                          MOVE IT_SEQUENCIA        TO CONTACOR.SEQUENCIA
+
+                                                                          MOVE ST_AUXILIAR         TO CONTACOR.AUXILIAR
+                                                                          MOVE ST_AUXILIAR_1       TO CONTACOR.AUXILIAR_1
+                                                                          MOVE ST_AUXILIAR_3       TO CONTACOR.AUXILIAR_3
+                                                                          
+                                                                          MOVE NB_SALDO_INICIAL    TO CONTACOR.VALOR
+                                                                          MOVE NB_DEBITO           TO CONTACOR.VALOR_1
+                                                                          MOVE NB_CREDITO          TO CONTACOR.VALOR_2
+                                                                          MOVE NB_SALDO_FINAL      TO CONTACOR.VALOR_3
+                                                                          MOVE ST_NATUREZA_INICIAL TO CONTACOR.NAT_INICIAL
+                                                                          MOVE ST_NATUREZA_FINAL   TO CONTACOR.NAT_FINAL
+
+                                                                          SAVERECORD CONTACOR
+                                                                          UNLOCK
+                                                                          ON ERROR OFF
+
+                                                                          CALC (JN_GRAVANDO + 1) TO JN_GRAVANDO
+                                                                         END
+
+                                                                CLEAR CONTACOR
+                                                                MOVE IT_RECNUM TO CONTACOR.RECNUM
+                                                                FIND EQ CONTACOR BY RECNUM
+                                                               END
+
+                                                       INDICATE FOUND TRUE
+                                                      END
+                                            UNTIL [~FOUND]
+                                           END
+
+[ EMITE_ALERTA!] BEGIN
+                  ADVERTE 'HA ERROS NO XML IMPORTADO QUE PODEM ACARRETAR NA REJEICAO DO PACOTE PELO TCE/SP, POREM NAO IMPEDEM SUA TRANSMISSAO'
+                 END
+
+MOVE 'IMPORTACAO CONTA CORRENTE XML ENTIDADE: ' TO ST_AUX
+APPEND ST_AUX JN_COD_ENTIDADE ' MES: ' JN_MES '/' JN_ANO ' ARQUIVO: ' JN_ARQUIVO
+GRAVAINCLUSAO 'CONTACOR' ST_AUX 'I'
+
+GOTO LB_MES
+ABORT
+
+LB_ROTINA_PARADA:
+ CABEC 'GOSTARIA REALMENTE DE SAIR < S/N >?' CONFIRMA.1
+ PAGE CONFIRMA
+ INKEYCHECK ST_TECLA IN 'SsNn'
+ IF ST_TECLA IN 'Ss' ABORT
+ MOVE 0 TO CURRENT_IMAGE
+ PAGE TELA
+ PAGE MSG
+RETURN
+
+LB_LIMPA_ARQUIVOS:
+ CLEAR CONTACOR
+ CONSTRAINT_SET 1
+ CONSTRAIN CONTACOR.ANO          EQ JN_ANO
+ CONSTRAIN CONTACOR.MES          EQ JN_MES
+ CONSTRAIN CONTACOR.COD_ENTIDADE EQ JN_COD_ENTIDADE
+ CONSTRAINED_FIND FIRST CONTACOR BY INDEX.1
+ WHILE [FOUND]
+  CALC (JN_LENDO + 1) TO JN_LENDO
+  INDICATE ERR FALSE
+  ON ERROR GOSUB CHECA_GRAVACAO
+  REREAD CONTACOR
+  DELETE CONTACOR
+  UNLOCK
+  ON ERROR OFF
+  CONSTRAINED_FIND NEXT
+  END
+ CONSTRAINT_SET 1 CLEAR
+RETURN
+
+LB_PEGA_MOVIMENTO:
+ REPEAT
+  LER ST_LINHA
+  PEGA_DADO '<SaldoInicial>'     '</SaldoInicial>'     '<ctb:SaldoInicial>'     '</ctb:SaldoInicial>'     ST_LINHA ST_SALDO_INICIAL
+  PEGA_DADO '<NatInicial>'       '</NatInicial>'       '<ctb:NatInicial>'       '</ctb:NatInicial>'       ST_LINHA ST_NATUREZA_INICIAL
+  PEGA_DADO '<MovimentoCredito>' '</MovimentoCredito>' '<ctb:MovimentoCredito>' '</ctb:MovimentoCredito>' ST_LINHA ST_CREDITO
+  PEGA_DADO '<MovimentoDebito>'  '</MovimentoDebito>'  '<ctb:MovimentoDebito>'  '</ctb:MovimentoDebito>'  ST_LINHA ST_DEBITO
+  PEGA_DADO '<SaldoFinal>'       '</SaldoFinal>'       '<ctb:SaldoFinal>'       '</ctb:SaldoFinal>'       ST_LINHA ST_SALDO_FINAL
+  PEGA_DADO '<NatFinal>'         '</NatFinal>'         '<ctb:NatFinal>'         '</ctb:NatFinal>'         ST_LINHA ST_NATUREZA_FINAL
+ UNTIL ST_FINAL IN ST_LINHA
+
+ REPLACE '.' IN ST_SALDO_INICIAL WITH ','
+ REPLACE '.' IN ST_CREDITO       WITH ','
+ REPLACE '.' IN ST_DEBITO        WITH ','
+ REPLACE '.' IN ST_SALDO_FINAL   WITH ','
+
+ MOVE ST_CREDITO       TO NB_CREDITO
+ MOVE ST_DEBITO        TO NB_DEBITO
+ MOVE ST_SALDO_INICIAL TO NB_SALDO_INICIAL
+ MOVE ST_SALDO_FINAL   TO NB_SALDO_FINAL
+RETURN
+
+LB_PONTUA_CONTA:
+ APPEND ST_CONTA '00'
+ INSERT '.' IN ST_CONTA AT 10
+ INSERT '.' IN ST_CONTA AT 8
+ INSERT '.' IN ST_CONTA AT 6
+ INSERT '.' IN ST_CONTA AT 5
+ INSERT '.' IN ST_CONTA AT 4
+ INSERT '.' IN ST_CONTA AT 3
+ INSERT '.' IN ST_CONTA AT 2
+RETURN
+
+LB_PONTUA_CONTA_CONTRAPARTIDA_VP:
+ APPEND ST_CONTRAPARTIDA_VP '00'
+ INSERT '.' IN ST_CONTRAPARTIDA_VP AT 10
+ INSERT '.' IN ST_CONTRAPARTIDA_VP AT 8
+ INSERT '.' IN ST_CONTRAPARTIDA_VP AT 6
+ INSERT '.' IN ST_CONTRAPARTIDA_VP AT 5
+ INSERT '.' IN ST_CONTRAPARTIDA_VP AT 4
+ INSERT '.' IN ST_CONTRAPARTIDA_VP AT 3
+ INSERT '.' IN ST_CONTRAPARTIDA_VP AT 2
+RETURN
+
+LB_PONTUA_CONTA_RECEITA:
+ IF JN_ANO LE '2017' APPEND ST_COD_RECEITA '00'
+                      
+ IF JN_ANO LE '2017' INSERT '.' IN ST_COD_RECEITA AT 9
+ IF JN_ANO GE '2018' INSERT '.' IN ST_COD_RECEITA AT 8
+                     INSERT '.' IN ST_COD_RECEITA AT 7
+                     INSERT '.' IN ST_COD_RECEITA AT 5
+                     INSERT '.' IN ST_COD_RECEITA AT 4
+                     INSERT '.' IN ST_COD_RECEITA AT 3
+                     INSERT '.' IN ST_COD_RECEITA AT 2
+RETURN
+
+LB_PONTUA_CONTA_DESPESA:
+ INSERT '.' IN ST_ECONOMICA AT 7
+ INSERT '.' IN ST_ECONOMICA AT 5
+ INSERT '.' IN ST_ECONOMICA AT 3
+ INSERT '.' IN ST_ECONOMICA AT 2
+RETURN
+
+LB_GRAVA_MOVIMENTO:
+ MOVE 0 TO IT_SEQUENCIA
+ 
+ INDICATE ERR FALSE
+ ON ERROR GOSUB CHECA_GRAVACAO
+ REREAD
+ CLEAR CONTACOR
+ MOVE JN_ANO              TO CONTACOR.ANO
+ MOVE JN_MES              TO CONTACOR.MES
+ MOVE JN_COD_ENTIDADE     TO CONTACOR.COD_ENTIDADE
+ MOVE ST_XML              TO CONTACOR.XML
+ MOVE ST_DADOS            TO CONTACOR.DADOS
+ MOVE 0                   TO CONTACOR.SEQUENCIA
+ FIND EQ CONTACOR BY INDEX.1
+ [ FOUND] BEGIN
+           ULTIMA_SEQUENCIA IT_SEQUENCIA
+
+           //---somente emitir  msg se for de algum c/c consolidado
+           INDICATE EMITE_ALERTA! AS ST_XML IN '01-02-04-05-06-07-08-12-27-30-31-32-33-34-35'
+          END
+
+ CLEAR CONTACOR
+ MOVE JN_ANO                TO CONTACOR.ANO
+ MOVE JN_MES                TO CONTACOR.MES
+ MOVE JN_COD_ENTIDADE       TO CONTACOR.COD_ENTIDADE
+ MOVE ST_XML                TO CONTACOR.XML
+ MOVE ST_DADOS              TO CONTACOR.DADOS
+ MOVE ST_CONTA              TO CONTACOR.CONTA
+ MOVE ST_AUXILIAR           TO CONTACOR.AUXILIAR
+ MOVE NB_SALDO_INICIAL      TO CONTACOR.VALOR
+ MOVE NB_DEBITO             TO CONTACOR.VALOR_1
+ MOVE NB_CREDITO            TO CONTACOR.VALOR_2
+ MOVE NB_SALDO_FINAL        TO CONTACOR.VALOR_3
+ MOVE ST_NATUREZA_INICIAL   TO CONTACOR.NAT_INICIAL
+ MOVE ST_NATUREZA_FINAL     TO CONTACOR.NAT_FINAL
+ MOVE IT_SEQUENCIA          TO CONTACOR.SEQUENCIA
+ MOVE ST_N_LICITACAO        TO CONTACOR.AUXILIAR_3
+ MOVE ST_REGIME_DESPESA_AUX TO CONTACOR.AUXILIAR_1
+ SAVERECORD CONTACOR
+ UNLOCK
+ ON ERROR OFF
+
+ MOVE 0 TO IT_SEQUENCIA
+ CALC (JN_GRAVANDO + 1) TO JN_GRAVANDO
+RETURN
+
+KEYPROC KEY.UP
+ BACKFIELD
+RETURN
+
+KEYPROC KEY.FIELD
+IF CURRENT_WINDOW EQ 5 BEGIN
+                        MOVE 'CENTIDAD 1 ' TO ST_JUNTA
+                        APPEND ST_JUNTA ST@USUARIO ' ' ST@OPCAO ' ' ST@PROGRAMA ' ' ST@CODIGO@ENTIDADE ' ' ST@EXERCICIO@FINANCEIRO
+                        CHAIN WAIT ST_JUNTA EXPORT_FILES
+                        MOVE 0 TO CURRENT_IMAGE
+                        PAGE TELA
+                        IF ENTIDADE.CODIGO NE "" BEGIN
+                                                  TRIM ENTIDADE.CODIGO    TO JN_COD_ENTIDADE
+                                                  TRIM ENTIDADE.DESCRICAO TO JN_ENTIDADE
+                                                 END
+                        ELSE ENTAGAIN
+                        RETURN
+                       END
+ELSE ENTAGAIN
+RETURN
+
+#INCLUDE INTEGRID.INC
+
+

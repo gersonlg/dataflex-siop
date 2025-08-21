@@ -1,0 +1,73 @@
+-----------------------------------------------------------------------------
+  DATE: 25/10/2023      TIME: 17:31                                  PAGE:  1
+  FILE DEFINITION FOR FILE: TEMPAUDE (# 167)
+-----------------------------------------------------------------------------
+  DRIVER NAME               : DATAFLEX
+  FILE ROOT NAME            : TEMPAUDE
+  USER DISPLAY NAME         : TEMPAUDE
+  DATAFLEX FILE NAME        : TEMPAUDE
+-----------------------------------------------------------------------------
+  RECORD LENGTH             : 768       ( USED: 755 )
+  MAX NUMBER OF RECORDS     : 16711679  ( USED: 0 )
+  FILE COMPRESSION          : NONE
+  RE-USE DELETED SPACE      : YES
+  LOCKING TYPE              : FILE
+  HEADER INTEGRITY CHECKING : YES
+  TRANSACTION TYPE          : CLIENT ATOMIC
+  RECORD IDENTITY INDEX     : 0 ( 0 , 0 )
+  FILE LOGIN PARAMETER      : 
+  SYSTEM FILE               : NO 
+-----------------------------------------------------------------------------
+
+NUM  FIELD NAME       TYPE SIZE  OFFST IX   RELATES TO FILE.FIELD
+---  ---------------  ---- ----- ----- --   ---------------------------------
+  1  COD_ENTIDADE     ASC      2     1  1   
+  2  EXERCICIO        ASC      4     3  1   
+  3  USUARIO          ASC     20     7  1   
+  4  CODIGO           ASC    200    27  1   
+  5  NUMERO           ASC     20   227  1   
+  6  CONTA            ASC     18   247      
+  7  AUXILIAR         ASC     15   265      
+  8  AUXILIAR_1       ASC     15   280      
+  9  AUXILIAR_2       ASC     15   295      
+ 10  VALOR            NUM   14.2   310      
+ 11  VALOR_1          NUM   14.2   318      
+ 12  VALOR_2          NUM   14.2   326      
+ 13  VALOR_3          NUM   14.2   334      
+ 14  VALOR_4          NUM   14.2   342      
+ 15  VALOR_5          NUM   14.2   350      
+ 16  VALOR_6          NUM   14.2   358      
+ 17  VALOR_7          NUM   14.2   366      
+ 18  VALOR_8          NUM   14.2   374      
+ 19  VALOR_9          NUM   14.2   382      
+ 20  VALOR_10         NUM   14.2   390      
+ 21  AUXILIAR_3       ASC     50   398      
+ 22  AUXILIAR_4       ASC     50   448      
+ 23  DT_AUXILIAR      DAT      3   498      
+ 24  DT_AUXILIAR_1    DAT      3   501      
+ 25  AUXILIAR_5       ASC     50   504  2   
+ 26  AUXILIAR_6       ASC    200   554      
+ 27  ENTIDADE_AUX     ASC      2   754      
+
+
+INDEX# FIELDS          DES U/C    LENGTH LEVELS SEGMENTS MODE
+------ --------------- --- ---    ------ ------ -------- -------
+  1    COD_ENTIDADE    NO  NO       246    24      5     ON-LINE
+       EXERCICIO       NO  NO 
+       USUARIO         NO  NO 
+       CODIGO          NO  NO 
+       NUMERO          NO  NO 
+
+  2    COD_ENTIDADE    NO  NO       99     11      6     ON-LINE
+       EXERCICIO       NO  NO 
+       USUARIO         NO  NO 
+       NUMERO          NO  NO 
+       AUXILIAR_5      NO  NO 
+       RECNUM          NO  NO 
+
+  3    COD_ENTIDADE    NO  NO       246    24      5     ON-LINE
+       EXERCICIO       NO  NO 
+       USUARIO         NO  NO 
+       NUMERO          NO  NO 
+       CODIGO          NO  NO 
+

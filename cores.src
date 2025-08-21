@@ -1,0 +1,179 @@
+/TELA RESIDENT
+зд SFPM дддддддд Sistema de Finan┤as Pёblicas Municipais дддддддддддддддддддддд©
+Ё______________________________________________________________________________Ё
+цдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд╢
+Ё __/__/____  ________________________________________________________  CONAM  Ё
+фмммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммм╣
+Ё             Usu═rio : _____   ___________________________________            Ё
+Ё      зддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд©     Ё
+Ё    зд╢ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ Ё     Ё
+Ё    Ё Ё ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ Ё     Ё
+Ё    Ё Ё ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ Ё     Ё
+Ё    Ё Ё ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ Ё     Ё
+Ё    Ё Ё ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ Ё     Ё
+Ё    Ё Ё ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ Ё     Ё
+Ё    Ё Ё ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ Ё     Ё
+Ё    Ё Ё ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ Ё     Ё
+Ё    Ё юдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддбды     Ё
+Ё    юддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддды       Ё
+Ё                                                                              Ё
+Ё         Tarja atual  ___     Titulo atual ___    Moldura atual ___           Ё
+Ё         Tarja nova   ___     Titulo novo  ___    Moldura nova  ___           Ё
+Ё                                                                              Ё
+цдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд╢
+Ё                              <ESC> Retorno                                   Ё
+юдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддды
+/CONFIRMA RESIDENT
+цдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд╢
+Ё______________________________________________________________________________Ё
+юдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддды
+/*
+// CORES.FRM - ALTERACAO DE CORES DO SISTEMA - SIAM
+// JOSE ANTONIO DI DOMENICO / JAIRO DE CARVALHO JUNIOR
+// LAST ATZ -  15:53 05/03/93
+
+#INCLUDE CONAM.LIB
+
+// NOMEACAO DAS VARIAVEIS
+
+STRING  ST_SETA_CIMA 1 ST_SETA_BAIXO 1 ST_JUNCAO ST_PREFEITURA
+INTEGER IT_CONTADOR
+
+// NOMEACAO DAS JANELAS
+
+AUTOPAGE TELA
+NAME JN_TARJA
+NAME JN_TARJA_DATA JN_TARJA_TITULO JN_CODIGO JN_NOME
+
+NAME J1   J2   J3   J4   J5   J6   J7   J8   J9   J10  J11  J12  J13  J14  J15  J16 J17 J18
+NAME J19  J20  J21  J22  J23  J24  J25  J26  J27  J28  J29  J30  J31  J32  J33  J34
+NAME J35  J36  J37  J38  J39  J40  J41  J42  J43  J44  J45  J46  J47  J48  J49  J50
+NAME J51  J52  J53  J54  J55  J56  J57  J58  J59  J60  J61  J62  J63  J64  J65  J66
+NAME J67  J68  J69  J70  J71  J72  J73  J74  J75  J76  J77  J78  J79  J80  J81  J82
+NAME J83  J84  J85  J86  J87  J88  J89  J90  J91  J92  J93  J94  J95  J96  J97  J98
+NAME J99  J100 J101 J102 J103 J104 J105 J106 J107 J108 J109 J110 J111 J112 J113 J114
+NAME J115 J116 J117 J118 J119 J120 J121 J122 J123 J124 J125 J126 J127 J128
+NAME JN_PARGR_TARJA JN_PARGR_TITULO     JN_PARGR_MOLDURA
+NAME JN_C_TARJA     JN_C_TITULO         JN_C_MOLDURA
+
+CHARACTER 24 TO ST_SETA_CIMA
+CHARACTER 25 TO ST_SETA_BAIXO
+
+OPEN MENUUSER
+
+INICIO:
+COMBRANCOS ST@USUARIO 5
+
+CLEAR MENUUSER
+MOVE ST@USUARIO TO MENUUSER.CODIGO
+FIND EQ MENUUSER BY INDEX.1
+[FOUND] BEGIN
+         MOVE MENUUSER.CODIGO      TO JN_CODIGO
+         MOVE MENUUSER.NOME        TO JN_NOME
+         MOVE MENUUSER.COR_MOLDURA TO IT_COR_MOLDURA
+         MOVE MENUUSER.COR_TITULO  TO IT_COR_TITULO
+         MOVE MENUUSER.COR_TARJA   TO IT_COR_TARJA
+        END
+
+[~ FOUND] BEGIN
+           ADVERTE 'USU═RIO N▌O ENCONTRADO ! SAINDO ...'
+           ABORT
+          END
+
+PAGE SET TELA           AT 00 00 COLORS IT_COR_TARJA   IT_COR_MOLDURA
+PAGE SET CONFIRMA       AT 21 00 COLORS IT_COR_TARJA   IT_COR_MOLDURA
+
+SCREENMODE IT_COR_MOLDURA ON
+SYSDATA JN_TARJA_DATA
+SCREENMODE IT_COR_TARJA ON
+CABEC ST@PREFEITURA JN_TARJA
+SCREENMODE IT_COR_TITULO ON
+CABEC 'COR E TONALIDADE ' JN_TARJA_TITULO
+SCREENMODE IT_COR_TARJA ON
+
+MOVE 0 TO WINDOWINDEX
+FOR IT_CONTADOR FROM 0 TO 127
+    SCREENMODE IT_CONTADOR ON
+    MOVE IT_CONTADOR TO J1&
+    CALC (WINDOWINDEX+1) TO WINDOWINDEX
+LOOP
+
+SCREENMODE IT_COR_MOLDURA ON
+MOVE IT_COR_TARJA   TO JN_PARGR_TARJA
+MOVE IT_COR_TITULO  TO JN_PARGR_TITULO
+MOVE IT_COR_MOLDURA TO JN_PARGR_MOLDURA
+
+MOVE IT_COR_TARJA   TO JN_C_TARJA
+MOVE IT_COR_TITULO  TO JN_C_TITULO
+MOVE IT_COR_MOLDURA TO JN_C_MOLDURA
+
+PAGE TELA
+
+// COR DA TARJA
+
+  GOTOXY 00 72
+  SHOW 'Ч' //ST_SETA_BAIXO
+  GOTOXY 02 62
+  SHOW 'Ч' //ST_SETA_CIMA
+
+  ACCEPT JN_C_TARJA  {AUTOCLEAR}
+ 
+  GOTOXY 00 72
+  SHOW 'д'
+  GOTOXY 02 62
+  SHOW 'д'
+
+// COR DO TITULO
+
+  GOTOXY 02 35
+  SHOW 'Ч' //ST_SETA_BAIXO
+  GOTOXY 04 35
+  SHOW 'Ч' //ST_SETA_CIMA
+
+  ACCEPT JN_C_TITULO  {AUTOCLEAR}
+ 
+  GOTOXY 02 35
+  SHOW 'д'
+  GOTOXY 04 35
+  SHOW 'м'
+
+// COR DA MOLDURA
+
+  GOTOXY 03 60
+  SHOW 'Ч' //ST_SETA_BAIXO
+  GOTOXY 05 60
+  SHOW 'Ч' //ST_SETA_CIMA
+
+  ACCEPT JN_C_MOLDURA  {AUTOCLEAR}
+ 
+CONFIRMACAO 'ALTERA─▌O'
+
+COMBRANCOS ST@USUARIO 5
+
+INDICATE ERR FALSE
+ON ERROR GOSUB CHECA_GRAVACAO
+REREAD
+ CLEAR MENUUSER
+ MOVE ST@USUARIO TO MENUUSER.CODIGO
+ FIND EQ MENUUSER BY INDEX.1
+ MOVE JN_C_TARJA   TO MENUUSER.COR_TARJA
+ MOVE JN_C_TITULO  TO MENUUSER.COR_TITULO
+ MOVE JN_C_MOLDURA TO MENUUSER.COR_MOLDURA
+ SAVERECORD MENUUSER
+ PAGE SET TELA   //SET
+ MOVE 'CORES : TARJA ' TO ST_JUNCAO
+ APPEND ST_JUNCAO JN_C_TARJA ', TITULO ' JN_C_TITULO ', MOLDURA ' JN_C_MOLDURA
+ GRAVAINCLUSAO 'MENUUSER' ST_JUNCAO 'A'
+UNLOCK
+ON ERROR OFF
+
+GOTO INICIO
+DESATIVA
+
+#INCLUDE INTEGRID.INC
+KEYPROC KEY.ESCAPE
+CONFIRMACAO 'RETORNO'
+
+KEYPROC KEY.UP
+IF CURRENT_WINDOW GT 37 BACKFIELD
+RETURN

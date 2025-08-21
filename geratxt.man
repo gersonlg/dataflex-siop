@@ -1,0 +1,245 @@
+/TELA RESIDENT
+зд CN-SIFPM ддддд Sistema Integrado de Finan┤as Pёblicas Municipais ддддддддддд©
+Ё                                                                              Ё
+цдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд╢
+Ё __/__/____  ______________________________________________________   CONAM   Ё
+фмммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммм╣
+Ё                                                                              Ё
+Ё                                                                              Ё
+Ё                                                                              Ё
+Ё                                                                              Ё
+Ё               Entre com o Nёmero do Arquivo : ___.      ________             Ё
+Ё                                                                              Ё
+Ё               Ou <ENTER> para todos do Filelist.                             Ё
+Ё                                                                              Ё
+Ё                                                                              Ё
+Ё               Delimitado por                : _ <L>inha <,> <;> ...          Ё
+Ё               (qualquer outro, digite o valor)                               Ё
+Ё                                                                              Ё
+Ё               Criando Arquivo ____________  ->  Lendo _________.             Ё
+Ё                                                                              Ё
+Ё                                                                              Ё
+Ё                                                          Memoria _________.  Ё
+цдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд╢
+Ё                              <ESC> Retorna                                   Ё
+юдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддды
+/CONFIRMA RESIDENT
+здддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд©
+Ё______________________________________________________________________________Ё
+юдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддды
+/FIM RESIDENT
+цдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд╢
+Ё                                                                              Ё
+юдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддды
+/*
+#COMMAND INKEYCHECK
+GOTOXY 25 0
+KEYPROC OFF
+REPEAT
+  INKEY !1
+UNTIL !1 !2 !3
+KEYPROC ON
+#ENDCOMMAND
+
+#COMMAND CONFIRMACAO
+ KEYPROC OFF
+
+ #IFDEF ST@CONFIRMA
+ #ELSE
+  STRING ST@CONFIRMA
+ #ENDIF
+
+ SCREENMODE IT_COR_TITULO ON
+ MOVE '' TO ST@CONFIRMA
+
+ APPEND ST@CONFIRMA 'CONFIRMA ' !1 ' ? <S/N>'
+ MOVE (CENTER(ST@CONFIRMA,78)) TO CONFIRMA.1
+ SCREENMODE IT_COR_TARJA ON
+ PAGE CONFIRMA
+ INKEYCHECK ST_TECLA IN 'sSnN'
+ KEYPROC ON
+ IF !1 EQ 'RETORNO' BEGIN
+                     IF ST_TECLA IN 'sS' ABORT
+                     ENTAGAIN
+                     RETURN
+                    END
+ ELSE IF ST_TECLA IN 'nN' GOTO INICIO
+#ENDCOMMAND
+
+#COMMAND ADVERTE
+ #IFDEF ST@NOME@ADVERTE
+ #ELSE
+    STRING ST@NOME@ADVERTE 12
+ #ENDIF
+
+ SCREENMODE IT_COR_TITULO ON
+ KEYPROC OFF
+
+ IF ST@USUARIO NE '' TRIM ST@USUARIO TO ST@NOME@ADVERTE
+ ELSE                MOVE 'FIRST'    TO ST@NOME@ADVERTE
+ APPEND ST@NOME@ADVERTE '.ADV'
+ 
+ DIRECT_OUTPUT ST@NOME@ADVERTE
+ WRITE !1
+ CLOSE_OUTPUT
+ 
+ SCREENMODE IT_COR_TARJA ON
+ PAGE FIM
+ REPLACE '.ADV' IN ST@NOME@ADVERTE WITH ''
+ TRIM ST@NOME@ADVERTE TO ST@NOME@ADVERTE
+ ERROR 0 ST@NOME@ADVERTE
+ APPEND ST@NOME@ADVERTE '.ADV'
+ ERASEFILE ST@NOME@ADVERTE
+ 
+ KEYPROC ON
+ SCREENMODE IT_COR_TARJA ON
+#ENDCOMMAND
+
+STRING  ST@USUARIO    ST_TECLA
+INTEGER IT_COR_TITULO IT_COR_TARJA IT_COR_MOLDURA
+
+IF IT_COR_TARJA EQ '' BEGIN
+  MOVE 31  TO IT_COR_TARJA
+  MOVE 112 TO IT_COR_TITULO
+  MOVE 15  TO IT_COR_MOLDURA
+END
+
+INTEGER IT_REG     IT_MAX_REG IT_N_ARQUIVO
+INTEGER IT_CAMPOS  IT_INICIO
+
+STRING ST_ARQUIVO 12 ST_NOME_USUARIO 32 ST_NOME_ARQUIVO 12 ST_AUX ST_ARQUIVO_DAT 12
+
+AUTOPAGE TELA
+NAME JN_TARJA_DATA
+NAME JN_TARJA_TITULO
+NAME JN_N_ARQUIVO JN_NOME_ARQUIVO
+NAME JN_DELIMITACAO
+NAME JN_NOME_TXT  JN_LENDO
+NAME JN_MEMORIA
+
+PAGE SET TELA     AT 00 00  COLORS IT_COR_TARJA  IT_COR_MOLDURA
+PAGE SET CONFIRMA AT 21 00  COLORS IT_COR_TARJA  IT_COR_MOLDURA
+PAGE SET FIM      AT 21 00  COLORS IT_COR_TARJA  IT_COR_MOLDURA
+
+SCREENMODE IT_COR_MOLDURA ON
+SYSDATE JN_TARJA_DATA 
+SCREENMODE IT_COR_TITULO ON
+MOVE (CENTER('PROGRAMA DE CRIA─▌O DE ARQUIVOS .TXTs PARA MOVEDADO',55)) TO JN_TARJA_TITULO
+SCREENMODE IT_COR_TARJA ON
+
+PAGE TELA
+
+INICIO:
+CLEARFORM JN_N_ARQUIVO THRU JN_MEMORIA
+MOVEALL '' TO ST_NOME_ARQUIVO ST_NOME_USUARIO
+
+MEMORY JN_MEMORIA
+
+ACCEPT JN_N_ARQUIVO
+INDICATE TODOS! AS JN_N_ARQUIVO EQ ''
+[ TODOS!] MOVE 'TODOS' TO JN_NOME_ARQUIVO
+
+[~TODOS!] BEGIN
+           FILELIST JN_N_ARQUIVO TO ST_NOME_USUARIO ST_NOME_ARQUIVO
+
+           IF ST_NOME_ARQUIVO EQ '' BEGIN
+                                     ADVERTE 'NёMERO DE ARQUIVO INV═LIDO'
+                                     GOTO INICIO
+                                    END
+           MOVE ST_NOME_ARQUIVO TO JN_NOME_ARQUIVO
+
+           TRIM JN_NOME_ARQUIVO TO ST_ARQUIVO
+           APPEND ST_ARQUIVO '.TXT'
+          END
+
+REPEAT
+ ACCEPT JN_DELIMITACAO {AUTOCLEAR,CAPSLOCK}
+ IF JN_DELIMITACAO EQ '' MOVE 'L' TO JN_DELIMITACAO
+UNTIL JN_DELIMITACAO NE ''
+INDICATE LINHA! AS JN_DELIMITACAO IN 'Ll'
+          
+CONFIRMACAO 'CRIA─▌O DE ARQUIVO(S) TEXTO'
+KEYPROC OFF
+[~TODOS!] GOSUB LB_GERA_TXT
+[ TODOS!] BEGIN
+           MOVE 1 TO IT_N_ARQUIVO
+           FOR IT_N_ARQUIVO FROM 1 TO 4095
+ 
+            MOVEALL '' TO ST_NOME_ARQUIVO ST_NOME_USUARIO ST_ARQUIVO_DAT
+            FILELIST IT_N_ARQUIVO TO ST_NOME_USUARIO ST_NOME_ARQUIVO
+            IF ST_NOME_ARQUIVO NE '' BEGIN
+                                      TRIM ST_NOME_ARQUIVO TO ST_ARQUIVO_DAT
+                                      APPEND ST_ARQUIVO_DAT '.DAT'
+                                      DIRECT_INPUT ST_ARQUIVO_DAT
+                                      [~SEQEOF] BEGIN
+                                                 CLOSE_INPUT
+                                                 MOVE ST_NOME_ARQUIVO TO JN_NOME_ARQUIVO
+
+                                                 TRIM JN_NOME_ARQUIVO TO ST_ARQUIVO
+                                                 APPEND ST_ARQUIVO '.TXT'
+                                                 MOVE IT_N_ARQUIVO TO JN_N_ARQUIVO
+                                                 MEMORY JN_MEMORIA
+                                                 GOSUB LB_GERA_TXT
+                                                END
+                                      CLOSE_INPUT
+                                     END
+           LOOP
+          END
+
+KEYPROC ON
+GOTO INICIO
+ABORT
+
+KEYPROC KEY.ESCAPE
+ABORT
+RETURN
+
+KEYPROC KEY.UP
+BACKFIELD
+RETURN
+
+LB_GERA_TXT:
+  OPEN  JN_N_ARQUIVO
+  CLEAR JN_N_ARQUIVO
+
+  MEMORY JN_MEMORIA
+
+  PAGE TELA
+  MOVE ST_ARQUIVO TO JN_NOME_TXT
+
+  //-----------PARA PEGAR A QTD. DE CAMPOS DO ARQUIVO---------------------
+
+  GET_ATTRIBUTE DF_FILE_NUMBER_FIELDS OF JN_N_ARQUIVO TO IT_CAMPOS
+
+  //----------------------------------------------------------------------
+  
+  MOVE 0 TO IT_INICIO
+//   IF JN_N_ARQUIVO EQ 210 MOVE '1' TO IT_INICIO
+
+  DIRECT_OUTPUT ST_ARQUIVO
+  REPEAT
+   VFIND JN_N_ARQUIVO 0 4
+   CALC (JN_LENDO + 1) TO JN_LENDO
+   [ FOUND] BEGIN
+             MOVE 0 TO FIELDINDEX
+             FOR FIELDINDEX FROM IT_INICIO TO IT_CAMPOS
+              [ LINHA!] BEGIN
+                         WRITELN |FS0.0&
+                        END
+              [~LINHA!] BEGIN
+                         WRITE |FS0.0&
+                         IF FIELDINDEX LT IT_CAMPOS BEGIN
+                                                     IF JN_DELIMITACAO EQ ',' WRITE '"' JN_DELIMITACAO '"'
+                                                     ELSE                     WRITE     JN_DELIMITACAO
+                                                    END
+                        END
+             LOOP
+             [~LINHA!] WRITELN ''
+            END
+  UNTIL [~FOUND]
+  CLOSE_OUTPUT
+
+  CLOSE JN_N_ARQUIVO
+  MEMORY JN_MEMORIA
+
+RETURN

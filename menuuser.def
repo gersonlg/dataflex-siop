@@ -1,0 +1,107 @@
+-----------------------------------------------------------------------------
+  DATE: 25/10/2023      TIME: 17:31                                  PAGE:  1
+  FILE DEFINITION FOR FILE: MENUUSER (# 204)
+-----------------------------------------------------------------------------
+  DRIVER NAME               : DATAFLEX
+  FILE ROOT NAME            : MENUUSER
+  USER DISPLAY NAME         : MENUUSER
+  DATAFLEX FILE NAME        : MENUUSER
+-----------------------------------------------------------------------------
+  RECORD LENGTH             : 1280      ( USED: 1193 )
+  MAX NUMBER OF RECORDS     : 16711679  ( USED: 0 )
+  FILE COMPRESSION          : NONE
+  RE-USE DELETED SPACE      : YES
+  LOCKING TYPE              : FILE
+  HEADER INTEGRITY CHECKING : YES
+  TRANSACTION TYPE          : CLIENT ATOMIC
+  RECORD IDENTITY INDEX     : 0 ( 0 , 0 )
+  FILE LOGIN PARAMETER      : 
+  SYSTEM FILE               : NO 
+-----------------------------------------------------------------------------
+
+NUM  FIELD NAME       TYPE SIZE  OFFST IX   RELATES TO FILE.FIELD
+---  ---------------  ---- ----- ----- --   ---------------------------------
+  1  CODIGO           ASC      5     1  1   
+  2  NOME             ASC     80     6  2   
+  3  CARGO            ASC     35    86      
+  4  CPF              ASC     14   121  3   
+  5  SENHA            ASC     50   135      
+  6  COR_MOLDURA      NUM    4.0   185      
+  7  COR_TARJA        NUM    4.0   187      
+  8  COR_TITULO       NUM    4.0   189      
+  9  VALIDADE_SENHA   DAT      3   191      
+ 10  HABILITADO       ASC      1   194      
+ 11  RAMAL            ASC     10   195      
+ 12  TIPO_IMP         ASC      1   205      
+ 13  PORTA_MATRICIAL  ASC     10   206      
+ 14  PORTA_LASER      ASC     10   216      
+ 15  IMPRESSORA       ASC     80   226      
+ 16  DATA_TRAB        DAT      3   306      
+ 17  N_SETOR          ASC      5   309      
+ 18  RG               ASC     13   314      
+ 19  DATA_NASCTO      DAT      3   327      
+ 20  EMAIL            ASC    100   330      
+ 21  MATRICULA        ASC     20   430  4   
+ 22  CONTRATO         ASC     30   450      
+ 23  ANO_CONTRATO     ASC      4   480      
+ 24  LOCAL_TRABALHO   ASC     10   484      
+ 25  PENDENTE         ASC      1   494  5   
+ 26  ADM              ASC      1   495  3   
+ 27  CHAVE            ASC    255   496      
+ 28  FRASE            ASC    255   751      
+ 29  SENHA_TEMP       ASC     50  1006      
+ 30  ASSINATURA       ASC     18  1056      
+ 31  CIC_CPF          ASC     18  1074      
+ 32  PGM_EM_USO       ASC     50  1092  7   
+ 33  GERENTE          ASC      1  1142      
+ 34  QTDE_ACESSO      NUM   10.0  1143      
+ 35  ULTIMO_ACESSO    DAT      3  1148      
+ 36  C_R_C            ASC     18  1151      
+ 37  TRABALHA_FERIAS  ASC      1  1169      
+ 38  TIPO             ASC     15  1170  3   
+ 39  GERA_CP          ASC      1  1185      
+ 40  CODIGO_ANTERIOR  ASC      5  1186  9   
+ 41  COD_ENTIDADE     ASC      2  1191  2   
+ 42  VALIDA_SERVIDOR  ASC      1  1193      
+
+
+INDEX# FIELDS          DES U/C    LENGTH LEVELS SEGMENTS MODE
+------ --------------- --- ---    ------ ------ -------- -------
+  1    CODIGO          NO  NO       5      4       1     ON-LINE
+
+  2    COD_ENTIDADE    NO  NO       85     10      3     ON-LINE
+       NOME            NO  NO 
+       RECNUM          NO  NO 
+
+  3    CPF             NO  NO       32     7       4     ON-LINE
+       TIPO            NO  NO 
+       ADM             NO  NO 
+       COD_ENTIDADE    NO  NO 
+
+  4    COD_ENTIDADE    NO  NO       26     6       4     ON-LINE
+       MATRICULA       NO  NO 
+       ADM             NO  NO 
+       RECNUM          NO  NO 
+
+  5    COD_ENTIDADE    NO  NO       33     7       5     ON-LINE
+       PENDENTE        NO  NO 
+       CPF             NO  NO 
+       ADM             NO  NO 
+       TIPO            NO  NO 
+
+  6    COD_ENTIDADE    NO  NO       32     7       4     ON-LINE
+       ADM             NO  NO 
+       CPF             NO  NO 
+       TIPO            NO  NO 
+
+  7    COD_ENTIDADE    NO  NO       55     8       3     ON-LINE
+       PGM_EM_USO      NO  NO 
+       RECNUM          NO  NO 
+
+  8    COD_ENTIDADE    NO  NO       7      4       2     ON-LINE
+       CODIGO          NO  NO 
+
+  9    COD_ENTIDADE    NO  NO       10     5       3     ON-LINE
+       CODIGO_ANTERIOR NO  NO 
+       RECNUM          NO  NO 
+

@@ -1,0 +1,308 @@
+/TELA RESIDENT
+ｳ __/__/____  ________________________________________________________  CONAM  ｳ
+ﾆﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍｵ
+ｳ                                                                              ｳ
+ｳ      Estado     __                                                           ｳ
+ｳ                                                                              ｳ
+ｳ      Ano        ____                                                         ｳ
+ｳ                                                                              ｳ
+ｳ                                                                              ｳ
+ｳ                                                                              ｳ
+ｳ      C｢digo     ____________          Tipo   _            Grau   _           ｳ
+ｳ                                                                              ｳ
+ｳ                                                                              ｳ
+ｳ                                                                              ｳ
+ｳ      Descri℡o  __________________________________________________           ｳ
+ｳ                                                                              ｳ
+ｳ                                                                              ｳ
+ｳ                                                                              ｳ
+ｳ                                                                              ｳ
+ﾃﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄｴ
+ｳ  <F1> Ajuda                 __________________                 <ESC> Retorna ｳ
+ﾀﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾙ
+/CONFIRMA RESIDENT
+ﾃﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄｴ
+ｳ______________________________________________________________________________ｳ
+ﾀﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾙ
+/ULTIMO_CADASTRADO RESIDENT
+ﾚﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄｿ
+ｳ                                          ｳ
+ｳ O item __________ foi:                   ｳ
+ｳ                                          ｳ
+ｳ C｢digo     ____________                  ｳ
+ｳ Nome       _____________________________ ｳ
+ｳ                                          ｳ
+ｳ Pressione qualquer tecla para continuar. ｳ
+ﾀﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾙ
+/*
+#INCLUDE CONAM.LIB
+
+STRING  ST_ANO ST_CODIGO
+
+INTEGER IT_GRAU
+
+AUTOPAGE TELA
+NAME JN_TARJA_DATA
+NAME JN_TARJA_TITULO
+NAME JN_UF            JN_ANO
+NAME JN_COD_ECONOMICA JN_TIPO  JN_GRAU
+NAME JN_DESCRICAO
+NAME JN_RODAPE
+
+OPEN ECONORCA
+
+MOVE ECONORCA.UF     TO JN_UF
+MOVE ECONORCA.ANO    TO JN_ANO
+MOVE ECONORCA.ANO    TO ST_ANO
+MOVE ECONORCA.CODIGO TO ST_CODIGO
+
+INDICATE PESQUISA! AS ST_CODIGO NE ''
+
+[ PESQUISA!] BEGIN
+              MOVE '2' TO ST@OPCAO
+             END
+
+PAGE SET TELA              AT 03 00  COLORS IT_COR_TARJA  IT_COR_MOLDURA
+PAGE SET ULTIMO_CADASTRADO AT 06 18  COLORS IT_COR_TITULO IT_COR_TITULO
+PAGE SET CONFIRMA          AT 21 00  COLORS IT_COR_TARJA  IT_COR_MOLDURA
+
+SCREENMODE IT_COR_MOLDURA ON
+SYSDATA JN_TARJA_DATA 
+SCREENMODE IT_COR_TITULO ON
+IF ST@OPCAO EQ '1' BEGIN
+                    CABEC 'CADASTRO DE CATEGORIAS ECONOMICAS - INCLUS三' JN_TARJA_TITULO
+                    MOVE 'inclu｡do' TO ULTIMO_CADASTRADO.1
+                   END
+IF ST@OPCAO EQ '2' BEGIN
+                    CABEC 'CADASTRO DE CATEGORIAS ECONOMICAS - ALTERA三' JN_TARJA_TITULO
+                    MOVE 'alterado' TO ULTIMO_CADASTRADO.1
+                   END
+IF ST@OPCAO EQ '3' BEGIN
+                    CABEC 'CADASTRO DE CATEGORIAS ECONOMICAS - EXCLUS三' JN_TARJA_TITULO
+                    MOVE 'exclu｡do' TO ULTIMO_CADASTRADO.1
+                   END
+SCREENMODE IT_COR_TARJA ON
+
+INDICATE SAIR! FALSE
+
+MOVE 'ECONORCA' TO ST@PROGRAMA
+
+PAGE TELA
+
+INICIO:
+
+[ SAIR!] ABORT
+
+SCREENMODE IT_COR_TITULO ON
+BLANKFORM JN_GRAU
+SCREENMODE IT_COR_TARJA ON
+CLEARFORM JN_COD_ECONOMICA THRU JN_TIPO
+CLEARFORM JN_DESCRICAO
+
+[~PESQUISA!] BEGIN
+              SCREENMODE IT_COR_MOLDURA ON
+              MOVE 'F9 Limpa Janelas' to JN_RODAPE
+              SCREENMODE IT_COR_TARJA ON
+             END
+[ PESQUISA!] BEGIN
+              SCREENMODE IT_COR_MOLDURA ON
+              BLANKFORM JN_RODAPE
+              SCREENMODE IT_COR_TARJA ON
+             END
+
+[~PESQUISA!] BEGIN
+              ACCEPT JN_UF {AUTOCLEAR,CAPSLOCK}
+              
+              ANO_2000 JN_ANO
+              MOVE JN_ANO TO ST_ANO
+             END
+
+[ PESQUISA!] BEGIN
+              MOVE ECONORCA.CODIGO TO JN_COD_ECONOMICA
+             END
+
+[~PESQUISA!] BEGIN
+              LB_INICIO:
+              CLEARFORM JN_COD_ECONOMICA THRU JN_DESCRICAO
+
+              LB_CODIGO:
+              ACCEPT JN_COD_ECONOMICA {AUTOCLEAR}
+
+              PONTUA_ECONOMICA JN_COD_ECONOMICA
+
+              IF (LENGTH(JN_COD_ECONOMICA)) NE 12 BEGIN
+                                                   ADVERTE 'C｢DIGO INVLIDO'
+                                                   GOTO LB_INICIO
+                                                  END
+             END
+
+CLEAR ECONORCA
+MOVE JN_UF            TO ECONORCA.UF
+MOVE JN_ANO           TO ECONORCA.ANO
+MOVE JN_COD_ECONOMICA TO ECONORCA.CODIGO
+FIND EQ ECONORCA BY INDEX.1
+[ FOUND] BEGIN
+          IF ST@OPCAO EQ '1' BEGIN
+                              ADVERTE 'ECONOMICA J CADASTRADA'
+                              [ PESQUISA!] ABORT
+                              GOTO LB_INICIO
+                             END
+         END
+
+[~FOUND] BEGIN
+          IF ST@OPCAO NE '1' BEGIN
+                              ADVERTE 'ECONOMICA N三 CADASTRADA'
+                              [ PESQUISA!] ABORT
+                              GOTO LB_INICIO
+                             END
+         END
+
+IF ST@OPCAO NE '1' BEGIN
+                    MOVE ECONORCA.DESCRICAO TO JN_DESCRICAO
+                    MOVE ECONORCA.TIPO TO JN_TIPO
+                    
+                    SCREENMODE IT_COR_TITULO ON
+                    MOVE ECONORCA.GRAU TO JN_GRAU
+                    SCREENMODE IT_COR_TARJA ON
+                   END
+ELSE BEGIN
+      GOSUB LB_CALCULA_GRAU
+
+      CLEARFORM JN_DESCRICAO
+     END
+
+IF ST@OPCAO NE '3' BEGIN
+                    LB_TIPO:
+                    IF JN_GRAU EQ '4' BEGIN
+                                       REPEAT
+                                        ACCEPT JN_TIPO {AUTOCLEAR,CAPSLOCK}
+                                        IF NOT JN_TIPO IN 'AS' MOVE '' TO JN_TIPO
+                                       UNTIL JN_TIPO NE ''
+                                      END
+                    
+                    LB_DESCRICAO:
+                    REPEAT
+                     ACCEPT JN_DESCRICAO {AUTOCLEAR,CAPSLOCK}
+                     IF JN_DESCRICAO EQ '' MENSAGEM 1
+                    UNTIL JN_DESCRICAO NE ''
+                   END
+
+IF ST@OPCAO EQ '1' CONFIRMACAO 'INCLUS三'
+IF ST@OPCAO EQ '2' CONFIRMACAO 'ALTERA三'
+IF ST@OPCAO EQ '3' CONFIRMACAO 'EXCLUS三'
+
+INDICATE ERR FALSE
+ON ERROR GOSUB CHECA_GRAVACAO
+REREAD
+ [ PESQUISA!] INDICATE SAIR! TRUE
+ 
+ CLEAR ECONORCA
+ MOVE JN_UF            TO ECONORCA.UF
+ MOVE JN_ANO           TO ECONORCA.ANO
+ MOVE JN_COD_ECONOMICA TO ECONORCA.CODIGO
+ FIND EQ ECONORCA BY INDEX.1
+ [ FOUND] BEGIN
+           IF ST@OPCAO EQ '1' BEGIN
+                               UNLOCK
+                               ON ERROR OFF
+                               ADVERTE 'ECONOMICA J CADASTRADA'
+                               GOTO INICIO
+                              END
+          END
+ [~FOUND] BEGIN
+           IF ST@OPCAO NE '1' BEGIN
+                               UNLOCK
+                               ON ERROR OFF
+                               ADVERTE 'ECONOMICA N三 CADASTRADA'
+                               GOTO INICIO
+                              END
+          END
+
+ IF ST@OPCAO EQ '1' BEGIN
+                     CLEAR ECONORCA
+                     MOVE JN_UF            TO ECONORCA.UF
+                     MOVE JN_ANO           TO ECONORCA.ANO
+                     MOVE JN_COD_ECONOMICA TO ECONORCA.CODIGO
+                     MOVE JN_DESCRICAO     TO ECONORCA.DESCRICAO
+                     MOVE JN_TIPO          TO ECONORCA.TIPO
+                     MOVE JN_GRAU          TO ECONORCA.GRAU
+                     SAVERECORD ECONORCA
+                    END
+ IF ST@OPCAO EQ '2' BEGIN
+                     MOVE JN_TIPO      TO ECONORCA.TIPO
+                     MOVE JN_DESCRICAO TO ECONORCA.DESCRICAO
+                     SAVERECORD ECONORCA
+                    END
+
+ IF ST@OPCAO EQ '3' BEGIN
+                     DELETE ECONORCA
+                     CLEAR ECONORCA
+                    END
+
+ IF ST@OPCAO EQ '1' GRAVAINCLUSAO 'ECONOMIC' JN_COD_ECONOMICA 'I'
+ IF ST@OPCAO EQ '2' GRAVAINCLUSAO 'ECONOMIC' JN_COD_ECONOMICA 'A'
+ IF ST@OPCAO EQ '3' GRAVAINCLUSAO 'ECONOMIC' JN_COD_ECONOMICA 'E'
+UNLOCK
+ON ERROR OFF
+
+MOVE JN_COD_ECONOMICA TO ULTIMO_CADASTRADO.2 
+MOVE JN_DESCRICAO     TO ULTIMO_CADASTRADO.3 
+
+[ SAIR!] BEGIN
+          ABORT
+         END
+
+GOTO LB_INICIO
+DESATIVA
+
+KEYPROC KEY.ESCAPE
+CONFIRMACAO 'RETORNO'
+
+KEYPROC KEY.SFIND 
+ULT_CADASTRADO    
+
+KEYPROC KEY.HELP
+AJUDA
+RETURN
+
+KEYPROC KEY.CLEAR
+RETURN INICIO
+
+KEYPROC KEY.UP
+ IF CURRENT_WINDOW EQ 6 BEGIN
+                         [~PESQUISA!] RETURN LB_CODIGO 
+                         [ PESQUISA!] RETURN LB_TIPO
+                        END
+ ELSE IF CURRENT_WINDOW EQ 8 BEGIN
+                              IF JN_GRAU EQ 4 BEGIN
+                                               RETURN LB_TIPO
+                                              END
+                              ELSE BEGIN
+                                    [ PESQUISA!] RETURN LB_TIPO
+                                    [~PESQUISA!] RETURN LB_CODIGO
+                                   END
+                             END
+ ELSE BEGIN
+       BACKFIELD
+      END
+RETURN
+
+LB_CALCULA_GRAU:
+ MOVE 0 TO IT_GRAU
+ IF (MID(JN_COD_ECONOMICA,1,1))  NE '0'  INCREMENT IT_GRAU
+ IF (MID(JN_COD_ECONOMICA,1,3))  NE '0'  INCREMENT IT_GRAU
+ IF (MID(JN_COD_ECONOMICA,2,5))  NE '00' INCREMENT IT_GRAU
+ IF (MID(JN_COD_ECONOMICA,2,8))  NE '00' INCREMENT IT_GRAU
+ IF (MID(JN_COD_ECONOMICA,2,11)) NE '00' INCREMENT IT_GRAU
+ 
+ SCREENMODE IT_COR_TITULO ON
+ MOVE IT_GRAU TO JN_GRAU
+ SCREENMODE IT_COR_TARJA  ON
+ 
+ IF IT_GRAU LE 3 MOVE 'S' TO JN_TIPO
+ ELSE            MOVE 'A' TO JN_TIPO
+RETURN
+
+#INCLUDE INTEGRID.INC
+
+

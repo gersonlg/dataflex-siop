@@ -1,0 +1,58 @@
+-----------------------------------------------------------------------------
+  DATE: 25/10/2023      TIME: 17:31                                  PAGE:  1
+  FILE DEFINITION FOR FILE: MENSAGEM (# 49)
+-----------------------------------------------------------------------------
+  DRIVER NAME               : DATAFLEX
+  FILE ROOT NAME            : MENSAGEM
+  USER DISPLAY NAME         : MENSAGEM
+  DATAFLEX FILE NAME        : MENSAGEM
+-----------------------------------------------------------------------------
+  RECORD LENGTH             : 512       ( USED: 223 )
+  MAX NUMBER OF RECORDS     : 16711679  ( USED: 0 )
+  FILE COMPRESSION          : NONE
+  RE-USE DELETED SPACE      : YES
+  LOCKING TYPE              : FILE
+  HEADER INTEGRITY CHECKING : YES
+  TRANSACTION TYPE          : CLIENT ATOMIC
+  RECORD IDENTITY INDEX     : 0 ( 0 , 0 )
+  FILE LOGIN PARAMETER      : 
+  SYSTEM FILE               : NO 
+-----------------------------------------------------------------------------
+
+NUM  FIELD NAME       TYPE SIZE  OFFST IX   RELATES TO FILE.FIELD
+---  ---------------  ---- ----- ----- --   ---------------------------------
+  1  COD_ENTIDADE     ASC      2     1  1   
+  2  EXERCICIO        ASC      4     3  1   
+  3  CODIGO           ASC     10     7  1   
+  4  REMETENTE        ASC      5    17  2   
+  5  DESTINATARIO     ASC      5    22  3   
+  6  DATA_ENVIO       DAT      3    27  2   
+  7  HORA_ENVIO       ASC      8    30      
+  8  CODIGO_PRN       NUM   10.0    38      
+  9  DESC_SISTEMA     ASC     50    43      
+ 10  DESC_1           ASC     50    93      
+ 11  DESC_2           ASC     50   143      
+ 12  DATA_LEITURA     DAT      3   193  3   
+ 13  HORA_LEITURA     ASC      8   196  3   
+ 14  GRUPO            ASC     20   204      
+
+
+INDEX# FIELDS          DES U/C    LENGTH LEVELS SEGMENTS MODE
+------ --------------- --- ---    ------ ------ -------- -------
+  1    COD_ENTIDADE    NO  NO       16     5       3     ON-LINE
+       EXERCICIO       NO  NO 
+       CODIGO          NO  NO 
+
+  2    COD_ENTIDADE    NO  NO       17     5       5     ON-LINE
+       EXERCICIO       NO  NO 
+       DATA_ENVIO      NO  NO 
+       REMETENTE       NO  NO 
+       RECNUM          NO  NO 
+
+  3    COD_ENTIDADE    NO  NO       25     6       6     ON-LINE
+       EXERCICIO       NO  NO 
+       DESTINATARIO    NO  NO 
+       DATA_LEITURA    NO  NO 
+       HORA_LEITURA    NO  NO 
+       RECNUM          NO  NO 
+

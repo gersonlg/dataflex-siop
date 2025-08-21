@@ -1,0 +1,503 @@
+/TELA RESIDENT
+ｳ __/__/____  ________________________________________________________  CONAM  ｳ
+ﾆﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍｵ
+ｳ Estado            __      Exercicio     ____                                 ｳ
+ｳ                                                                              ｳ
+ｳ C｢digo            __________________                             Grau _      ｳ
+ｳ Descri℡o         __________________________________________________         ｳ
+ｳ                                                                              ｳ
+ｳ Tipo              _  <S/A>           Saldo _ <D/C>          Superavit _ <F/P>ｳ
+ｳ                                                                              ｳ
+ｳ Inverte Saldo     _  <S/N>                   Tipo  Movimentacao __  <B/UD/UC>ｳ
+ｳ                                                                              ｳ
+ｳ Encerra           __ <13-14-N>               Sistema <P/O/C>  _ _____________ｳ
+ｳ                                                                              ｳ
+ｳ Detalha abertura  _  <S/N>       Detalha Mes  12 _<S/N>  13 _<S/N>  14 _<S/N>ｳ
+ｳ                                                                              ｳ
+ｳ C. Corrente       __ _______________________________________________         ｳ
+ｳ                                                                              ｳ
+ｳ Previdencia <P/ > _  Investimento RPPS  _  <S/ >  Investimento Geral _  <S/ >ｳ
+ﾃﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄｴ
+ｳ  <F1> Ajuda                 <F9> Limpa Janelas                 <ESC> Retorna ｳ
+ﾀﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾙ
+/CONFIRMA RESIDENT
+ﾃﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄｴ
+ｳ______________________________________________________________________________ｳ
+ﾀﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾙ
+/ULTIMO_CADASTRADO RESIDENT
+ﾚﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄｿ
+ｳ                                                               ｳ
+ｳ A ultima conta __________ foi:                                ｳ
+ｳ                                                               ｳ
+ｳ C｢digo     __________________                                 ｳ
+ｳ Nome       __________________________________________________ ｳ
+ｳ                                                               ｳ
+ｳ           Pressione qualquer tecla para continuar.            ｳ
+ﾀﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾙ
+/*
+#INCLUDE CONAM.LIB
+#INCLUDE BUSCAINF.LIB
+
+STRING  ST_DESTINO 255
+
+INTEGER IT_GRAU
+
+AUTOPAGE TELA
+NAME JN_TARJA_DATA
+NAME JN_TARJA_TITULO
+NAME JN_ESTADO           JN_EXERCICIO
+NAME JN_CODIGO           JN_GRAU             JN_DESCRICAO
+NAME JN_TIPO             JN_SALDO            JN_SUPERAVIT
+NAME JN_INVERTE_SALDO    JN_TP_MOVIMENTACAO
+NAME JN_ENCERRA          JN_SISTEMA          JN_NOME_SISTEMA
+NAME JN_DETALHA_ABERTURA JN_DETALHA_M12      JN_DETALHA_M13      JN_DETALHA_M14
+NAME JN_CONTA_CORRENTE   JN_CC
+NAME JN_PREVIDENCIA
+NAME JN_INVEST_RPPS      JN_INVEST_GERAL
+
+OPEN PLANO
+
+PAGE SET TELA              AT 03 00  COLORS IT_COR_TARJA  IT_COR_MOLDURA
+PAGE SET ULTIMO_CADASTRADO AT 08 09  COLORS IT_COR_TITULO IT_COR_TITULO
+PAGE SET CONFIRMA          AT 21 00  COLORS IT_COR_TARJA  IT_COR_MOLDURA
+
+SCREENMODE IT_COR_MOLDURA ON
+SYSDATA JN_TARJA_DATA 
+SCREENMODE IT_COR_TITULO ON
+IF ST@OPCAO EQ '1' BEGIN
+                    CABEC 'CADASTRO DE CONTAS CONTBEIS - INCLUS三' JN_TARJA_TITULO
+                    MOVE 'inclu｡da' TO ULTIMO_CADASTRADO.1
+                   END
+IF ST@OPCAO EQ '2' BEGIN
+                    CABEC 'CADASTRO DE CONTAS CONTBEIS - ALTERA三' JN_TARJA_TITULO
+                    MOVE 'alterada' TO ULTIMO_CADASTRADO.1
+                   END
+IF ST@OPCAO EQ '3' BEGIN
+                    CABEC 'CADASTRO DE CONTAS CONTBEIS - EXCLUS三' JN_TARJA_TITULO
+                    MOVE 'exclu｡da' TO ULTIMO_CADASTRADO.1
+                   END
+
+SCREENMODE IT_COR_TARJA ON
+
+PAGE TELA
+
+INDICATE PESQUISA! AS PLANO.CODIGO NE ''
+
+INDICATE PEDE_COD! AS [~PESQUISA!]
+[ PESQUISA!] IF ST@OPCAO EQ '1' INDICATE PEDE_COD! TRUE
+
+[~PESQUISA!] BEGIN
+              MOVE PARGERAL.EXERCICIO TO JN_EXERCICIO
+              MOVE PARGERAL.ESTADO    TO JN_ESTADO
+             END
+[ PESQUISA!] BEGIN
+              MOVE PLANO.UF  TO JN_ESTADO
+              MOVE PLANO.ANO TO JN_EXERCICIO
+             END
+
+INICIO:
+SCREENMODE IT_COR_TARJA ON
+CLEARFORM JN_CODIGO THRU JN_PREVIDENCIA
+
+[ PESQUISA!] BEGIN
+              CLEARFORM JN_DESCRICAO THRU JN_CC
+
+              IF ST@OPCAO NE '1' BEGIN
+                                  MOVE PLANO.CODIGO           TO JN_CODIGO
+                                  MOVE PLANO.DESCRICAO        TO JN_DESCRICAO
+                                  MOVE PLANO.TIPO             TO JN_TIPO
+                                  MOVE PLANO.GRAU             TO JN_GRAU
+                                  MOVE PLANO.SALDO_DC         TO JN_SALDO
+                                  MOVE PLANO.SUPERAVIT        TO JN_SUPERAVIT
+                                  MOVE PLANO.INVERTE_SALDO    TO JN_INVERTE_SALDO
+                                  MOVE PLANO.TP_MOVIMENTACAO  TO JN_TP_MOVIMENTACAO
+                                  MOVE PLANO.ENCERRA          TO JN_ENCERRA
+                                  MOVE PLANO.SISTEMA          TO JN_SISTEMA
+                                  MOVE PLANO.DETALHAABERTURA  TO JN_DETALHA_ABERTURA
+                                  MOVE PLANO.DETALHA_M12      TO JN_DETALHA_M12
+                                  MOVE PLANO.DETALHA_M13      TO JN_DETALHA_M13
+                                  MOVE PLANO.DETALHA_M14      TO JN_DETALHA_M14
+                                  MOVE PLANO.CONTA_CORRENTE   TO JN_CONTA_CORRENTE
+                                  MOVE PLANO.PREVIDENCIA      TO JN_PREVIDENCIA
+                                  MOVE PLANO.INVEST_RPPS      TO JN_INVEST_RPPS
+                                  MOVE PLANO.INVEST_GERAL     TO JN_INVEST_GERAL
+
+                                  BUSCA_TBINFTCE 'RELACAO DE CONTAS CORRENTES' JN_CONTA_CORRENTE JN_CC
+
+                                  IF JN_SISTEMA EQ 'P' MOVE 'Patrimonial ' TO JN_NOME_SISTEMA
+                                  IF JN_SISTEMA EQ 'F' MOVE 'Financeiro  ' TO JN_NOME_SISTEMA
+                                  IF JN_SISTEMA EQ 'O' MOVE 'Or㌢mentrio' TO JN_NOME_SISTEMA
+                                  IF JN_SISTEMA EQ 'C' MOVE 'Compensado  ' TO JN_NOME_SISTEMA
+                                 END
+             END
+
+LB_ESTADO:
+ [~PESQUISA!] ACCEPT JN_ESTADO {CAPSLOCK}
+ COMBRANCOS JN_ESTADO 2
+ 
+ IF NOT JN_ESTADO IN 'SP-MG-BR' GOTO LB_ESTADO
+
+LB_ANO:
+ [~PESQUISA!] ANO_2000 JN_EXERCICIO
+
+LB_CONTA:
+ [PEDE_COD!] ACCEPT JN_CODIGO {AUTOCLEAR}
+ IF JN_CODIGO EQ '' BEGIN
+                     MENSAGEM 1
+                     GOTO LB_CONTA
+                    END
+
+ REPEAT
+  REMOVE '.' FROM JN_CODIGO
+ UNTIL [~FOUND]
+
+ TRIM JN_CODIGO TO JN_CODIGO
+ IF (LENGTH(JN_CODIGO)) EQ  1 APPEND JN_CODIGO '0000000000'
+ IF (LENGTH(JN_CODIGO)) EQ  2 APPEND JN_CODIGO '000000000'
+ IF (LENGTH(JN_CODIGO)) EQ  3 APPEND JN_CODIGO '00000000'
+ IF (LENGTH(JN_CODIGO)) EQ  4 APPEND JN_CODIGO '0000000'
+ IF (LENGTH(JN_CODIGO)) EQ  5 APPEND JN_CODIGO '000000'
+ IF (LENGTH(JN_CODIGO)) EQ  6 APPEND JN_CODIGO '00000'
+ IF (LENGTH(JN_CODIGO)) EQ  7 APPEND JN_CODIGO '0000'
+ IF (LENGTH(JN_CODIGO)) EQ  8 APPEND JN_CODIGO '000'
+ IF (LENGTH(JN_CODIGO)) EQ  9 APPEND JN_CODIGO '00'
+ IF (LENGTH(JN_CODIGO)) EQ 10 APPEND JN_CODIGO '0'
+
+ INSERT '.' IN JN_CODIGO AT 10
+ INSERT '.' IN JN_CODIGO AT 8
+ INSERT '.' IN JN_CODIGO AT 6
+ INSERT '.' IN JN_CODIGO AT 5
+ INSERT '.' IN JN_CODIGO AT 4
+ INSERT '.' IN JN_CODIGO AT 3
+ INSERT '.' IN JN_CODIGO AT 2
+
+ CLEAR PLANO
+ MOVE JN_ESTADO    TO PLANO.UF
+ MOVE JN_EXERCICIO TO PLANO.ANO
+ MOVE JN_CODIGO    TO PLANO.CODIGO
+ FIND EQ PLANO BY INDEX.1
+ [ FOUND] BEGIN
+           IF ST@OPCAO EQ '1' BEGIN
+                               ADVERTE 'CONTA J CADASTRADA'
+                               [ PESQUISA!] ABORT
+                               GOTO LB_CONTA
+                              END
+          END
+ [~FOUND] BEGIN
+           IF ST@OPCAO NE '1' BEGIN
+                               ADVERTE 'CONTA N三 CADASTRADA'
+                               [ PESQUISA!] ABORT
+                               GOTO LB_CONTA
+                              END
+          END
+
+ IF ST@OPCAO NE '1' BEGIN
+                     CLEARFORM JN_DESCRICAO THRU JN_CC
+
+                     MOVE PLANO.CODIGO           TO JN_CODIGO
+                     MOVE PLANO.DESCRICAO        TO JN_DESCRICAO
+                     MOVE PLANO.TIPO             TO JN_TIPO
+                     MOVE PLANO.GRAU             TO JN_GRAU
+                     MOVE PLANO.SALDO_DC         TO JN_SALDO
+                     MOVE PLANO.SUPERAVIT        TO JN_SUPERAVIT
+                     MOVE PLANO.INVERTE_SALDO    TO JN_INVERTE_SALDO
+                     MOVE PLANO.TP_MOVIMENTACAO  TO JN_TP_MOVIMENTACAO
+                     MOVE PLANO.ENCERRA          TO JN_ENCERRA
+                     MOVE PLANO.SISTEMA          TO JN_SISTEMA
+                     MOVE PLANO.DETALHAABERTURA  TO JN_DETALHA_ABERTURA
+                     MOVE PLANO.DETALHA_M12      TO JN_DETALHA_M12
+                     MOVE PLANO.DETALHA_M13      TO JN_DETALHA_M13
+                     MOVE PLANO.DETALHA_M14      TO JN_DETALHA_M14
+                     MOVE PLANO.CONTA_CORRENTE   TO JN_CONTA_CORRENTE
+                     MOVE PLANO.PREVIDENCIA      TO JN_PREVIDENCIA
+                     MOVE PLANO.INVEST_RPPS      TO JN_INVEST_RPPS
+                     MOVE PLANO.INVEST_GERAL     TO JN_INVEST_GERAL
+
+                     BUSCA_TBINFTCE 'RELACAO DE CONTAS CORRENTES' JN_CONTA_CORRENTE JN_CC
+                     
+                     IF JN_SISTEMA EQ 'P' MOVE 'Patrimonial ' TO JN_NOME_SISTEMA
+                     IF JN_SISTEMA EQ 'F' MOVE 'Financeiro  ' TO JN_NOME_SISTEMA
+                     IF JN_SISTEMA EQ 'O' MOVE 'Or㌢mentrio' TO JN_NOME_SISTEMA
+                     IF JN_SISTEMA EQ 'C' MOVE 'Compensado  ' TO JN_NOME_SISTEMA
+                    END
+ ELSE BEGIN
+       GOSUB LB_CALCULA_GRAU
+       CLEARFORM JN_DESCRICAO THRU JN_CC
+      END
+
+ IF ST@OPCAO NE '3' BEGIN
+                     LB_DESCRICAO:
+                      REPEAT
+                       ACCEPT JN_DESCRICAO {AUTOCLEAR,CAPSLOCK}
+                       IF JN_DESCRICAO EQ '' MENSAGEM 1
+                      UNTIL JN_DESCRICAO NE ''
+
+                     LB_TIPO:
+                      REPEAT
+                       ACCEPT JN_TIPO {AUTOCLEAR,CAPSLOCK}
+                       IF JN_TIPO EQ '' MENSAGEM 1
+                      UNTIL JN_TIPO IN 'AS'
+
+                     IF JN_TIPO EQ 'A' BEGIN
+                                        LB_SALDO:
+                                         REPEAT
+                                          ACCEPT JN_SALDO {AUTOCLEAR,CAPSLOCK}
+                                          IF JN_SALDO EQ '' MENSAGEM 1
+                                         UNTIL JN_SALDO IN 'DC'
+
+                                        LB_SUPERAVIT:
+                                         ACCEPT JN_SUPERAVIT {AUTOCLEAR,CAPSLOCK}
+                                         IF JN_SUPERAVIT NE '' IF NOT JN_SUPERAVIT IN 'FP' GOTO LB_SUPERAVIT
+
+                                        LB_INVERTE_SALDO:
+                                         REPEAT
+                                          ACCEPT JN_INVERTE_SALDO {AUTOCLEAR,CAPSLOCK}
+                                          IF JN_INVERTE_SALDO EQ '' MENSAGEM 1
+                                         UNTIL JN_INVERTE_SALDO IN 'SN'
+
+                                        LB_TP_MOVIMENTACAO:
+                                         ACCEPT JN_TP_MOVIMENTACAO {AUTOCLEAR,CAPSLOCK}
+                                                INDICATE OK! AS JN_TP_MOVIMENTACAO EQ 'B'
+                                         [~OK!] INDICATE OK! AS JN_TP_MOVIMENTACAO EQ 'UD'
+                                         [~OK!] INDICATE OK! AS JN_TP_MOVIMENTACAO EQ 'UC'
+                                         [~OK!] BEGIN
+                                                 ADVERTE 'INFORMACAO INVALIDA'
+                                                 GOTO LB_TP_MOVIMENTACAO
+                                                END
+                                         IF JN_TP_MOVIMENTACAO EQ '' BEGIN
+                                                                      MENSAGEM 1
+                                                                      GOTO LB_TP_MOVIMENTACAO
+                                                                     END
+
+                                        LB_ENCERRA:
+                                         ACCEPT JN_ENCERRA {AUTOCLEAR,CAPSLOCK}
+                                                INDICATE OK! AS JN_ENCERRA EQ 'N'
+                                         [~OK!] INDICATE OK! AS JN_ENCERRA EQ '13'
+                                         [~OK!] INDICATE OK! AS JN_ENCERRA EQ '14'
+                                         [~OK!] BEGIN
+                                                 ADVERTE 'INFORMACAO INVALIDA'
+                                                 GOTO LB_ENCERRA
+                                                END
+                                         IF JN_ENCERRA EQ '' BEGIN
+                                                              MENSAGEM 1
+                                                              GOTO LB_ENCERRA
+                                                             END
+
+                                        LB_SISTEMA:
+                                         ACCEPT JN_SISTEMA {CAPSLOCK}
+                                         IF NOT JN_SISTEMA IN 'PFOC' GOTO LB_SISTEMA
+                    
+                                         IF JN_SISTEMA EQ 'P' MOVE 'Patrimonial ' TO JN_NOME_SISTEMA
+                                         IF JN_SISTEMA EQ 'F' MOVE 'Financeiro  ' TO JN_NOME_SISTEMA
+                                         IF JN_SISTEMA EQ 'O' MOVE 'Or㌢mentrio' TO JN_NOME_SISTEMA
+                                         IF JN_SISTEMA EQ 'C' MOVE 'Compensado  ' TO JN_NOME_SISTEMA
+
+                                        LB_DETALHA_ABERTURA:
+                                         ACCEPT JN_DETALHA_ABERTURA {AUTOCLEAR,CAPSLOCK}
+                                         [ @AUDESP_SP!] BEGIN
+                                                         IF JN_DETALHA_ABERTURA EQ '' BEGIN
+                                                                                       MENSAGEM 1
+                                                                                       GOTO LB_DETALHA_ABERTURA
+                                                                                      END
+                                                        END
+
+                                        LB_DETALHA_M12:
+                                         ACCEPT JN_DETALHA_M12 {AUTOCLEAR,CAPSLOCK}
+                                         [ @AUDESP_SP!] BEGIN
+                                                         IF JN_DETALHA_M12 EQ '' BEGIN
+                                                                                  MENSAGEM 1
+                                                                                  GOTO LB_DETALHA_M12
+                                                                                 END
+                                                        END
+
+                                        LB_DETALHA_M13:
+                                         ACCEPT JN_DETALHA_M13 {AUTOCLEAR,CAPSLOCK}
+                                         [ @AUDESP_SP!] BEGIN
+                                                         IF JN_DETALHA_M13 EQ '' BEGIN
+                                                                                  MENSAGEM 1
+                                                                                  GOTO LB_DETALHA_M13
+                                                                                 END
+                                                        END
+
+                                        LB_DETALHA_M14:
+                                         ACCEPT JN_DETALHA_M14 {AUTOCLEAR,CAPSLOCK}
+                                         [ @AUDESP_SP!] BEGIN
+                                                         IF JN_DETALHA_M14 EQ '' BEGIN
+                                                                                  MENSAGEM 1
+                                                                                  GOTO LB_DETALHA_M14
+                                                                                 END
+                                                        END
+                                       
+                                       LB_CC:
+                                        ACCEPT JN_CONTA_CORRENTE {AUTOCLEAR,CAPSLOCK}
+                                        IF JN_CONTA_CORRENTE NE '' BEGIN
+                                                                    COMZEROS JN_CONTA_CORRENTE 2
+
+                                                                    BUSCA_TBINFTCE 'RELACAO DE CONTAS CORRENTES' JN_CONTA_CORRENTE JN_CC
+                                                                    [~@OK!] BEGIN
+                                                                              ADVERTE 'CONTA CORRENTE INVLIDO'
+                                                                              CLEARFORM JN_CONTA_CORRENTE THRU JN_CC
+                                                                             END
+                                                                   END
+                                       END
+                     ELSE BEGIN
+                           CLEARFORM JN_SALDO THRU JN_CC
+                          END
+
+                     LB_PREVIDENCIA:
+                     ACCEPT JN_PREVIDENCIA { CAPSLOCK }
+                     IF JN_PREVIDENCIA NE '' IF JN_PREVIDENCIA NE 'S' GOTO LB_PREVIDENCIA
+                    
+                     LB_INVESTIMENTO_RPPS:
+                     ACCEPT JN_INVEST_RPPS { CAPSLOCK }
+                     IF JN_INVEST_RPPS NE '' IF JN_INVEST_RPPS NE 'S' GOTO LB_INVESTIMENTO_RPPS
+                    
+                     LB_INVESTIMENTO_GERAL:
+                     ACCEPT JN_INVEST_GERAL { CAPSLOCK }
+                     IF JN_INVEST_GERAL NE '' IF JN_INVEST_GERAL NE 'S' GOTO LB_INVESTIMENTO_GERAL
+                    END
+
+SCREENMODE IT_COR_TITULO ON
+IF ST@OPCAO EQ '1' CABEC 'CONFIRMA INCLUS三 <S/N>'  CONFIRMA.1
+IF ST@OPCAO EQ '2' CABEC 'CONFIRMA ALTERA三 <S/N>' CONFIRMA.1
+IF ST@OPCAO EQ '3' CABEC 'CONFIRMA EXCLUS三 <S/N>'  CONFIRMA.1
+SCREENMODE IT_COR_TARJA ON
+PAGE CONFIRMA
+INKEYCHECK ST_TECLA IN 'sSnN'
+IF ST_TECLA IN 'nN' BEGIN
+                     SCREENMODE IT_COR_TARJA ON
+                     CLEARFORM JN_CODIGO THRU JN_PREVIDENCIA
+                     [ PESQUISA!] ABORT
+                     GOTO LB_CONTA
+                    END
+
+INDICATE ERR FALSE
+ON ERROR GOSUB CHECA_GRAVACAO
+REREAD
+ CLEAR PLANO
+ MOVE JN_ESTADO    TO PLANO.UF
+ MOVE JN_EXERCICIO TO PLANO.ANO
+ MOVE JN_CODIGO    TO PLANO.CODIGO
+ FIND EQ PLANO BY INDEX.1
+ [ FOUND] BEGIN
+           IF ST@OPCAO EQ '1' BEGIN
+                               UNLOCK
+                               ON ERROR OFF
+                               ADVERTE 'CONTA J CADASTRADA'
+                               GOTO INICIO
+                              END
+          END
+ [~FOUND] BEGIN
+           IF ST@OPCAO NE '1' BEGIN
+                               UNLOCK
+                               ON ERROR OFF
+                               ADVERTE 'CONTA N三 CADASTRADA'
+                               GOTO INICIO
+                              END
+          END
+
+ IF ST@OPCAO NE '3' BEGIN
+                     MOVE JN_SUPERAVIT        TO PLANO.SUPERAVIT
+                     MOVE JN_INVERTE_SALDO    TO PLANO.INVERTE_SALDO
+                     MOVE JN_TP_MOVIMENTACAO  TO PLANO.TP_MOVIMENTACAO
+                     MOVE JN_ENCERRA          TO PLANO.ENCERRA
+                     MOVE JN_DETALHA_ABERTURA TO PLANO.DETALHAABERTURA
+                     MOVE JN_DETALHA_M12      TO PLANO.DETALHA_M12
+                     MOVE JN_DETALHA_M13      TO PLANO.DETALHA_M13
+                     MOVE JN_DETALHA_M14      TO PLANO.DETALHA_M14
+                     MOVE JN_ESTADO           TO PLANO.UF
+                     MOVE JN_EXERCICIO        TO PLANO.ANO
+                     MOVE JN_CODIGO           TO PLANO.CODIGO
+                     MOVE JN_DESCRICAO        TO PLANO.DESCRICAO
+                     MOVE JN_TIPO             TO PLANO.TIPO
+                     MOVE JN_GRAU             TO PLANO.GRAU
+                     MOVE JN_SALDO            TO PLANO.SALDO_DC
+                     MOVE JN_ENCERRA          TO PLANO.ENCERRA
+                     MOVE JN_CONTA_CORRENTE   TO PLANO.CONTA_CORRENTE
+                     MOVE JN_SISTEMA          TO PLANO.SISTEMA
+                     MOVE JN_PREVIDENCIA      TO PLANO.PREVIDENCIA
+                     MOVE JN_INVEST_RPPS      TO PLANO.INVEST_RPPS
+                     MOVE JN_INVEST_GERAL     TO PLANO.INVEST_GERAL
+                     SAVERECORD PLANO
+                    END
+
+ IF ST@OPCAO EQ '3' BEGIN
+                     DELETE PLANO
+                     CLEAR PLANO
+                    END
+
+ IF ST@OPCAO EQ '1' GRAVAINCLUSAO 'PLANO' JN_CODIGO 'I'
+ IF ST@OPCAO EQ '2' GRAVAINCLUSAO 'PLANO' JN_CODIGO 'A'
+ IF ST@OPCAO EQ '3' GRAVAINCLUSAO 'PLANO' JN_CODIGO 'E'
+UNLOCK
+ON ERROR OFF
+
+MOVE JN_CODIGO    TO ULTIMO_CADASTRADO.2 
+MOVE JN_DESCRICAO TO ULTIMO_CADASTRADO.3 
+
+SCREENMODE IT_COR_TARJA ON
+CLEARFORM JN_CODIGO THRU JN_PREVIDENCIA
+
+[ PESQUISA!] ABORT
+GOTO LB_CONTA
+DESATIVA
+
+KEYPROC KEY.ESCAPE
+CONFIRMACAO 'RETORNO'
+
+KEYPROC KEY.SFIND 
+ULT_CADASTRADO    
+
+KEYPROC KEY.HELP
+AJUDA
+RETURN
+
+KEYPROC KEY.CLEAR
+RETURN INICIO
+
+KEYPROC KEY.UP
+IF CURRENT_WINDOW GT 9 BEGIN
+                        IF JN_TIPO NE 'A' RETURN LB_TIPO
+                        ELSE              BACKFIELD
+                       END
+ELSE BACKFIELD
+RETURN
+
+LB_CALCULA_GRAU:
+ MOVE 0 TO IT_GRAU
+      IF (MID(JN_CODIGO,2,17)) NE '00' MOVE 8 TO IT_GRAU
+ ELSE IF (MID(JN_CODIGO,2,14)) NE '00' MOVE 7 TO IT_GRAU
+ ELSE IF (MID(JN_CODIGO,2,11)) NE '00' MOVE 6 TO IT_GRAU
+ ELSE IF (MID(JN_CODIGO,1,9))  NE '0'  MOVE 5 TO IT_GRAU
+ ELSE IF (MID(JN_CODIGO,1,7))  NE '0'  MOVE 4 TO IT_GRAU
+ ELSE IF (MID(JN_CODIGO,1,5))  NE '0'  MOVE 3 TO IT_GRAU
+ ELSE IF (MID(JN_CODIGO,1,3))  NE '0'  MOVE 2 TO IT_GRAU
+ ELSE IF (MID(JN_CODIGO,1,1))  NE '0'  MOVE 1 TO IT_GRAU
+
+ MOVE IT_GRAU             TO JN_GRAU
+ IF IT_GRAU EQ 8 MOVE 'A' TO JN_TIPO
+ IF IT_GRAU EQ 1 MOVE 'S' TO JN_TIPO
+
+ IF (LEFT(JN_CODIGO,1)) IN '1.3.5' MOVE 'D' TO JN_SALDO
+ ELSE                              MOVE 'C' TO JN_SALDO
+
+ MOVE 'N' TO JN_ENCERRA
+RETURN
+
+KEYPROC KEY.FIELD
+ IF CURRENT_WINDOW EQ 5 BEGIN
+                         MOVE 'P1PLANO 1 ' TO ST_DESTINO
+                         APPEND ST_DESTINO ST@USUARIO ' ' ST@OPCAO ' ' ST@PROGRAMA ' ' ST@CODIGO@ENTIDADE ' ' ST@EXERCICIO@FINANCEIRO
+                         CHAIN WAIT ST_DESTINO EXPORT_FILES
+                         MOVE 0 TO CURRENT_IMAGE
+                         PAGE TELA
+                         IF PLANO.CODIGO NE '' TRIM PLANO.CODIGO TO JN_CODIGO
+                         ELSE ENTAGAIN
+                        END
+ ELSE ENTAGAIN
+RETURN
+
+#INCLUDE INTEGRID.INC
+
+
+

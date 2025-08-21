@@ -1,0 +1,60 @@
+-----------------------------------------------------------------------------
+  DATE: 25/10/2023      TIME: 17:31                                  PAGE:  1
+  FILE DEFINITION FOR FILE: LANCAXML (# 286)
+-----------------------------------------------------------------------------
+  DRIVER NAME               : DATAFLEX
+  FILE ROOT NAME            : LANCAXML
+  USER DISPLAY NAME         : LANCAXML
+  DATAFLEX FILE NAME        : LANCAXML
+-----------------------------------------------------------------------------
+  RECORD LENGTH             : 512       ( USED: 444 )
+  MAX NUMBER OF RECORDS     : 16711679  ( USED: 0 )
+  FILE COMPRESSION          : NONE
+  RE-USE DELETED SPACE      : YES
+  LOCKING TYPE              : FILE
+  HEADER INTEGRITY CHECKING : YES
+  TRANSACTION TYPE          : CLIENT ATOMIC
+  RECORD IDENTITY INDEX     : 0 ( 0 , 0 )
+  FILE LOGIN PARAMETER      : 
+  SYSTEM FILE               : NO 
+-----------------------------------------------------------------------------
+
+NUM  FIELD NAME       TYPE SIZE  OFFST IX   RELATES TO FILE.FIELD
+---  ---------------  ---- ----- ----- --   ---------------------------------
+  1  ANO              ASC      4     1  1   
+  2  MES              ASC      2     5  1   
+  3  COD_ENTIDADE     ASC      2     7  1   
+  4  XML              ASC     10     9  1   
+  5  CONTA            ASC     18    19      
+  6  DADOS            ASC    200    37  1   
+  7  AUXILIAR         ASC     15   237      
+  8  NAT_INICIAL      ASC      1   252      
+  9  SALDO_INICIAL    NUM   14.2   253      
+ 10  DEBITO           NUM   14.2   261      
+ 11  CREDITO          NUM   14.2   269      
+ 12  SALDO_FINAL      NUM   14.2   277      
+ 13  NAT_FINAL        ASC      1   285      
+ 14  SEQUENCIA        NUM   10.0   286  1   
+ 15  AUXILIAR_1       ASC     50   291      
+ 16  AUXILIAR_2       ASC     50   341      
+ 17  AUXILIAR_3       ASC     50   391      
+ 18  AJUSTE_BALANCO   ASC      1   441  2   
+ 19  STATUS           ASC      1   442      
+ 20  REGULARIZA_RP    ASC      1   443      
+ 21  REGULARIZA_NAT   ASC      1   444      
+
+
+INDEX# FIELDS          DES U/C    LENGTH LEVELS SEGMENTS MODE
+------ --------------- --- ---    ------ ------ -------- -------
+  1    ANO             NO  NO       223    24      6     ON-LINE
+       MES             NO  NO 
+       COD_ENTIDADE    NO  NO 
+       XML             NO  NO 
+       DADOS           NO  NO 
+       SEQUENCIA       NO  NO 
+
+  2    ANO             NO  NO       10     5       4     ON-LINE
+       COD_ENTIDADE    NO  NO 
+       AJUSTE_BALANCO  NO  NO 
+       RECNUM          NO  NO 
+

@@ -1,0 +1,241 @@
+/TELA RESIDENT
+Ё __/__/____  ________________________________________________________  CONAM  Ё
+фмммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммм╣
+Ё                                                                              Ё
+Ё                                                                              Ё
+Ё Estado                   __                                                  Ё
+Ё                                                                              Ё
+Ё Ano                      ____                                                Ё
+Ё                                                                              Ё
+Ё                                                                              Ё
+Ё                                                                              Ё
+Ё ______            ______ ____.                                               Ё
+Ё                                                                              Ё
+Ё                                                                              Ё
+Ё Descricao              : ________________________________________            Ё
+Ё                                                                              Ё
+Ё Tamanho do Codigo      : __.                                                 Ё
+Ё                                                                              Ё
+Ё Previdencia            : _ <S/ >                                             Ё
+цдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд╢
+Ё     <F1> ajuda     <F3> ёltimo __________     <F9> limpa    <ESC> retorno    Ё
+юдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддды
+/CONFIRMA RESIDENT
+цдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд╢
+Ё______________________________________________________________________________Ё
+юдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддды
+/ULTIMO_CADASTRADO RESIDENT
+здддддддддддддддддддддддддддддддддддддддддддддд©
+Ё                                              Ё
+ЁA ёltima tabela  __________ foi:              Ё
+Ё                                              Ё
+Ё C╒digo ____.                                 Ё
+Ё Nome   ___________________________________   Ё
+Ё                                              Ё
+Ё                                              Ё
+Ё Pressione qualquer tecla para continuar.     Ё
+юдддддддддддддддддддддддддддддддддддддддддддддды
+/INCLUSAO RESIDENT
+здддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд©
+Ё                    ESTA ░ A INCLUS▌O DA TABELA:                        Ё
+цдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд╢
+Ё                                ____.                                   Ё
+цдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд╢
+Ё                Pressione qualquer tecla para continuar                 Ё
+юдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддды
+/*
+#INCLUDE CONAM.LIB
+
+STRING ST_DESTINO
+
+AUTOPAGE INCLUSAO
+NAME JN_CODIGO
+
+AUTOPAGE TELA
+NAME JN_TARJA_DATA
+NAME JN_TARJA_TITULO
+NAME JN_UF           JN_ANO
+NAME JN_TITULO       JN_F2           JN_N_TABELA
+NAME JN_DESCRICAO    JN_TAMANHO_COD
+NAME JN_PREVIDENCIA
+NAME JN_F3
+
+OPEN INFOCAD
+
+PAGE SET CONFIRMA          AT 21 00 COLORS IT_COR_TARJA  IT_COR_MOLDURA
+PAGE SET TELA              AT 03 00 COLORS IT_COR_TARJA  IT_COR_MOLDURA
+PAGE SET ULTIMO_CADASTRADO AT 06 18 COLORS IT_COR_TITULO IT_COR_TITULO
+PAGE SET INCLUSAO          AT 16 03 COLORS IT_COR_TITULO IT_COR_TITULO
+
+SCREENMODE IT_COR_MOLDURA ON
+SYSDATA JN_TARJA_DATA 
+SCREENMODE IT_COR_TITULO ON
+IF ST@OPCAO EQ '1' BEGIN
+                    CABEC 'INCLUS▌O DE TABELAS INFOCAD' JN_TARJA_TITULO
+                    MOVE 'Inclu║do' TO ULTIMO_CADASTRADO.1
+                   END
+IF ST@OPCAO EQ '2' BEGIN
+                    CABEC 'ALTERA─▌O DE TABELAS INFOCAD' JN_TARJA_TITULO
+                    MOVE 'Alterado' TO ULTIMO_CADASTRADO.1
+                   END
+IF ST@OPCAO EQ '3' BEGIN
+                    CABEC 'EXCLUS▌O DE TABELAS INFOCAD' JN_TARJA_TITULO
+                    MOVE 'Exclu║do' TO ULTIMO_CADASTRADO.1
+                   END
+SCREENMODE IT_COR_MOLDURA ON
+MOVE 'C╒digo' TO JN_TITULO
+MOVE '<F2> :'   TO JN_F2
+IF ST@OPCAO EQ '1' MOVE 'cadastrado' TO JN_F3
+IF ST@OPCAO EQ '2' MOVE 'alterado  ' TO JN_F3
+IF ST@OPCAO EQ '3' MOVE 'exclu║do  ' TO JN_F3
+SCREENMODE IT_COR_TARJA ON
+
+MOVE PARGERAL.ESTADO    TO JN_UF
+MOVE PARGERAL.EXERCICIO TO JN_ANO
+
+INICIO:
+CLEARFORM JN_N_TABELA THRU JN_PREVIDENCIA
+
+IF ST@OPCAO EQ '1' BEGIN
+                    SCREENMODE IT_COR_MOLDURA ON
+                    BLANKFORM JN_TITULO THRU JN_N_TABELA
+                    SCREENMODE IT_COR_TARJA ON
+                   END
+ELSE BEGIN
+      REPEAT
+       ACCEPT JN_N_TABELA {AUTOCLEAR}
+       IF JN_N_TABELA EQ '' MENSAGEM 1
+       ELSE BEGIN
+             COMZEROS JN_N_TABELA 5
+
+             CLEAR INFOCAD
+             MOVE JN_UF       TO INFOCAD.UF
+             MOVE JN_ANO      TO INFOCAD.ANO
+             MOVE JN_N_TABELA TO INFOCAD.CODIGO
+             FIND EQ INFOCAD BY INDEX.1
+             [~FOUND] BEGIN
+                       ADVERTE 'TABELA N▌O CADASTRADA'
+                       CLEARFORM JN_N_TABELA
+                      END
+            END
+      UNTIL JN_N_TABELA NE ''
+      MOVE INFOCAD.DESCRICAO   TO JN_DESCRICAO
+      MOVE INFOCAD.TAMANHO_COD TO JN_TAMANHO_COD
+      MOVE INFOCAD.PREVIDENCIA TO JN_PREVIDENCIA
+     END
+
+IF ST@OPCAO NE '3' BEGIN
+ ACCEPT JN_DESCRICAO {CAPSLOCK,AUTOCLEAR}
+ IF JN_DESCRICAO EQ '' BEGIN
+                        DISPENSA 1
+                       END
+ 
+ ACCEPT JN_TAMANHO_COD {AUTOCLEAR}
+ 
+ LB_PREVIDENCIA:
+ ACCEPT JN_PREVIDENCIA {AUTOCLEAR,CAPSLOCK}
+ IF JN_PREVIDENCIA NE '' IF NOT JN_PREVIDENCIA IN 'Ss' GOTO LB_PREVIDENCIA
+ END
+
+IF ST@OPCAO EQ '1' CONFIRMACAO 'INCLUS▌O'
+IF ST@OPCAO EQ '2' CONFIRMACAO 'ALTERA─▌O'
+IF ST@OPCAO EQ '3' CONFIRMACAO 'EXCLUS▌O'
+
+INDICATE ERR FALSE
+ON ERROR GOSUB CHECA_GRAVACAO
+REREAD
+ IF ST@OPCAO NE '1' BEGIN
+                     CLEAR INFOCAD
+                     MOVE JN_UF       TO INFOCAD.UF
+                     MOVE JN_ANO      TO INFOCAD.ANO
+                     MOVE JN_N_TABELA TO INFOCAD.CODIGO
+                     FIND EQ INFOCAD BY INDEX.1
+                     [~FOUND] BEGIN
+                               UNLOCK
+                               ON ERROR OFF
+                               DISPENSA 358
+                              END
+                    END
+
+ ELSE BEGIN
+       CLEAR INFOCAD
+       MOVE JN_UF   TO INFOCAD.UF
+       MOVE JN_ANO  TO INFOCAD.ANO
+       MOVE 9999    TO INFOCAD.CODIGO
+       FIND LT INFOCAD BY INDEX.1
+       [ FOUND] INDICATE FOUND AS INFOCAD.UF  EQ JN_UF
+       [ FOUND] INDICATE FOUND AS INFOCAD.ANO EQ JN_ANO
+       [ FOUND] CALC (INFOCAD.CODIGO + 1) TO JN_CODIGO
+       [~FOUND] MOVE '1'                  TO JN_CODIGO
+
+       CLEAR INFOCAD
+       MOVE JN_UF     TO INFOCAD.UF
+       MOVE JN_ANO    TO INFOCAD.ANO
+       MOVE JN_CODIGO TO INFOCAD.CODIGO
+      END
+
+ IF ST@OPCAO NE '3' BEGIN
+                     MOVE JN_DESCRICAO   TO INFOCAD.DESCRICAO
+                     MOVE JN_TAMANHO_COD TO INFOCAD.TAMANHO_COD
+                     MOVE JN_PREVIDENCIA TO INFOCAD.PREVIDENCIA
+                     SAVERECORD INFOCAD
+                    END
+ ELSE BEGIN
+       DELETE INFOCAD
+      END
+
+IF ST@OPCAO EQ '1' GRAVAINCLUSAO 'INFOCAD' JN_CODIGO 'I'
+IF ST@OPCAO EQ '2' GRAVAINCLUSAO 'INFOCAD' JN_N_TABELA 'A'
+IF ST@OPCAO EQ '3' GRAVAINCLUSAO 'INFOCAD' JN_N_TABELA 'E'
+UNLOCK
+ON ERROR OFF
+
+MOVE INFOCAD.CODIGO TO ULTIMO_CADASTRADO.2
+MOVE JN_DESCRICAO  TO ULTIMO_CADASTRADO.3
+
+IF ST@OPCAO EQ '1' BEGIN
+                    BEEP
+                    PAGE INCLUSAO
+                    GOTOXY 30 00
+                    PAUSE
+                   END
+
+GOTO INICIO
+DESATIVA
+
+KEYPROC KEY.ESCAPE
+CONFIRMACAO 'RETORNO'
+
+KEYPROC KEY.SFIND
+ULT_CADASTRADO
+
+KEYPROC KEY.HELP
+AJUDA
+RETURN
+
+KEYPROC KEY.CLEAR
+RETURN INICIO
+
+KEYPROC KEY.UP
+BACKFIELD
+RETURN
+
+KEYPROC KEY.FIELD
+ IF CURRENT_WINDOW EQ 7 BEGIN
+                         MOVE 'CINFOCAD 1 ' TO ST_DESTINO
+                         APPEND ST_DESTINO ST@USUARIO ' ' ST@OPCAO ' ' ST@PROGRAMA ' ' ST@CODIGO@ENTIDADE ' ' ST@EXERCICIO@FINANCEIRO ' ' JN_UF ' ' JN_ANO
+                         CHAIN WAIT ST_DESTINO EXPORT_FILES
+                         MOVE 0 TO CURRENT_IMAGE
+                         PAGE TELA
+                         IF INFOCAD.CODIGO NE '' BEGIN
+                                                 TRIM INFOCAD.CODIGO    TO JN_N_TABELA
+                                                 TRIM INFOCAD.DESCRICAO TO JN_DESCRICAO
+                                                END
+                         ELSE ENTAGAIN
+                        END
+ ELSE ENTAGAIN
+RETURN
+
+#INCLUDE INTEGRID.INC
+
+

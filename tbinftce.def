@@ -1,0 +1,44 @@
+-----------------------------------------------------------------------------
+  DATE: 27/05/2024      TIME: 15:53                                  PAGE:  1
+  FILE DEFINITION FOR FILE: TBINFTCE (# 326)
+-----------------------------------------------------------------------------
+  DRIVER NAME               : DATAFLEX
+  FILE ROOT NAME            : TBINFTCE
+  USER DISPLAY NAME         : TBINFTCE
+  DATAFLEX FILE NAME        : TBINFTCE
+-----------------------------------------------------------------------------
+  RECORD LENGTH             : 102       ( USED: 98 )
+  MAX NUMBER OF RECORDS     : 16711679  ( USED: 8732 )
+  FILE COMPRESSION          : NONE
+  RE-USE DELETED SPACE      : YES
+  LOCKING TYPE              : FILE
+  HEADER INTEGRITY CHECKING : YES
+  TRANSACTION TYPE          : CLIENT ATOMIC
+  RECORD IDENTITY INDEX     : 0 ( 0 , 0 )
+  FILE LOGIN PARAMETER      : 
+  SYSTEM FILE               : NO 
+-----------------------------------------------------------------------------
+
+NUM  FIELD NAME       TYPE SIZE  OFFST IX   RELATES TO FILE.FIELD
+---  ---------------  ---- ----- ----- --   ---------------------------------
+  1  ANO              ASC      4     1  1   
+  2  ESTADO           ASC      2     5  1   
+  3  COD_INFOTCE      NUM    4.0     7  1   
+  4  CODIGO           ASC     10     9  1   
+  5  DESCRICAO        ASC     60    19  2   
+  6  CODIGO_AUXILIAR  ASC     20    79      
+
+
+INDEX# FIELDS          DES U/C    LENGTH LEVELS SEGMENTS MODE
+------ --------------- --- ---    ------ ------ -------- -------
+  1    ANO             NO  NO       18     5       4     ON-LINE
+       ESTADO          NO  NO 
+       COD_INFOTCE     NO  NO 
+       CODIGO          NO  NO 
+
+  2    ANO             NO  NO       78     10      5     ON-LINE
+       ESTADO          NO  NO 
+       DESCRICAO       NO  NO 
+       CODIGO          NO  NO 
+       COD_INFOTCE     NO  NO 
+

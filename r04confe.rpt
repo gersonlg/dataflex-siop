@@ -1,0 +1,703 @@
+/TELA RESIDENT
+ÆÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍµ
+³                                                                              ³
+³                                                                              ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ RELATORIO DE CONFERENCIA (XML) RESTOS A PAGAR ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                                                                              ³
+³                                                                              ³
+³Entidade       <F2>: __ _____________________________________________________ ³
+³                                                                              ³
+³Mes Inicial                          : __   Mes Final    : __ <01...13>       ³
+³                                                                              ³
+³Separa por Exercicio                 : _   <S/N>                              ³
+³                                                                              ³
+³Separa por Entidades                 : _   <S/N>                              ³
+³                                                                              ³
+³Separa Processados e Nao Processados : _   <S/N>                              ³
+³                                                                              ³
+³Acumula dados da Camara              : _   <S/N>                              ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                               <ESC>  Retorna                                 ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/CONFIRMA RESIDENT
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³______________________________________________________________________________³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/MSG RESIDENT
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄ RELATORIO DE CONFERENCIA (XML) RESTOS A PAGAR ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³                                                                            ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ SOLICITADO ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                                                                            ³
+³                                                                            ³
+³           ____________________________________________________             ³
+³                                                                            ³
+³                                                                            ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ PROCESSANDO ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                                                                            ³
+³                                                                            ³
+³       Dados      : ___________________________________________________     ³
+³                                                                            ³
+³                                                                            ³
+³       Lendo      :   ________.   Imprimindo : _____.    P gs.: ___.        ³
+³                                                                            ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/HEADER RESIDENT
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+|                                                                               ____________________________________________________________                                                                              |
+|                                                                                                                                                                                                                         |
+|                                                                               ____________________________________________________________                                                                              |
+|                                                                                                                                                                                                                         |
+|                                                                                         Restos a Pagar - Relatorio de Conferencia                                                                                       |
+|                                                                                                                                                                                                                         |
+|                                                                                                                                                                                                                         |
+| DATA  __/__/____                                                              ____________________________________________________________                                                                Pagina _____. |
+|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|                                                                        | Inscritos em  | Inscritos em  |  Saldo Total  |             Pago              |           Cancelado           |                | Liquidacao    |
+|                                                                        | Exercicios    | __/__/____    |  Inscritos    |-------------------------------|-------------------------------|       Saldo    | Nao           |
+| Restos a Pagar                                                         | Anteriores    |               |               |     no Periodo|          Atual|     no Periodo|          Atual|       Atual    | Processados   |
+|=========================================================================================================================================================================================================================|
+/ENTIDADE RESIDENT
+|__ _____________________________________________________________________|               |               |               |               |               |               |               |                |               |
+|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+/BODY RESIDENT
+|   _____________________________________________________________________|________,___.__|________,___.__|________,___.__|________,___.__|________,___.__|________,___.__|________,___.__|_________,___.__|________,___.__|
+/LINHA RESIDENT
+|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+/LINHA2 RESIDENT
+|=========================================================================================================================================================================================================================|
+/TOTAL RESIDENT
+| _______________________________________________________________________|________,___.__|________,___.__|________,___.__|________,___.__|________,___.__|________,___.__|________,___.__|_________,___.__|________,___.__|
+/FOOTER_COMPLETE RESIDENT
+|                                                                        |               |               |               |               |               |               |               |                |               |
+/FOOTER RESIDENT
+ -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/MENSAGEM RESIDENT 
+ Obs.: No caso de divergˆncia entre os saldos de Restos a Pagar deste relat¢rio com os demais relat¢rios emitidos pelo sistema, 
+       solicitamos a fineza de certificar no sistema se esta diferen‡a confere com o total de Estorno de Cancelamento de Restos 
+       a Pagar do exerc¡cio, pois esses valores nao sao considerados neste relatorio.
+/*
+#INCLUDE CONAM.LIB
+#INCLUDE ZERAARQ.LIB
+#INCLUDE IQUADROS.LIB
+
+//--
+//-- !1 = string st_dados
+//-- !2 = conta contabil
+//-- !3 = ano do rp
+//-- !4 = cod entidade
+//-- !5 = st_numero
+//--
+#COMMAND MONTA_DADOS
+ MOVEALL '' TO !1 !5 
+ 
+ [ SEPARA_ENTIDADES!] MOVE !4   TO !1
+ [~SEPARA_ENTIDADES!] MOVE '00' TO !1
+ 
+ [ SEPARA_PROCESSADOS!] BEGIN 
+   IF !2 EQ ST@RREO@RP@PROCESSADO@INSCRITO   APPEND !1 ' Restos a Pagar Processados'      //--inscricao
+   IF !2 EQ ST@RREO@RP@NPROCESSADO@INSCRITO  APPEND !1 ' Restos a Pagar Nao Processados'  //--inscricao
+   IF !2 EQ ST@RREO@RP@PROCESSADO@PAGO       APPEND !1 ' Restos a Pagar Processados'      //--pagamento
+   IF !2 EQ ST@RREO@RP@NPROCESSADO@PAGO      APPEND !1 ' Restos a Pagar Nao Processados'  //--pagamento
+   IF !2 EQ ST@RREO@RP@PROCESSADO@CANCELADO  APPEND !1 ' Restos a Pagar Processados'      //--cancelamento
+   IF !2 EQ ST@RREO@RP@NPROCESSADO@CANCELADO APPEND !1 ' Restos a Pagar Nao Processados'  //--cancelamento
+ END
+
+ [~SEPARA_PROCESSADOS!] APPEND !1 ' Restos a Pagar'
+ [  SEPARA_EXERCICIOS!] APPEND !1 ' ' !3
+#ENDCOMMAND
+
+//--
+//-- !1 = string st_dados
+//-- !2 = conta contabil
+//-- !3 = ano do rp
+//-- !4 = cod entidade
+//-- !5 = st_numero = tipo de subtotal
+//-- !6 = tipo de subtotal
+//--      02 = processado por entidade
+//--      01 = entidade
+//--
+#COMMAND MONTA_DADOS_TOTALIZADOR
+ MOVEALL '' TO !1 !5 
+ 
+ [ SEPARA_ENTIDADES!] MOVE !4   TO !1
+ [~SEPARA_ENTIDADES!] MOVE '00' TO !1
+ 
+ IF !6 EQ '01' BEGIN
+  APPEND !1 ' XX'
+  MOVE '01' TO !5
+  END
+ ELSE BEGIN
+  [ SEPARA_PROCESSADOS!] BEGIN 
+   IF !2 EQ ST@RREO@RP@PROCESSADO@INSCRITO  BEGIN
+    APPEND !1 ' Restos a Pagar Processados'
+    MOVE '02' TO !5
+    END
+   IF !2 EQ ST@RREO@RP@NPROCESSADO@INSCRITO BEGIN
+    APPEND !1 ' Restos a Pagar Nao Processados'
+    MOVE '03' TO !5
+    END
+   IF !2 EQ ST@RREO@RP@PROCESSADO@PAGO  BEGIN
+    APPEND !1 ' Restos a Pagar Processados'
+    MOVE '02' TO !5
+    END
+   IF !2 EQ ST@RREO@RP@NPROCESSADO@PAGO BEGIN
+    APPEND !1 ' Restos a Pagar Nao Processados'
+    MOVE '03' TO !5
+    END
+   IF !2 EQ ST@RREO@RP@PROCESSADO@CANCELADO  BEGIN
+    APPEND !1 ' Restos a Pagar Processados'
+    MOVE '02' TO !5
+    END
+   IF !2 EQ ST@RREO@RP@NPROCESSADO@CANCELADO BEGIN
+    APPEND !1 ' Restos a Pagar Nao Processados'
+    MOVE '03' TO !5
+    END
+   END
+  END
+  
+ [~SEPARA_PROCESSADOS!] APPEND !1 ' Restos a Pagar'
+ [  SEPARA_EXERCICIOS!] APPEND !1 ' ' 'XXXX'
+#ENDCOMMAND
+
+//--
+//-- !1 = string st_dados
+//-- !2 = conta contabil
+//-- !3 = mes
+//-- !4 = valor   (saldo inicial)
+//-- !5 = valor_1 (debito)
+//-- !6 = valor_2 (credito)
+//-- !7 = entidade (00) ou codigo
+//-- !8 = ano do r.p.
+//--
+#COMMAND GRAVA_TEMPCALC
+ //--guarda natureza original da conta (padrao deste relatorio CREDORA)
+ CLEAR PLANO
+ MOVE PARGERAL.ESTADO TO PLANO.UF
+ MOVE ST_EXERCICIO    TO PLANO.ANO
+ MOVE !4              TO PLANO.CODIGO
+ FIND EQ PLANO BY INDEX.1
+ [~FOUND] CLEAR PLANO
+ INDICATE DEVEDORA! AS PLANO.SALDO_DC EQ 'D'
+ //--
+
+ CLEAR TEMPCALC
+ MOVE ST@CODIGO@ENTIDADE      TO TEMPCALC.COD_ENTIDADE
+ MOVE ST@EXERCICIO@FINANCEIRO TO TEMPCALC.EXERCICIO
+ MOVE ST@USUARIO              TO TEMPCALC.USUARIO
+ MOVE !1                      TO TEMPCALC.CODIGO
+ MOVE !7                      TO TEMPCALC.NUMERO
+ FIND EQ TEMPCALC BY INDEX.1
+ INDICATE ERR FALSE
+ ON ERROR GOSUB CHECA_GRAVACAO
+ REREAD
+ IF ((!2 EQ ST@RREO@RP@PROCESSADO@INSCRITO) OR (!2 EQ ST@RREO@RP@NPROCESSADO@INSCRITO)) BEGIN //--inscricao e saldo
+  IF !3 EQ '01' BEGIN
+   IF !9 EQ 'C' BEGIN
+                             CALC (TEMPCALC.VALOR   + !4) TO TEMPCALC.VALOR
+    IF !8 EQ ST_ANO_ANTERIOR CALC (TEMPCALC.VALOR_5 + !4) TO TEMPCALC.VALOR_5
+    IF !8 LT ST_ANO_ANTERIOR CALC (TEMPCALC.VALOR_6 + !4) TO TEMPCALC.VALOR_6
+   END
+   ELSE BEGIN
+                             CALC (TEMPCALC.VALOR   - !4) TO TEMPCALC.VALOR
+    IF !8 EQ ST_ANO_ANTERIOR CALC (TEMPCALC.VALOR_5 - !4) TO TEMPCALC.VALOR_5
+    IF !8 LT ST_ANO_ANTERIOR CALC (TEMPCALC.VALOR_6 - !4) TO TEMPCALC.VALOR_6
+   END
+  END
+ END
+ 
+ IF ((!2 EQ ST@RREO@RP@PROCESSADO@PAGO) OR (!2 EQ ST@RREO@RP@NPROCESSADO@PAGO)) BEGIN //--pagamentos
+  IF !3 LE '12' BEGIN //--pegar pagamentos s¢ at‚ mes 12
+   IF !3 GE JN_MES_INICIAL BEGIN
+    CALC (TEMPCALC.VALOR_1 + (!5 - !6)) TO TEMPCALC.VALOR_1
+   END
+   CALC (TEMPCALC.VALOR_2 + (!5 - !6)) TO TEMPCALC.VALOR_2
+  END
+ END
+
+ IF ((!2 EQ ST@RREO@RP@PROCESSADO@CANCELADO) OR (!2 EQ ST@RREO@RP@NPROCESSADO@CANCELADO)) BEGIN //--cancelamentos
+  IF !3 EQ '13' BEGIN //--no mes 13 pegar somente os creditos (debitos s’o o encerramento da conta)
+   IF !3 GE JN_MES_INICIAL BEGIN
+    CALC (TEMPCALC.VALOR_3 + !5) TO TEMPCALC.VALOR_3
+   END
+   CALC (TEMPCALC.VALOR_4 + !5) TO TEMPCALC.VALOR_4
+  END
+  ELSE BEGIN
+   IF !3 GE JN_MES_INICIAL BEGIN
+    CALC (TEMPCALC.VALOR_3 + (!5 - !6)) TO TEMPCALC.VALOR_3
+   END
+   CALC (TEMPCALC.VALOR_4 + (!5 - !6)) TO TEMPCALC.VALOR_4
+  END
+ END
+
+ IF !2 EQ ST@RREO@RP@NPROCESSADO@LIQUIDADO BEGIN //--saldo liquidacao rp nao processados
+  IF !3 EQ '01' BEGIN
+   IF !9 EQ 'C' CALC (TEMPCALC.VALOR_7 + !4) TO TEMPCALC.VALOR_7
+   ELSE         CALC (TEMPCALC.VALOR_7 - !4) TO TEMPCALC.VALOR_7
+  END
+  CALC (TEMPCALC.VALOR_7 + (!5 - !6)) TO TEMPCALC.VALOR_7
+ END
+
+ SAVERECORD TEMPCALC
+ UNLOCK
+ ON ERROR OFF
+#ENDCOMMAND
+
+STRING ST_EXERCICIO   4 ST_JUNTA  ST_MES_FINAL   ST_QUEBRA    ST_DATA_ANTERIOR 10 ST_MES_BUSCA 2 ST_NUMERO ST_PERIODO
+STRING ST_MES_INICIAL   ST_CONTA  ST_DADOS   255 ST_DESCRICAO ST_ANO_ANTERIOR   4  ST_CODIGO     ST_COD_ENTIDADE   2 
+
+INTEGER IT_AUX IT_GRAU RECCOUNT IT_MES_FINAL IT_MES
+
+AUTOPAGE BODY
+NAME JBD_CODIGO
+NAME JBD_SALDO_ANT_1   JBD_SALDO_ANT_2
+NAME JBD_SALDO_INICIAL JBD_PAGO_NO_PERIODO JBD_PAGO_ATUAL JBD_CANCELADO_NO_PERIODO JBD_CANCELADO_ATUAL JBD_SALDO_ATUAL JBD_LIQUIDACAO_NAO_PROCESSADOS
+
+AUTOPAGE TOTAL
+NAME JT_CODIGO
+NAME JT_SALDO_ANT_1   JT_SALDO_ANT_2
+NAME JT_SALDO_INICIAL JT_PAGO_NO_PERIODO JT_PAGO_ATUAL JT_CANCELADO_NO_PERIODO JT_CANCELADO_ATUAL JT_SALDO_ATUAL JT_LIQUIDACAO_NAO_PROCESSADOS
+
+AUTOPAGE ENTIDADE
+NAME JBD_COD_ENTIDADE JBD_ENTIDADE
+
+AUTOPAGE TOTAL 
+NAME JT_TITULO 
+
+AUTOPAGE MSG
+NAME JN_PERIODO
+NAME JN_DADOS 
+NAME JN_LENDO JN_IMPRIMINDO JN_PAGINA
+
+AUTOPAGE TELA
+NAME JN_COD_ENTIDADE      JN_ENTIDADE
+NAME JN_MES_INICIAL       JN_MES_FINAL
+NAME JN_SEPARA_EXERCICIOS
+NAME JN_SEPARA_ENTIDADES
+NAME JN_SEPARA_PROCESSADOS
+NAME JN_SEPARA_CAMARA
+
+OPEN ENTIDADE
+OPEN TEMPCALC
+OPEN PLANO
+ABRE_CONTACOR ST@EXERCICIO@FINANCEIRO CONTACOR
+
+PAGE SET MSG      AT 05 01 COLORS IT_COR_TITULO IT_COR_TITULO
+PAGE SET TELA     AT  4  0 COLORS IT_COR_TARJA  IT_COR_MOLDURA
+PAGE SET CONFIRMA AT 21 00 COLORS IT_COR_TARJA  IT_COR_MOLDURA
+
+MOVE PARGERAL.EXERCICIO      TO ST_EXERCICIO
+CALC (PARGERAL.EXERCICIO -1) TO ST_ANO_ANTERIOR
+
+MOVE '31/12/' TO ST_DATA_ANTERIOR
+APPEND ST_DATA_ANTERIOR ST_ANO_ANTERIOR
+
+INICIO:
+SCREENMODE IT_COR_TARJA ON
+PAGE TELA
+MOVE 'S' TO JN_SEPARA_EXERCICIOS
+MOVE 'S' TO JN_SEPARA_ENTIDADES
+MOVE 'S' TO JN_SEPARA_PROCESSADOS
+MOVE 'N' TO JN_SEPARA_CAMARA
+
+IF PARGERAL.COD_ENTIDADE EQ '01' BEGIN
+ ACCEPT JN_COD_ENTIDADE {AUTOCLEAR}
+ [KEY.ESCAPE] ABORT
+ IF JN_COD_ENTIDADE NE '' BEGIN
+                           COMZEROS JN_COD_ENTIDADE 2
+                           CLEAR ENTIDADE
+                           MOVE ST@EXERCICIO@FINANCEIRO TO ENTIDADE.EXERCICIO 
+                           MOVE JN_COD_ENTIDADE         TO ENTIDADE.CODIGO
+                           FIND EQ ENTIDADE BY INDEX.1
+                           [~FOUND] BEGIN
+                                     ADVERTE 'ENTIDADE NŽO CADASTRADA'
+                                     CLEARFORM JN_COD_ENTIDADE THRU JN_ENTIDADE
+                                     GOTO INICIO
+                                    END
+                           MOVE ENTIDADE.DESCRICAO      TO JN_ENTIDADE
+                          END
+ ELSE MOVE 'TODAS' TO JN_ENTIDADE
+ END
+ELSE BEGIN
+ MOVE PARGERAL.COD_ENTIDADE   TO JN_COD_ENTIDADE
+ CLEAR ENTIDADE
+ MOVE ST@EXERCICIO@FINANCEIRO TO ENTIDADE.EXERCICIO 
+ MOVE JN_COD_ENTIDADE         TO ENTIDADE.CODIGO
+ FIND EQ ENTIDADE BY INDEX.1
+ [~FOUND] BEGIN
+           ADVERTE 'ENTIDADE NŽO CADASTRADA'
+           CLEARFORM JN_COD_ENTIDADE THRU JN_ENTIDADE
+          END
+ MOVE ENTIDADE.DESCRICAO      TO JN_ENTIDADE
+ END
+MOVE JN_COD_ENTIDADE TO ST_COD_ENTIDADE
+INDICATE TODAS! AS JN_COD_ENTIDADE EQ ''
+
+REPEAT
+ ACCEPT JN_MES_INICIAL      {CAPSLOCK}
+ [KEY.ESCAPE] ABORT
+ COMZEROS JN_MES_INICIAL 2
+ IF ((JN_MES_INICIAL LT '01') OR (JN_MES_INICIAL GT '13')) BEGIN
+                                                            MENSAGEM 353
+                                                            CLEARFORM JN_MES_INICIAL
+                                                           END
+UNTIL JN_MES_INICIAL NE ''
+
+REPEAT
+ ACCEPT JN_MES_FINAL      {CAPSLOCK}
+ [KEY.ESCAPE] ABORT
+ COMZEROS JN_MES_FINAL 2
+ IF ((JN_MES_FINAL LT '01') OR (JN_MES_FINAL GT '13')) BEGIN
+                                                        MENSAGEM 353
+                                                        CLEARFORM JN_MES_FINAL
+                                                       END
+UNTIL JN_MES_FINAL NE ''
+
+REPEAT
+ ACCEPT JN_SEPARA_EXERCICIOS {AUTOCLEAR,CAPSLOCK}
+ [KEY.ESCAPE] ABORT
+ IF NOT JN_SEPARA_EXERCICIOS IN 'SsNn' MOVE '' TO JN_SEPARA_EXERCICIOS
+UNTIL JN_SEPARA_EXERCICIOS NE '' 
+INDICATE SEPARA_EXERCICIOS! AS JN_SEPARA_EXERCICIOS IN 'Ss'
+
+REPEAT
+ [ TODAS!] ACCEPT JN_SEPARA_ENTIDADES {AUTOCLEAR,CAPSLOCK}
+ [KEY.ESCAPE] ABORT
+ IF NOT JN_SEPARA_ENTIDADES IN 'SsNn' MOVE '' TO JN_SEPARA_ENTIDADES
+UNTIL JN_SEPARA_ENTIDADES NE '' 
+INDICATE SEPARA_ENTIDADES! AS JN_SEPARA_ENTIDADES IN 'Ss'
+
+REPEAT
+ ACCEPT JN_SEPARA_PROCESSADOS {AUTOCLEAR,CAPSLOCK}
+ [KEY.ESCAPE] ABORT
+ IF NOT JN_SEPARA_PROCESSADOS IN 'SsNn' MOVE '' TO JN_SEPARA_PROCESSADOS
+UNTIL JN_SEPARA_PROCESSADOS NE '' 
+INDICATE SEPARA_PROCESSADOS! AS JN_SEPARA_PROCESSADOS IN 'Ss'
+
+REPEAT
+ [ TODAS!] ACCEPT JN_SEPARA_CAMARA {AUTOCLEAR,CAPSLOCK}
+ [~TODAS!] BEGIN
+  IF JN_COD_ENTIDADE NE '02' MOVE 'N' TO JN_SEPARA_CAMARA
+  ELSE                       MOVE 'S' TO JN_SEPARA_CAMARA
+  END
+ [KEY.ESCAPE] ABORT
+ IF NOT JN_SEPARA_CAMARA IN 'SsNn' MOVE '' TO JN_SEPARA_CAMARA
+UNTIL JN_SEPARA_CAMARA NE '' 
+INDICATE SEPARA_CAMARA! AS JN_SEPARA_CAMARA IN 'Nn'
+
+MONTH JN_MES_INICIAL ST_MES_INICIAL
+APPEND ST_MES_INICIAL ST_EXERCICIO
+
+MONTH JN_MES_FINAL ST_MES_FINAL
+APPEND ST_MES_FINAL ST_EXERCICIO
+
+MOVE 'Periodo: ' TO ST_PERIODO
+APPEND ST_PERIODO ST_MES_INICIAL ' A ' ST_MES_FINAL
+
+MOVE 'CONFERENCIA(XML) RESTOS A PAGAR MES ' TO ST_JUNTA
+APPEND ST_JUNTA  JN_MES_INICIAL ' A ' JN_MES_FINAL
+ABREREL ST_JUNTA '132C+'
+
+CABEC ST_PERIODO JN_PERIODO
+
+PAGE TELA
+PAGE MSG
+GOTOXY 25 0
+
+                   INDICATE TOTAL_ENTIDADE! AS [ SEPARA_EXERCICIOS!]
+[~TOTAL_ENTIDADE!] INDICATE TOTAL_ENTIDADE! AS [ SEPARA_PROCESSADOS!]
+[ TOTAL_ENTIDADE!] INDICATE TOTAL_ENTIDADE! AS [ SEPARA_ENTIDADES!]
+[ TOTAL_ENTIDADE!] INDICATE TOTAL_ENTIDADE! AS [ TODAS!]
+
+INDICATE        TOTAL_PROCESSADO! GROUP ALL [ SEPARA_PROCESSADOS!  SEPARA_EXERCICIOS! SEPARA_ENTIDADES!]
+INDICATE             SO_ENTIDADE! GROUP ALL [~SEPARA_PROCESSADOS! ~SEPARA_EXERCICIOS! SEPARA_ENTIDADES!]
+INDICATE TOTAL_GERAL_PROCESSADOS! GROUP ANY [   SEPARA_ENTIDADES!  SEPARA_EXERCICIOS!]
+
+APAGA_TEMPCALC
+
+//--monta temporario
+VERIFICA_CONTA PARGERAL.ESTADO PARGERAL.EXERCICIO 'RESTOS_A_PAGAR' '1' ' ' JN_MES_FINAL
+//--movimento de restos a pagar pegar at‚ mes 13
+MOVE JN_MES_FINAL TO IT_MES_FINAL
+
+FOR IT_MES FROM 1 TO IT_MES_FINAL
+ MOVE IT_MES TO ST_MES_BUSCA
+ COMZEROS ST_MES_BUSCA 2
+ 
+ CLEAR CONTACOR
+ CONSTRAINT_SET 1
+ CONSTRAIN CONTACOR.ANO EQ ST_EXERCICIO
+ CONSTRAIN CONTACOR.MES EQ ST_MES_BUSCA
+ [~TODAS!] CONSTRAIN CONTACOR.COD_ENTIDADE EQ ST_COD_ENTIDADE
+ CONSTRAIN CONTACOR.XML BETWEEN ST@RREO@XML@INICIAL AND ST@RREO@XML@FINAL
+ CONSTRAIN CONTACOR AS ((CONTACOR.CONTA GE ST@RREO@CONTA@INICIAL)  AND (CONTACOR.CONTA LE ST@RREO@CONTA@FINAL))
+ CONSTRAINED_FIND FIRST CONTACOR BY INDEX.2
+ WHILE [ FOUND]
+         CALC (JN_LENDO + 1)               TO JN_LENDO
+         MOVE (MID(CONTACOR.DADOS,100,20)) TO JN_DADOS
+
+         MOVE '' TO ST_DADOS
+         
+         INDICATE OK! FALSE
+         
+         VERIFICA_CONTA PARGERAL.ESTADO CONTACOR.ANO 'LANCTO_RP' CONTACOR.CONTA CONTACOR.DADOS ' '
+               
+                         INDICATE PROCESSADO!  AS CONTACOR.CONTA EQ ST@RREO@RP@PROCESSADO@INSCRITO 
+         [~PROCESSADO!]  INDICATE PROCESSADO!  AS CONTACOR.CONTA EQ ST@RREO@RP@PROCESSADO@PAGO 
+         [~PROCESSADO!]  INDICATE PROCESSADO!  AS CONTACOR.CONTA EQ ST@RREO@RP@PROCESSADO@CANCELADO
+         [ PROCESSADO!]  INDICATE OK! TRUE
+         
+                         INDICATE NPROCESSADO! AS CONTACOR.CONTA EQ ST@RREO@RP@NPROCESSADO@INSCRITO 
+         [~NPROCESSADO!] INDICATE NPROCESSADO! AS CONTACOR.CONTA EQ ST@RREO@RP@NPROCESSADO@PAGO
+         [~NPROCESSADO!] INDICATE NPROCESSADO! AS CONTACOR.CONTA EQ ST@RREO@RP@NPROCESSADO@CANCELADO
+         [ NPROCESSADO!] INDICATE OK! TRUE
+         
+         [ OK!] [ SEPARA_CAMARA!] INDICATE OK! AS CONTACOR.COD_ENTIDADE NE '02' 
+         
+         [ OK!] BEGIN
+                 //--linha analitica de acordo com a selecao escolhida 
+                 MONTA_DADOS ST_DADOS CONTACOR.CONTA ST@RREO@ANO@ORGAO CONTACOR.COD_ENTIDADE ST_NUMERO
+                 GRAVA_TEMPCALC ST_DADOS CONTACOR.CONTA CONTACOR.MES CONTACOR.VALOR CONTACOR.VALOR_2 CONTACOR.VALOR_1 ST_NUMERO ST@RREO@ANO@ORGAO CONTACOR.NAT_INICIAL
+
+                 //--subtotal por processado e nao processado por entidade
+                 [ TOTAL_PROCESSADO!] BEGIN
+                  MONTA_DADOS_TOTALIZADOR ST_DADOS CONTACOR.CONTA ST@RREO@ANO@ORGAO CONTACOR.COD_ENTIDADE ST_NUMERO '02'
+                  GRAVA_TEMPCALC ST_DADOS CONTACOR.CONTA CONTACOR.MES CONTACOR.VALOR CONTACOR.VALOR_2 CONTACOR.VALOR_1 ST_NUMERO ST@RREO@ANO@ORGAO CONTACOR.NAT_INICIAL
+                  END
+                 
+                 //--subtotal por entidade
+                 [ TOTAL_ENTIDADE!] BEGIN
+                  MONTA_DADOS_TOTALIZADOR ST_DADOS CONTACOR.CONTA ST@RREO@ANO@ORGAO CONTACOR.COD_ENTIDADE ST_NUMERO '01'
+                  GRAVA_TEMPCALC ST_DADOS CONTACOR.CONTA CONTACOR.MES CONTACOR.VALOR CONTACOR.VALOR_2 CONTACOR.VALOR_1 ST_NUMERO ST@RREO@ANO@ORGAO CONTACOR.NAT_INICIAL
+                  END
+                  
+                 //--total geral 
+                 MOVE 'XX XX' TO ST_DADOS
+                 MOVE 'XX'    TO ST_NUMERO
+                 GRAVA_TEMPCALC ST_DADOS CONTACOR.CONTA CONTACOR.MES CONTACOR.VALOR CONTACOR.VALOR_2 CONTACOR.VALOR_1 ST_NUMERO ST@RREO@ANO@ORGAO CONTACOR.NAT_INICIAL
+
+                 //--total geral por processado e nao processado
+                 [ TOTAL_GERAL_PROCESSADOS!] BEGIN
+                  MOVE 'XX'                TO ST_DADOS
+                  [ PROCESSADO!] MOVE '01' TO ST_NUMERO
+                  [~PROCESSADO!] MOVE '02' TO ST_NUMERO
+                  GRAVA_TEMPCALC ST_DADOS CONTACOR.CONTA CONTACOR.MES CONTACOR.VALOR CONTACOR.VALOR_2 CONTACOR.VALOR_1 ST_NUMERO ST@RREO@ANO@ORGAO CONTACOR.NAT_INICIAL
+                  END
+                END
+            
+         CONSTRAINT_SET 1
+         CONSTRAINED_FIND NEXT
+        END
+ CONSTRAINT_SET 1 CLEAR
+LOOP 
+
+MOVE 1 TO PAGECOUNT
+MOVE 0 TO RECCOUNT
+
+//--impressao do relatorio
+CABEC ST@PREFEITURA                HEADER.1
+[~TODAS!] CABEC ENTIDADE.DESCRICAO HEADER.2
+[ TODAS!] BEGIN
+ [~SEPARA_CAMARA!] CABEC 'CONSOLIDADO - COM CAMARA' HEADER.2
+ [ SEPARA_CAMARA!] CABEC 'CONSOLIDADO - SEM CAMARA' HEADER.2
+ END
+SYSDATA                            HEADER.3
+CABEC ST_PERIODO                   HEADER.4
+PRINT PAGECOUNT                 TO HEADER.5
+
+PRINT ST_DATA_ANTERIOR          TO HEADER.6
+OUTPUT HEADER
+
+INDICATE LINHA! FALSE
+INDICATE TOTAL! TRUE
+MOVE '' TO ST_QUEBRA
+
+CLEAR TEMPCALC
+CONSTRAINT_SET 1
+CONSTRAIN TEMPCALC.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+CONSTRAIN TEMPCALC.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+CONSTRAIN TEMPCALC.USUARIO      EQ ST@USUARIO
+CONSTRAINED_FIND FIRST TEMPCALC BY INDEX.1
+WHILE [FOUND]
+ KEYCHECK GOSUB LB_ROTINA_PARADA
+ INCREMENT RECCOUNT
+ CALC (JN_LENDO + 1)     TO JN_LENDO
+ MOVE RECCOUNT           TO JN_IMPRIMINDO
+ MOVE PAGECOUNT          TO JN_PAGINA
+
+ BLANKFORM BODY
+ GOSUB LB_PULA_PAGINA
+
+ IF (LEFT(TEMPCALC.CODIGO,2)) EQ 'XX' BEGIN
+  [ TOTAL!] BEGIN
+   OUTPUT LINHA
+   INDICATE TOTAL! FALSE
+   END
+   
+  IF TEMPCALC.NUMERO EQ 'XX' PRINT 'Total Geral '                               TO JT_CODIGO
+  IF TEMPCALC.NUMERO EQ '01' PRINT 'Total Geral Restos a Pagar Processados'     TO JT_CODIGO
+  IF TEMPCALC.NUMERO EQ '02' PRINT 'Total Geral Restos a Pagar Nao Processados' TO JT_CODIGO
+  
+  PRINT TEMPCALC.VALOR                                          TO JT_SALDO_INICIAL 
+  PRINT TEMPCALC.VALOR_1                                        TO JT_PAGO_NO_PERIODO
+  PRINT TEMPCALC.VALOR_2                                        TO JT_PAGO_ATUAL 
+  PRINT TEMPCALC.VALOR_3                                        TO JT_CANCELADO_NO_PERIODO
+  PRINT TEMPCALC.VALOR_4                                        TO JT_CANCELADO_ATUAL
+   
+  PRINT TEMPCALC.VALOR_5                                        TO JT_SALDO_ANT_2
+  PRINT TEMPCALC.VALOR_6                                        TO JT_SALDO_ANT_1
+  
+  PRINT TEMPCALC.VALOR_7                                        TO JT_LIQUIDACAO_NAO_PROCESSADOS
+  
+  PRINT (JT_SALDO_INICIAL - JT_PAGO_ATUAL - JT_CANCELADO_ATUAL) TO JT_SALDO_ATUAL
+  OUTPUT TOTAL
+  END
+
+ ELSE BEGIN
+  [ SO_ENTIDADE!] BEGIN
+   MOVE (LEFT(TEMPCALC.CODIGO,2)) TO ST_QUEBRA
+   
+   CLEAR ENTIDADE
+   MOVE ST@EXERCICIO@FINANCEIRO   TO ENTIDADE.EXERCICIO 
+   MOVE ST_QUEBRA                 TO ENTIDADE.CODIGO
+   FIND EQ ENTIDADE BY INDEX.1
+   
+   MOVE ENTIDADE.CODIGO  TO ST_CODIGO
+   APPEND ST_CODIGO ' ' ENTIDADE.DESCRICAO
+  
+   PRINT ST_CODIGO                                                  TO JBD_CODIGO
+   PRINT TEMPCALC.VALOR                                             TO JBD_SALDO_INICIAL 
+   PRINT TEMPCALC.VALOR_1                                           TO JBD_PAGO_NO_PERIODO
+   PRINT TEMPCALC.VALOR_2                                           TO JBD_PAGO_ATUAL 
+   PRINT TEMPCALC.VALOR_3                                           TO JBD_CANCELADO_NO_PERIODO
+   PRINT TEMPCALC.VALOR_4                                           TO JBD_CANCELADO_ATUAL
+   
+   PRINT TEMPCALC.VALOR_5                                           TO JBD_SALDO_ANT_2
+   PRINT TEMPCALC.VALOR_6                                           TO JBD_SALDO_ANT_1
+   
+   PRINT TEMPCALC.VALOR_7                                           TO JBD_LIQUIDACAO_NAO_PROCESSADOS
+   
+   PRINT (JBD_SALDO_INICIAL - JBD_PAGO_ATUAL - JBD_CANCELADO_ATUAL) TO JBD_SALDO_ATUAL
+   
+   GOSUB LB_PULA_PAGINA
+   OUTPUT BODY
+   END
+   
+  [~SO_ENTIDADE!] BEGIN
+   [ SEPARA_ENTIDADES!] BEGIN
+    IF ST_QUEBRA NE (LEFT(TEMPCALC.CODIGO,2)) BEGIN
+     MOVE (LEFT(TEMPCALC.CODIGO,2)) TO ST_QUEBRA
+     
+     CLEAR ENTIDADE
+     MOVE ST@EXERCICIO@FINANCEIRO   TO ENTIDADE.EXERCICIO 
+     MOVE ST_QUEBRA                 TO ENTIDADE.CODIGO
+     FIND EQ ENTIDADE BY INDEX.1
+     
+     PRINT ENTIDADE.CODIGO          TO JBD_COD_ENTIDADE
+     PRINT ENTIDADE.DESCRICAO       TO JBD_ENTIDADE
+     [ LINHA!] BEGIN
+                OUTPUT LINHA2
+                INDICATE LINHA! FALSE
+               END
+     OUTPUT ENTIDADE
+     END
+    END
+
+   IF TEMPCALC.NUMERO EQ '' PRINT (MID(TEMPCALC.CODIGO,50,4))       TO JBD_CODIGO
+   IF TEMPCALC.NUMERO EQ '01' PRINT 'Total da Entidade'             TO JBD_CODIGO
+   IF TEMPCALC.NUMERO EQ '02' PRINT 'Total Processado'              TO JBD_CODIGO
+   IF TEMPCALC.NUMERO EQ '03' PRINT 'Total Nao Processado'          TO JBD_CODIGO
+    
+   PRINT TEMPCALC.VALOR                                             TO JBD_SALDO_INICIAL 
+   PRINT TEMPCALC.VALOR_1                                           TO JBD_PAGO_NO_PERIODO
+   PRINT TEMPCALC.VALOR_2                                           TO JBD_PAGO_ATUAL 
+   PRINT TEMPCALC.VALOR_3                                           TO JBD_CANCELADO_NO_PERIODO
+   PRINT TEMPCALC.VALOR_4                                           TO JBD_CANCELADO_ATUAL
+   
+   PRINT TEMPCALC.VALOR_5                                           TO JBD_SALDO_ANT_2
+   PRINT TEMPCALC.VALOR_6                                           TO JBD_SALDO_ANT_1
+   
+   PRINT TEMPCALC.VALOR_7                                           TO JBD_LIQUIDACAO_NAO_PROCESSADOS
+   
+   PRINT (JBD_SALDO_INICIAL - JBD_PAGO_ATUAL - JBD_CANCELADO_ATUAL) TO JBD_SALDO_ATUAL
+   
+   GOSUB LB_PULA_PAGINA
+   OUTPUT BODY
+   END
+  INDICATE LINHA! TRUE
+  END
+
+ INDICATE ERR FALSE
+ ON ERROR GOSUB CHECA_GRAVACAO
+ REREAD TEMPCALC
+ DELETE TEMPCALC
+ UNLOCK
+ ON ERROR OFF
+ CONSTRAINED_FIND NEXT
+ END
+CONSTRAINT_SET 1 CLEAR
+
+OUTPUT FOOTER
+OUTPUT MENSAGEM
+
+#INCLUDE R00CONFE.INC
+
+BUSCA_CAMINHO_MENU 'R04CONFE' ''
+FORMFEED
+GRAVAPAG
+
+[~TITULO_R00CONF!] BEGIN
+                    ADVERTE 'VERIFIQUE, NO FIM DO RELATORIO, RELACAO DA(S) ENTIDADE(S) SEM ARQUIVO(S) XML REFERENTE AO PERIODO SELECIONADO.'
+                   END
+
+ABORT
+
+LB_ROTINA_PARADA:
+ CABEC 'GOSTARIA REALMENTE DE SAIR < S/N >?' CONFIRMA.1
+ PAGE CONFIRMA
+ INKEYCHECK ST_TECLA IN 'SsNn'
+ IF ST_TECLA IN 'Ss' BEGIN
+                      MOVE 0 TO RECCOUNT
+                      LIMPA_PRN
+                     END
+ 
+ MOVE 0 TO CURRENT_IMAGE
+ PAGE TELA
+ PAGE MSG
+RETURN
+
+KEYPROC KEY.UP
+ BACKFIELD
+RETURN
+
+KEYPROC KEY.FIELD
+IF CURRENT_WINDOW EQ 1 BEGIN
+                        MOVE 'CENTIDAD 1 ' TO ST_JUNTA
+                        APPEND ST_JUNTA ST@USUARIO ' ' ST@OPCAO ' ' ST@PROGRAMA ' ' ST@CODIGO@ENTIDADE ' ' ST@EXERCICIO@FINANCEIRO
+                        CHAIN WAIT ST_JUNTA EXPORT_FILES
+                        MOVE 0 TO CURRENT_IMAGE
+                        PAGE TELA
+                        IF ENTIDADE.CODIGO NE "" BEGIN
+                                                  TRIM ENTIDADE.CODIGO    TO JN_COD_ENTIDADE
+                                                  TRIM ENTIDADE.DESCRICAO TO JN_ENTIDADE
+                                                 END
+                        ELSE ENTAGAIN
+                        RETURN
+                       END
+ENTAGAIN
+RETURN
+
+LB_PULA_PAGINA:
+ IF LINECOUNT GE 54 BEGIN
+  OUTPUT FOOTER
+  FORMFEED
+  PRINT PAGECOUNT TO HEADER.5
+  OUTPUT HEADER
+  END
+RETURN
+
+
+#INCLUDE INTEGRID.INC
+
+
+
+

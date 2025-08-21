@@ -1,0 +1,219 @@
+/TELA1 RESIDENT
+цдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд╢
+Ё                                                                              Ё
+Ё                                                                              Ё
+Ё                                                                              Ё
+Ё                                                                              Ё
+Ё                                                                              Ё
+Ё                                                                              Ё
+Ё                                                                              Ё
+Ё                                                                              Ё
+Ё                                                                              Ё
+Ё                                                                              Ё
+Ё                                                                              Ё
+Ё                                                                              Ё
+Ё                                                                              Ё
+цдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд╢
+Ё    <F1> Ajuda           <Setas> Movimenta tarja            <ESC> Retorna     Ё
+юдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддды
+/RODAPE1 RESIDENT
+цдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд╢
+Ё    <F1> Ajuda           <Setas> Movimenta tarja            <ESC> Retorna     Ё
+юдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддды
+/CONFIRMA RESIDENT
+цдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд╢
+Ё______________________________________________________________________________Ё
+юдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддды
+/RODAPE RESIDENT
+цдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд╢
+Ё    <F1> Ajuda           <Setas> Movimenta tarja            <ESC> Retorna     Ё
+юдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддды
+/OPCOES RESIDENT
+здддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд©
+ЁQual a forma que o(s) arquivo(s) dever═(└o) ser copiado:                Ё
+Ё                                                                        Ё
+Ё<1> = PRN OU <2> = PDF ?         Digite a op┤└o: <_> ___                Ё
+цдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд╢
+ЁInforme o "Local" onde ser═ efetuada a C╒pia                            Ё
+Ё                                                                        Ё
+Ё________________________________________________________________________Ё
+юдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддды
+/*
+#INCLUDE CONAM.LIB
+#INCLUDE CAMINHO.LIB
+
+STRING ST_DESTINO  255 ST_TELA        1 ST_ARQUIVO 50 ST_ARQ1  50 ST_ANEXO 50 ST_ANEXO1 50 ST_AUX    255 ST_LINHA 255
+STRING ST_CLIENTE  255 ST_DIRETORIO 255 ST_SFPM   255 ST_TAMANHO  ST_FONTE    ST_FOLHA     ST_MOSTRA
+DATE    DT_DATA
+SYSDATA DT_DATA
+
+INTEGER IT_TAMANHO IT_COLUNAS IT_AUX
+
+AUTOPAGE OPCOES
+NAME JN_FORMATO JN_NOME_FORMATO
+NAME JN_DESTINO
+
+OPEN COLUNREL
+OPEN ARQ_PRN
+
+PAGE SET TELA1     AT  7  0 COLORS IT_COR_TARJA   IT_COR_MOLDURA
+PAGE SET CONFIRMA  AT 21  0 COLORS IT_COR_TARJA   IT_COR_MOLDURA
+PAGE SET RODAPE    AT 21  0 COLORS IT_COR_TARJA   IT_COR_MOLDURA 
+PAGE SET RODAPE1   AT 21  0 COLORS IT_COR_TARJA   IT_COR_MOLDURA
+PAGE SET OPCOES    AT 11 03 COLORS IT_COR_MOLDURA IT_COR_TARJA
+
+MOVE (OBTER_PASTA_TEXTOS('TEXTOS','')) TO ST_DIRETORIO
+
+GET_CURRENT_DIRECTORY TO ST_SFPM
+APPEND ST_SFPM '/'
+LOWERCASE ST_SFPM
+
+INICIO:
+
+SCREENMODE IT_COR_TARJA ON
+CLEARFORM OPCOES
+DISPLAY '<Enter> Seleciona o "LOCAL"' TO JN_DESTINO
+PAGE OPCOES
+SCREENMODE IT_COR_TARJA ON
+
+REPEAT 
+ ACCEPT JN_FORMATO {AUTOCLEAR}
+ [KEY.ESCAPE] GOTO SAI
+UNTIL JN_FORMATO IN '1#2'
+
+IF JN_FORMATO EQ '1' PRINT 'PRN' TO JN_NOME_FORMATO
+ELSE                 PRINT 'PDF' TO JN_NOME_FORMATO
+// PAUSE ''
+
+REPEAT
+ ROTINA_INICIO:
+ KEYPROC ON
+ DISPLAY '<Enter> Seleciona o "LOCAL"' TO JN_DESTINO
+ GOSUB ALTA_INTENSIDADE
+ INKEY ST_TECLA
+ GOSUB BAIXA_INTENSIDADE
+ 
+ MOVEALL '' TO JN_DESTINO 
+ 
+ TRIM ST_DIRETORIO TO ST_DIRETORIO
+ MOVE ST_DIRETORIO TO JN_DESTINO
+ [KEY.ESCAPE] BEGIN
+               SAI:
+               CABEC 'CONFIRMA RETORNO ? <S/N>' CONFIRMA.1
+               PAGE CONFIRMA
+               INKEYCHECK ST_TECLA IN 'SsNn'
+               IF ST_TECLA IN 'sS' ABORT
+               ELSE IF ST_TECLA IN 'nN' GOTO INICIO
+              END
+
+ [KEY.RETURN] BEGIN
+               JN_OP:
+               ACCEPT JN_DESTINO {AUTOCLEAR}
+               [KEY.ESCAPE] BEGIN
+                             CABEC 'CONFIRMA RETORNO ? <S/N>' CONFIRMA.1
+                             PAGE CONFIRMA
+                             INKEYCHECK ST_TECLA IN 'SsNn'
+                             IF ST_TECLA IN 'sS' ABORT
+                             ELSE IF ST_TECLA IN 'nN' BEGIN
+                                                       PAGE RODAPE
+                                                       GOTO JN_OP
+                                                      END
+                            END
+              END
+
+              SCREENMODE IT_COR_TITULO ON
+              MOVE '' TO ST_TELA
+              CABEC 'CONFIRMA C╒PIA? <S/N>' CONFIRMA.1
+              PAGE CONFIRMA
+              INKEYCHECK ST_TELA IN 'SsNn'
+              IF ST_TELA IN 'nN' BEGIN
+                                  PAGE RODAPE
+                                  GOTO INICIO
+                                 END
+                                 
+              SCREENMODE IT_COR_TITULO ON
+              CABEC 'INICIANDO C╒PIA PARA DRIVE SELECIONADO...' CONFIRMA.1
+              SCREENMODE IT_COR_TARJA ON
+              PAGE CONFIRMA
+              BEEP
+              GOTOXY 26 0
+              MOVE '' TO ST_DESTINO
+              MOVE 0 TO CURRENT_IMAGE
+              
+              CLEAR ARQ_PRN
+              MOVE ST@CODIGO@ENTIDADE      TO ARQ_PRN.COD_ENTIDADE
+              MOVE ST@EXERCICIO@FINANCEIRO TO ARQ_PRN.EXERCICIO
+              MOVE ST@USUARIO              TO ARQ_PRN.USUARIO
+              REPEAT
+               FIND GT ARQ_PRN BY INDEX.2
+               [ FOUND] INDICATE FOUND AS ARQ_PRN.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+               [ FOUND] INDICATE FOUND AS ARQ_PRN.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+               [ FOUND] INDICATE FOUND AS ARQ_PRN.USUARIO      EQ ST@USUARIO
+               [ FOUND] IF ARQ_PRN.FLAG_EMISSAO EQ '@' BEGIN
+                                                        MOVE 'arq' TO ST_ARQUIVO
+                                                        APPEND ST_ARQUIVO ST@CODIGO@ENTIDADE ST@EXERCICIO@FINANCEIRO ARQ_PRN.CODIGO '.prn'
+                                                        
+                                                        MOVE ARQ_PRN.COLUNAS TO ST_TAMANHO
+                                                        
+                                                        IF JN_FORMATO EQ '1' BEGIN
+                                                                              COPYFILE ST_ARQUIVO TO JN_DESTINO
+                                                                             END
+                                                        ELSE                 BEGIN
+                                                                              MOVEALL '' TO ST_FOLHA ST_TAMANHO
+                                                                              
+                                                                              //--obter qtd de colunas do relatorio
+                                                                              MOVE ST_SFPM TO ST_AUX
+                                                                              APPEND ST_AUX ST_ARQUIVO
+                                                                              DIRECT_INPUT ST_ARQUIVO
+                                                                              MOVE 0 TO IT_TAMANHO
+                                                                              
+                                                                              FOR IT_AUX FROM 1 TO 60
+                                                                               READLN ST_LINHA
+                                                                               LENGTH ST_LINHA TO IT_COLUNAS
+                                                                               IF IT_COLUNAS GT IT_TAMANHO MOVE IT_COLUNAS TO IT_TAMANHO
+                                                                              LOOP
+                                                                              CLOSE_INPUT ST_ARQUIVO
+                                                                              //--
+                                                                              
+                                                                              CLEAR COLUNREL
+                                                                              MOVE IT_TAMANHO TO COLUNREL.QTD_COLUNAS
+                                                                              FIND GE COLUNREL BY INDEX.1
+                                                                              [~FOUND] CLEAR COLUNREL
+                                                                              
+                                                                              MOVE COLUNREL.ORIENTACAO TO ST_FOLHA
+                                                                              MOVE COLUNREL.FONTE      TO ST_TAMANHO
+                                                                              
+                                                                              TRIM ST_FOLHA   TO ST_FOLHA
+                                                                              TRIM ST_TAMANHO TO ST_TAMANHO
+                                                                              
+                                                                              REPLACE ',' IN ST_TAMANHO WITH '.'
+                                                                              
+                                                                              IF ST_FOLHA NE '' BEGIN
+                                                                                                 MOVE '' TO ST_DESTINO
+                                                                                                 //--- oficial clientes ---
+                                                                                                 APPEND ST_DESTINO 'php /usr/bin/txt2pdf.php ' ST_SFPM ' ' ST_ARQUIVO ' ' ST_FOLHA ' ' ST_TAMANHO ' ' JN_DESTINO ' > a'
+                                                                                                 RUNPROGRAM WAIT ST_DESTINO
+                                                                                                END
+                                                                             END
+                                                        INDICATE FOUND TRUE
+                                                       END
+              UNTIL [~FOUND]
+              
+              CLOSE_OUTPUT ST_DESTINO
+              CLEARSCREEN
+              ABORT
+LOOP
+
+GOTO INICIO
+
+#INCLUDE INTEGRID.INC
+
+BAIXA_INTENSIDADE:
+ SCREENMODE IT_COR_TARJA ON
+ DISPLAY JN_DESTINO TO JN_DESTINO
+RETURN
+
+ALTA_INTENSIDADE:
+ SCREENMODE IT_COR_TITULO ON
+ DISPLAY JN_DESTINO TO JN_DESTINO
+RETURN

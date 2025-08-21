@@ -1,0 +1,60 @@
+-----------------------------------------------------------------------------
+  DATE: 25/10/2023      TIME: 17:31                                  PAGE:  1
+  FILE DEFINITION FOR FILE: TEMPCALC (# 134)
+-----------------------------------------------------------------------------
+  DRIVER NAME               : DATAFLEX
+  FILE ROOT NAME            : TEMPCALC
+  USER DISPLAY NAME         : TEMPCALC
+  DATAFLEX FILE NAME        : TEMPCALC
+-----------------------------------------------------------------------------
+  RECORD LENGTH             : 384       ( USED: 360 )
+  MAX NUMBER OF RECORDS     : 16711679  ( USED: 0 )
+  FILE COMPRESSION          : NONE
+  RE-USE DELETED SPACE      : YES
+  LOCKING TYPE              : FILE
+  HEADER INTEGRITY CHECKING : YES
+  TRANSACTION TYPE          : CLIENT ATOMIC
+  RECORD IDENTITY INDEX     : 0 ( 0 , 0 )
+  FILE LOGIN PARAMETER      : 
+  SYSTEM FILE               : NO 
+-----------------------------------------------------------------------------
+
+NUM  FIELD NAME       TYPE SIZE  OFFST IX   RELATES TO FILE.FIELD
+---  ---------------  ---- ----- ----- --   ---------------------------------
+  1  COD_ENTIDADE     ASC      2     1  1   
+  2  EXERCICIO        ASC      4     3  1   
+  3  USUARIO          ASC     20     7  1   
+  4  CODIGO           ASC    100    27  1   
+  5  NUMERO           ASC     30   127  1   
+  6  VALOR            NUM   14.2   157      
+  7  VALOR_1          NUM   14.2   165      
+  8  VALOR_2          NUM   14.2   173      
+  9  VALOR_3          NUM   14.2   181      
+ 10  VALOR_4          NUM   14.2   189      
+ 11  VALOR_5          NUM   14.2   197      
+ 12  VALOR_6          NUM   14.2   205      
+ 13  VALOR_7          NUM   14.2   213      
+ 14  VALOR_8          NUM   14.2   221      
+ 15  VALOR_9          NUM   14.2   229      
+ 16  VALOR_10         NUM   14.2   237      
+ 17  AUXILIAR         ASC     30   245      
+ 18  AUXILIAR_1       ASC     30   275      
+ 19  AUXILIAR_2       ASC     50   305      
+ 20  DATA_AUX         DAT      3   355      
+ 21  DATA_AUX_1       DAT      3   358      
+
+
+INDEX# FIELDS          DES U/C    LENGTH LEVELS SEGMENTS MODE
+------ --------------- --- ---    ------ ------ -------- -------
+  1    COD_ENTIDADE    NO  NO       156    16      5     ON-LINE
+       EXERCICIO       NO  NO 
+       USUARIO         NO  NO 
+       CODIGO          NO  NO 
+       NUMERO          NO  NO 
+
+  2    COD_ENTIDADE    NO  NO       156    16      5     ON-LINE
+       EXERCICIO       NO  NO 
+       USUARIO         NO  NO 
+       NUMERO          NO  NO 
+       CODIGO          NO  NO 
+

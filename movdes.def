@@ -1,0 +1,178 @@
+-----------------------------------------------------------------------------
+  DATE: 25/10/2023      TIME: 17:31                                  PAGE:  1
+  FILE DEFINITION FOR FILE: MOVDES (# 212)
+-----------------------------------------------------------------------------
+  DRIVER NAME               : DATAFLEX
+  FILE ROOT NAME            : MOVDES
+  USER DISPLAY NAME         : MOVDES
+  DATAFLEX FILE NAME        : MOVDES
+-----------------------------------------------------------------------------
+  RECORD LENGTH             : 170       ( USED: 168 )
+  MAX NUMBER OF RECORDS     : 16711679  ( USED: 0 )
+  FILE COMPRESSION          : NONE
+  RE-USE DELETED SPACE      : YES
+  LOCKING TYPE              : FILE
+  HEADER INTEGRITY CHECKING : YES
+  TRANSACTION TYPE          : CLIENT ATOMIC
+  RECORD IDENTITY INDEX     : 0 ( 0 , 0 )
+  FILE LOGIN PARAMETER      : 
+  SYSTEM FILE               : NO 
+-----------------------------------------------------------------------------
+
+NUM  FIELD NAME       TYPE SIZE  OFFST IX   RELATES TO FILE.FIELD
+---  ---------------  ---- ----- ----- --   ---------------------------------
+  1  COD_ENTIDADE     ASC      2     1  1   
+  2  EXERCICIO        ASC      4     3  1   
+  3  ORGAO            ASC      8     7  2   
+  4  ECONOMICA        ASC     12    15  2   
+  5  FUNCAO           ASC      2    27  2   
+  6  SUBFUNCAO        ASC      3    29  2   
+  7  PROGRAMA         ASC      4    32  2   
+  8  TIPO_CODIGO_PA   ASC      4    36  2   
+  9  TIPO_PROJ_ATIV   ASC      1    40      
+ 10  CODI_PROJ_ATIV   ASC      3    41      
+ 11  NUMERO           ASC      5    44  1   
+ 12  FIXADO_INICIAL   NUM   14.2    49      
+ 13  FIXADO_FINAL     NUM   14.2    57      
+ 14  ACUM_EMPENHO     NUM   14.2    65      
+ 15  VINCULADO        NUM   14.2    73      
+ 16  ORDINARIO        NUM   14.2    81      
+ 17  TIPO_DESPESA     ASC      2    89      
+ 18  TIPO_INSTRUM     ASC      2    91  8   
+ 19  COD_INSTRUM      ASC     10    93  8   
+ 20  DATA             DAT      3   103      
+ 21  COD_SUB_UNIDADE  OVE      2    13  2   
+ 22  COD_ORGAO        OVE      2     7  2   
+ 23  COD_UNIDADE      OVE      2    10  2   
+ 24  FLAG_FIX_FINAL   ASC      1   106      
+ 25  ATZ_MONETARIA    ASC      1   107      
+ 26  VIGENCIA_SN      ASC      1   108      
+ 27  ULT_DATA         DAT      3   109  9   
+ 28  ULT_HORA         ASC      8   112  9   
+ 29  ENSINO           ASC      1   120 12   
+ 30  FUNCIONAL        OVE      9    27  2   
+ 31  RESERVA          NUM   14.2   121      
+ 32  GRUPO_DESPESA    OVE      3    15  2   
+ 33  SAUDE            ASC      1   129      
+ 34  N_FONTE          ASC      5   130  2   
+ 35  COD_APLICACAO    ASC      7   135  2   
+ 36  REMANEJA         ASC      1   142      
+ 37  AUX              ASC      5   143      
+ 38  DESP_ORIGINAL    ASC      5   148      
+ 39  RELACIONADA      ASC      5   153      
+ 40  COD_ORGAO_AUX    ASC      8   158      
+ 41  REABERTURA_DESP  ASC      1   166      
+ 42  TIPO_CREDITO     ASC      2   167  8   
+
+
+INDEX# FIELDS          DES U/C    LENGTH LEVELS SEGMENTS MODE
+------ --------------- --- ---    ------ ------ -------- -------
+  1    COD_ENTIDADE    NO  NO       11     5       3     ON-LINE
+       EXERCICIO       NO  NO 
+       NUMERO          NO  NO 
+
+  2    COD_ENTIDADE    NO  NO       51     8       10    ON-LINE
+       EXERCICIO       NO  NO 
+       ORGAO           NO  NO 
+       ECONOMICA       NO  NO 
+       FUNCAO          NO  NO 
+       SUBFUNCAO       NO  NO 
+       PROGRAMA        NO  NO 
+       TIPO_CODIGO_PA  NO  NO 
+       N_FONTE         NO  NO 
+       COD_APLICACAO   NO  NO 
+
+  3    COD_ENTIDADE    NO  NO       18     5       5     ON-LINE
+       EXERCICIO       NO  NO 
+       TIPO_CODIGO_PA  NO  NO 
+       NUMERO          NO  NO 
+       RECNUM          NO  NO 
+
+  4    COD_ENTIDADE    NO  NO       12     5       4     ON-LINE
+       EXERCICIO       NO  NO 
+       SUBFUNCAO       NO  NO 
+       RECNUM          NO  NO 
+
+  5    COD_ENTIDADE    NO  NO       26     6       5     ON-LINE
+       EXERCICIO       NO  NO 
+       ECONOMICA       NO  NO 
+       NUMERO          NO  NO 
+       RECNUM          NO  NO 
+
+  6    COD_ENTIDADE    NO  NO       22     6       7     ON-LINE
+       EXERCICIO       NO  NO 
+       FUNCAO          NO  NO 
+       SUBFUNCAO       NO  NO 
+       PROGRAMA        NO  NO 
+       TIPO_CODIGO_PA  NO  NO 
+       RECNUM          NO  NO 
+
+  7    COD_ENTIDADE    NO  NO       13     5       4     ON-LINE
+       EXERCICIO       NO  NO 
+       PROGRAMA        NO  NO 
+       RECNUM          NO  NO 
+
+  8    COD_ENTIDADE    NO  NO       25     6       6     ON-LINE
+       EXERCICIO       NO  NO 
+       TIPO_INSTRUM    NO  NO 
+       COD_INSTRUM     NO  NO 
+       TIPO_CREDITO    NO  NO 
+       NUMERO          NO  NO 
+
+  9    COD_ENTIDADE    NO  NO       20     6       5     ON-LINE
+       EXERCICIO       NO  NO 
+       ULT_DATA        NO  NO 
+       ULT_HORA        NO  NO 
+       RECNUM          NO  NO 
+
+  10   COD_ENTIDADE    NO  NO       48     8       9     ON-LINE
+       EXERCICIO       NO  NO 
+       COD_ORGAO       NO  NO 
+       ECONOMICA       NO  NO 
+       FUNCIONAL       NO  NO 
+       TIPO_CODIGO_PA  NO  NO 
+       N_FONTE         NO  NO 
+       COD_APLICACAO   NO  NO 
+       RECNUM          NO  NO 
+
+  11   COD_ENTIDADE    NO  NO       54     8       11    ON-LINE
+       EXERCICIO       NO  NO 
+       ORGAO           NO  NO 
+       ECONOMICA       NO  NO 
+       FUNCAO          NO  NO 
+       SUBFUNCAO       NO  NO 
+       PROGRAMA        NO  NO 
+       TIPO_CODIGO_PA  NO  NO 
+       N_FONTE         NO  NO 
+       COD_APLICACAO   NO  NO 
+       RECNUM          NO  NO 
+
+  12   COD_ENTIDADE    NO  NO       33     7       6     ON-LINE
+       EXERCICIO       NO  NO 
+       FUNCIONAL       NO  NO 
+       ECONOMICA       NO  NO 
+       ENSINO          NO  NO 
+       NUMERO          NO  NO 
+
+  13   COD_ENTIDADE    NO  NO       51     8       10    ON-LINE
+       EXERCICIO       NO  NO 
+       ORGAO           NO  NO 
+       PROGRAMA        NO  NO 
+       FUNCAO          NO  NO 
+       SUBFUNCAO       NO  NO 
+       TIPO_CODIGO_PA  NO  NO 
+       ECONOMICA       NO  NO 
+       N_FONTE         NO  NO 
+       COD_APLICACAO   NO  NO 
+
+  14   COD_ENTIDADE    NO  NO       51     8       10    ON-LINE
+       EXERCICIO       NO  NO 
+       ORGAO           NO  NO 
+       TIPO_CODIGO_PA  NO  NO 
+       ECONOMICA       NO  NO 
+       FUNCAO          NO  NO 
+       SUBFUNCAO       NO  NO 
+       PROGRAMA        NO  NO 
+       N_FONTE         NO  NO 
+       COD_APLICACAO   NO  NO 
+

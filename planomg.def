@@ -1,0 +1,50 @@
+-----------------------------------------------------------------------------
+  DATE: 27/05/2024      TIME: 15:53                                  PAGE:  1
+  FILE DEFINITION FOR FILE: PLANOMG (# 332)
+-----------------------------------------------------------------------------
+  DRIVER NAME               : DATAFLEX
+  FILE ROOT NAME            : PLANOMG
+  USER DISPLAY NAME         : PLANOMG
+  DATAFLEX FILE NAME        : PLANOMG
+-----------------------------------------------------------------------------
+  RECORD LENGTH             : 512       ( USED: 489 )
+  MAX NUMBER OF RECORDS     : 16711679  ( USED: 52583 )
+  FILE COMPRESSION          : NONE
+  RE-USE DELETED SPACE      : YES
+  LOCKING TYPE              : FILE
+  HEADER INTEGRITY CHECKING : YES
+  TRANSACTION TYPE          : CLIENT ATOMIC
+  RECORD IDENTITY INDEX     : 0 ( 0 , 0 )
+  FILE LOGIN PARAMETER      : 
+  SYSTEM FILE               : NO 
+-----------------------------------------------------------------------------
+
+NUM  FIELD NAME       TYPE SIZE  OFFST IX   RELATES TO FILE.FIELD
+---  ---------------  ---- ----- ----- --   ---------------------------------
+  1  ANO              ASC      4     1  1   
+  2  NATUREZA         ASC     10     5  1   
+  3  CODIGO           ASC     20    15  1   
+  4  DESCRICAO        ASC    200    35  2   
+  5  GRAU             ASC      1   235      
+  6  TIPO             ASC      1   236      
+  7  DESCRICAO_ABREV  ASC     50   237      
+  8  DESCRICAO_1      ASC     50   287      
+  9  DESCRICAO_2      ASC     50   337      
+ 10  DESCRICAO_3      ASC     50   387      
+ 11  DESCRICAO_4      ASC     50   437      
+ 12  DETALHA_FONTE    ASC      1   487      
+ 13  CONVENIO         ASC      1   488      
+ 14  CONTRATO         ASC      1   489      
+
+
+INDEX# FIELDS          DES U/C    LENGTH LEVELS SEGMENTS MODE
+------ --------------- --- ---    ------ ------ -------- -------
+  1    ANO             NO  NO       34     7       3     ON-LINE
+       NATUREZA        NO  NO 
+       CODIGO          NO  NO 
+
+  2    ANO             NO  NO       234    24      4     ON-LINE
+       NATUREZA        NO  NO 
+       DESCRICAO       NO  NO 
+       CODIGO          NO  NO 
+

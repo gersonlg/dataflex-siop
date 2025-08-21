@@ -1,0 +1,2095 @@
+/TELA RESIDENT
+ÆÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍµ
+³                                                                              ³
+³                                                                              ³
+ÃÄÄÄÄÄÄÄÄÄÄ GERACAO DE ARQUIVO PARA IMPORTACAO DO SIOPS - DESPESA ÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                                                                              ³
+³                                                                              ³
+³                                                                              ³
+³                                                                              ³
+³  Entidade <F2>   : __ _____________________________________________________  ³
+³                                                                              ³
+³                                                                              ³
+³  Mes             : __                                                        ³
+³                                                                              ³
+³                                                                              ³
+³                                                                              ³
+³                                                                              ³
+³                                                                              ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                               <ESC>  Retorna                                 ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/CONFIRMA RESIDENT
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³______________________________________________________________________________³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/MSG RESIDENT
+ÚÄÄÄÄÄÄÄÄÄ GERACAO DE ARQUIVO PARA IMPORTACAO DO SIOPS - DESPESA ÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³                                                                            ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ SOLICITADO ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                                                                            ³
+³                                                                            ³
+³                            Despesas - Siops                                ³
+³                                                                            ³
+³                                                                            ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ PROCESSANDO ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                                                                            ³
+³                                                                            ³
+³                       þ Gerando Arquivos Textos þ                          ³
+³                                                                            ³
+³                                                                            ³
+³                           Lendo :  __________.                             ³
+³                                                                            ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/HEADER RESIDENT
+ -----------------------------------------------------------------------------------------------------------------
+|                                                                                                                 |
+|                          ___________________________________________________________                            |
+|                                                                                                                 |
+|                                                                                                                 |
+|                   PENDENCIAS REFERENTE A GERACAO DE ARQUIVO TEXTO PARA O SIOPS - DESPESAS                       |
+|                                                                                                                 |
+|                          ___________________________________________________________                            |
+| __/__/____                                                                                         Pagina ____. |
+|-----------------------------------------------------------------------------------------------------------------|
+/BODY RESIDENT
+| _______________________________________________________________________________________________________________ |
+/TOTAL RESIDENT
+ -----------------------------------------------------------------------------------------------------------------
+/VALOR# RESIDENT
+______________.__
+/FANTASMA# RESIDENT
+_________________
+/HEADER_CONFERE
+    FIXADO INICIAL       FIXADO ATUAL           EMPENHADO         LIQUIDADO               PAGO     RESTOS A PAGAR             ORCADO
+/LINHA_CONFERE
+
+___________,___.__ ___________,___.__ ___________,___.__ ___________,___.__ ___________,___.__ ___________,___.__ ___________,___.__ 
+/HEADER_CONFERE_PASTA
+ PASTA                                                                               FIXADO INICIAL       FIXADO ATUAL           EMPENHADO         LIQUIDADO               PAGO     RESTOS A PAGAR             ORCADO
+
+/LINHA_CONFERE_PASTA
+____________________________________________________________________________________________________ ___________,___.__ ___________,___.__ ___________,___.__ ___________,___.__ ___________,___.__ ___________,___.__ ___________,___.__ 
+/LINHA_CONFERE_PASTA_TOTAL
+
+____________________________________________________________________________________________________ ___________,___.__ ___________,___.__ ___________,___.__ ___________,___.__ ___________,___.__ ___________,___.__ ___________,___.__ 
+/*
+#INCLUDE CONAM.LIB
+#INCLUDE ZERAARQ.LIB
+#INCLUDE CAMINHO.LIB
+
+//--
+//-- !1 - codigo
+//-- !2 - tipo FI fixado inicial FA fixado atualizado EP empenho LQ liquidado PG pago RP restos a pagar nao processado OR orcado proximo exercicio
+//-- !3 - valor
+//-- !4 - subfuncao
+//-- !5 - fonte de recurso
+//-- !6 - codigo de aplicacao
+//--
+#COMMAND GRAVA_TEMPCALC
+#IFDEF  ST@CODIGO@DESPESA@SIOPS
+#ELSE
+ STRING ST@CODIGO@DESPESA@SIOPS 255
+#ENDIF
+ 
+ TRIM !1 TO !1
+ 
+ MOVE (PAD(!1,20)) TO ST@CODIGO@DESPESA@SIOPS
+ APPEND ST@CODIGO@DESPESA@SIOPS ' ' (TRIM(!4)) ' ' (PAD(!5,5)) ' ' (TRIM(!6))
+
+ CLEAR TEMPCALC
+ MOVE ST@CODIGO@ENTIDADE      TO TEMPCALC.COD_ENTIDADE
+ MOVE ST@EXERCICIO@FINANCEIRO TO TEMPCALC.EXERCICIO
+ MOVE ST@USUARIO              TO TEMPCALC.USUARIO
+ MOVE 'DES_SIOPS'             TO TEMPCALC.NUMERO
+ MOVE ST@CODIGO@DESPESA@SIOPS TO TEMPCALC.CODIGO
+ FIND EQ TEMPCALC BY INDEX.1
+ INDICATE ERR FALSE
+ ON ERROR GOSUB CHECA_GRAVACAO
+ [ FOUND] REREAD TEMPCALC
+ 
+      IF !2 EQ 'FI' CALC (TEMPCALC.VALOR_1 + !3) TO TEMPCALC.VALOR_1
+ ELSE IF !2 EQ 'FA' CALC (TEMPCALC.VALOR_2 + !3) TO TEMPCALC.VALOR_2
+ ELSE IF !2 EQ 'EP' CALC (TEMPCALC.VALOR_3 + !3) TO TEMPCALC.VALOR_3
+ ELSE IF !2 EQ 'LQ' CALC (TEMPCALC.VALOR_4 + !3) TO TEMPCALC.VALOR_4
+ ELSE IF !2 EQ 'PG' CALC (TEMPCALC.VALOR_5 + !3) TO TEMPCALC.VALOR_5
+ ELSE IF !2 EQ 'RP' CALC (TEMPCALC.VALOR_6 + !3) TO TEMPCALC.VALOR_6
+ ELSE IF !2 EQ 'OR' CALC (TEMPCALC.VALOR_7 + !3) TO TEMPCALC.VALOR_7
+ 
+ MOVE 'ANALITICA'                                TO TEMPCALC.AUXILIAR
+ SAVERECORD TEMPCALC
+ UNLOCK
+ ON ERROR OFF
+#ENDCOMMAND
+
+//--!1 codigo tce cliente
+//--!2 codigo siops
+#COMMAND BUSCA_CODIGO_SIOPS
+#IFDEF  ST@BUSCA@SINTETICA
+#ELSE
+ STRING ST@BUSCA@SINTETICA
+#ENDIF
+ 
+ INDICATE @CODIGO@RELACIONADO! TRUE
+ 
+ MOVE '' TO !2
+ 
+ CLEAR RELSIOP
+ MOVE PARGERAL.ESTADO    TO RELSIOP.UF
+ MOVE PARGERAL.EXERCICIO TO RELSIOP.ANO
+ MOVE 'SIOPS'            TO RELSIOP.SISTEMA
+ MOVE 'DESPESA'          TO RELSIOP.NATUREZA
+ MOVE !1                 TO RELSIOP.CODIGO_TCE
+ MOVE ''                 TO RELSIOP.CNR
+ FIND EQ RELSIOP BY INDEX.2
+ [~FOUND] INDICATE @CODIGO@RELACIONADO! FALSE
+ [ FOUND] MOVE RELSIOP.CODIGO_SIOP TO !2
+//  [~FOUND] MOVE !1                  TO !2
+ 
+ //--
+ //--busca codigo sintetico para despesa fixada
+ //--
+ //--
+ CLEAR CADSIOP
+ MOVE 'SIOPS'            TO CADSIOP.SISTEMA
+ MOVE PARGERAL.EXERCICIO TO CADSIOP.ANO
+ MOVE 'DESPESA'          TO CADSIOP.NATUREZA
+ MOVE !2                 TO CADSIOP.CODIGO
+ FIND EQ CADSIOP BY INDEX.1
+ [~FOUND] CLEAR CADSIOP
+ //--
+ //--busca codigo analitico para despesa fixada em sintetica
+ //--
+ INDICATE @BUSCA@ANALITICA! AS ((!2 EQ '') OR (CADSIOP.TIPO NE 'A'))
+ 
+ INDICATE @ACHOU@ANALITICA! TRUE
+ 
+ [ @BUSCA@ANALITICA!] BEGIN
+                       INDICATE @ACHOU@ANALITICA! FALSE
+                       
+                       CLEAR ECONORCA
+                       MOVE PARGERAL.ESTADO    TO ECONORCA.UF
+                       MOVE PARGERAL.EXERCICIO TO ECONORCA.ANO
+                       MOVE !1                 TO ECONORCA.CODIGO
+                       FIND EQ ECONORCA BY INDEX.1
+                       [ FOUND] BEGIN
+                                 IF ECONORCA.TIPO EQ 'S' BEGIN
+                                                          MOVE !1 TO ST@BUSCA@SINTETICA
+                                                          APPEND ST@BUSCA@SINTETICA '.00'
+                                                          
+                                                          CLEAR CADSIOP
+                                                          MOVE 'SIOPS'            TO CADSIOP.SISTEMA
+                                                          MOVE PARGERAL.EXERCICIO TO CADSIOP.ANO
+                                                          MOVE 'DESPESA'          TO CADSIOP.NATUREZA
+                                                          MOVE ST@BUSCA@SINTETICA TO CADSIOP.CODIGO
+                                                          FIND EQ CADSIOP BY INDEX.1
+                                                          [ FOUND] BEGIN
+                                                                    IF CADSIOP.TIPO EQ 'S' BEGIN
+                                                                                            MOVE (MID(!1,9,1)) TO ST@BUSCA@SINTETICA
+                                                                                            APPEND ST@BUSCA@SINTETICA '.99.00'
+                                                                                            
+                                                                                            CLEAR CADSIOP
+                                                                                            MOVE 'SIOPS'            TO CADSIOP.SISTEMA
+                                                                                            MOVE PARGERAL.EXERCICIO TO CADSIOP.ANO
+                                                                                            MOVE 'DESPESA'          TO CADSIOP.NATUREZA
+                                                                                            MOVE ST@BUSCA@SINTETICA TO CADSIOP.CODIGO
+                                                                                            FIND EQ CADSIOP BY INDEX.1
+                                                                                            [ FOUND] BEGIN
+                                                                                                      IF CADSIOP.TIPO EQ 'A' BEGIN
+                                                                                                                              MOVE CADSIOP.CODIGO TO !2
+                                                                                                                              INDICATE @CODIGO@RELACIONADO! TRUE
+                                                                                                                              INDICATE    @ACHOU@ANALITICA! TRUE
+                                                                                                                             END
+                                                                                                      ELSE BEGIN
+                                                                                                            MOVE (MID(!1,9,1)) TO ST@BUSCA@SINTETICA
+                                                                                                            APPEND ST@BUSCA@SINTETICA '.99.99'
+                                                                                                            
+                                                                                                            CLEAR CADSIOP
+                                                                                                            MOVE 'SIOPS'            TO CADSIOP.SISTEMA
+                                                                                                            MOVE PARGERAL.EXERCICIO TO CADSIOP.ANO
+                                                                                                            MOVE 'DESPESA'          TO CADSIOP.NATUREZA
+                                                                                                            MOVE ST@BUSCA@SINTETICA TO CADSIOP.CODIGO
+                                                                                                            FIND EQ CADSIOP BY INDEX.1
+                                                                                                            [ FOUND] BEGIN
+                                                                                                                      IF CADSIOP.TIPO EQ 'A' BEGIN
+                                                                                                                                              MOVE CADSIOP.CODIGO TO !2
+                                                                                                                                              INDICATE @CODIGO@RELACIONADO! TRUE
+                                                                                                                                              INDICATE    @ACHOU@ANALITICA! TRUE
+                                                                                                                                             END
+                                                                                                                     END
+                                                                                                           
+                                                                                                           END
+                                                                                                     END
+                                                                                            
+                                                                                           END
+                                                                    ELSE BEGIN
+                                                                          MOVE CADSIOP.CODIGO TO !2
+                                                                          INDICATE @CODIGO@RELACIONADO! TRUE
+                                                                          INDICATE    @ACHOU@ANALITICA! TRUE
+                                                                         END
+                                                                   END
+                                                         END
+                                END
+                      END
+ 
+ [~@ACHOU@ANALITICA!] BEGIN
+                       IF !1 EQ '3.3.50.39.00' BEGIN
+                                                MOVE '3.3.50.39.36.99' TO !2
+                                                INDICATE @CODIGO@RELACIONADO! TRUE
+                                               END
+                       IF !1 EQ '3.3.90.40.00' BEGIN
+                                                MOVE '3.3.90.99.00.00' TO !2
+                                                INDICATE @CODIGO@RELACIONADO! TRUE
+                                               END
+                      END
+#ENDCOMMAND
+
+//--
+//-- !1 - codigo
+//-- !2 - natureza
+//-- !3 - tipo Empenhado Liquidado Pago
+//-- !4 - valor
+//--
+#COMMAND GRAVA_TEMPCALC_COVID
+#IFDEF  ST@CODIGO@DESPESA@SIOPS
+#ELSE
+ STRING ST@CODIGO@DESPESA@SIOPS 255
+#ENDIF
+ 
+ IF !1 NE '' BEGIN
+              TRIM !1 TO !1
+              
+              MOVE (PAD(!1,20)) TO ST@CODIGO@DESPESA@SIOPS
+
+              CLEAR TEMPCALC
+              MOVE ST@CODIGO@ENTIDADE      TO TEMPCALC.COD_ENTIDADE
+              MOVE ST@EXERCICIO@FINANCEIRO TO TEMPCALC.EXERCICIO
+              MOVE ST@USUARIO              TO TEMPCALC.USUARIO
+              MOVE ST@CODIGO@DESPESA@SIOPS TO TEMPCALC.CODIGO
+              MOVE !2                      TO TEMPCALC.NUMERO
+              FIND EQ TEMPCALC BY INDEX.1
+              INDICATE ERR FALSE
+              ON ERROR GOSUB CHECA_GRAVACAO
+              [ FOUND] REREAD TEMPCALC
+              
+                   IF !3 EQ 'E' CALC (TEMPCALC.VALOR_3 + !4) TO TEMPCALC.VALOR_3
+              ELSE IF !3 EQ 'L' CALC (TEMPCALC.VALOR_4 + !4) TO TEMPCALC.VALOR_4
+              ELSE IF !3 EQ 'P' CALC (TEMPCALC.VALOR_5 + !4) TO TEMPCALC.VALOR_5
+              
+              MOVE 'ANALITICA'                               TO TEMPCALC.AUXILIAR
+              SAVERECORD TEMPCALC
+              UNLOCK
+              ON ERROR OFF
+             END
+#ENDCOMMAND
+
+//--!1 fonte recurso
+//--!2 codigo aplicacao
+//--!3 subfuncao
+//--!4 string que recebe codigo siops
+//--!5 string que recebe natureza
+#COMMAND BUSCA_CODIGO_SIOPS_COVID
+#IFDEF   ST@BUSCA@CODIGO
+#ELSE
+ STRING  ST@BUSCA@CODIGO
+#ENDIF
+#IFDEF   ST@NATUREZA@SIOPS
+#ELSE
+ STRING  ST@NATUREZA@SIOPS
+#ENDIF
+#IFDEF   ST@BUSCA@SUBFUNCAO
+#ELSE
+ STRING  ST@BUSCA@SUBFUNCAO
+#ENDIF
+#IFDEF   IT@AUX
+#ELSE
+ INTEGER IT@AUX
+#ENDIF
+ 
+ IF (TRIM(!3)) IN '122-301-302-303-304-305-306' MOVE (TRIM(!3)) TO ST@BUSCA@SUBFUNCAO
+ ELSE                                           MOVE 'XXX'      TO ST@BUSCA@SUBFUNCAO
+ 
+ MOVEALL '' TO !4 !5
+ 
+ MOVE (TRIM(!1)) TO ST@BUSCA@CODIGO
+      IF (MID(!2,3,1)) EQ '312' APPEND ST@BUSCA@CODIGO ' ' (MID(!2,3,1)) 'XXXX ' ST@BUSCA@SUBFUNCAO
+ ELSE IF (MID(!2,3,1)) EQ '800' APPEND ST@BUSCA@CODIGO ' ' (MID(!2,3,1)) 'XXXX ' ST@BUSCA@SUBFUNCAO
+ ELSE IF (MID(!2,3,1)) EQ '900' APPEND ST@BUSCA@CODIGO ' ' (MID(!2,3,1)) 'XXXX ' ST@BUSCA@SUBFUNCAO
+ ELSE                           APPEND ST@BUSCA@CODIGO ' ' 'XXXXXXX'     ' '     ST@BUSCA@SUBFUNCAO
+ 
+ MOVE 0 TO IT@AUX
+ FOR IT@AUX FROM 1 TO 3
+         IF IT@AUX EQ 1 MOVE 'COVID_D_PROPRIO' TO ST@NATUREZA@SIOPS
+    ELSE IF IT@AUX EQ 2 MOVE 'COVID_D_ESTADO'  TO ST@NATUREZA@SIOPS
+    ELSE IF IT@AUX EQ 3 MOVE 'COVID_D_UNIAO'   TO ST@NATUREZA@SIOPS
+    
+    CLEAR RELSIOP
+    MOVE PARGERAL.ESTADO    TO RELSIOP.UF
+    MOVE PARGERAL.EXERCICIO TO RELSIOP.ANO
+    MOVE 'SIOPS'            TO RELSIOP.SISTEMA
+    MOVE ST@NATUREZA@SIOPS  TO RELSIOP.NATUREZA
+    MOVE ST@BUSCA@CODIGO    TO RELSIOP.CODIGO_TCE
+    MOVE ''                 TO RELSIOP.CNR
+    FIND EQ RELSIOP BY INDEX.2
+    [ FOUND] BEGIN
+              MOVE RELSIOP.CODIGO_SIOP TO !4
+              MOVE RELSIOP.NATUREZA    TO !5
+             END
+ LOOP
+#ENDCOMMAND
+
+
+//--
+//-- !1 cnr para busca
+//-- !2 fonte de recurso
+//-- !3 codigo-tce (fonte + codigo de apliacao)
+//-- !4 string para receber pasta responsavel
+//--
+#COMMAND BUSCA_APLICACAO_RECEITA
+#IFDEF    ST@CNR@INICIAL
+#ELSE
+   STRING ST@CNR@INICIAL
+#ENDIF
+#IFDEF    ST@CNR@FINAL
+#ELSE
+   STRING ST@CNR@FINAL
+#ENDIF
+#IFDEF    ST@RESULTADO@BUSCA
+#ELSE
+   STRING ST@RESULTADO@BUSCA
+#ENDIF
+#IFDEF    ST@COD@CNR
+#ELSE
+   STRING ST@COD@CNR
+#ENDIF
+#IFDEF     IT@GRAU
+#ELSE
+   INTEGER IT@GRAU
+#ENDIF
+#IFDEF    ST@FONTE
+#ELSE
+   STRING ST@FONTE
+#ENDIF
+#IFDEF    ST@CODIGO@APLICACAO
+#ELSE
+   STRING ST@CODIGO@APLICACAO
+#ENDIF
+ 
+ MOVE '' TO ST@RESULTADO@BUSCA
+ 
+ MOVE (TRIM(!1))    TO ST@COD@CNR
+ MOVE (TRIM(!2))    TO ST@FONTE
+ MOVE (MID(!3,7,4)) TO ST@CODIGO@APLICACAO
+ 
+ IF 'X' IN ST@COD@CNR MOVE 6 TO IT@GRAU
+ ELSE                 MOVE 7 TO IT@GRAU
+ 
+ MOVE (REPLACES("X",(TRIM(ST@COD@CNR)),"")) TO ST@COD@CNR
+
+ MOVE (OBTER_CODIGO_INICIAL_RECEITA(ST@COD@CNR,PARGERAL.EXERCICIO,IT@GRAU)) TO ST@CNR@INICIAL
+ MOVE (OBTER_CODIGO_FINAL_RECEITA(ST@COD@CNR,PARGERAL.EXERCICIO,IT@GRAU))   TO ST@CNR@FINAL
+ 
+ //--muda fonte 9x para 0x para buscar receita
+ IF (MID(ST@FONTE,1,1)) EQ '9' MOVE (OVERSTRIKE('0',ST@FONTE,1)) TO ST@FONTE
+ 
+ CLEAR MOVREC
+ MOVE ST@CODIGO@ENTIDADE      TO MOVREC.COD_ENTIDADE
+ MOVE ST@EXERCICIO@FINANCEIRO TO MOVREC.EXERCICIO
+ MOVE ST@CNR@INICIAL          TO MOVREC.CODIGO
+ REPEAT
+  FIND GT MOVREC BY INDEX.1
+  [ FOUND] INDICATE FOUND AS MOVREC.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+  [ FOUND] INDICATE FOUND AS MOVREC.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+  [ FOUND] INDICATE FOUND AS MOVREC.CODIGO       GE ST@CNR@INICIAL
+  [ FOUND] INDICATE FOUND AS MOVREC.CODIGO       LE ST@CNR@FINAL
+  [ FOUND] BEGIN
+            CLEAR FONTREC
+            MOVE ST@CODIGO@ENTIDADE      TO FONTREC.COD_ENTIDADE
+            MOVE ST@EXERCICIO@FINANCEIRO TO FONTREC.EXERCICIO
+            MOVE 'RO'                    TO FONTREC.NATUREZA
+            MOVE MOVREC.NUMERO           TO FONTREC.CODIGO
+            MOVE ST@FONTE                TO FONTREC.N_FONTE
+            REPEAT
+             FIND GT FONTREC BY INDEX.1
+             [ FOUND] INDICATE FOUND AS FONTREC.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+             [ FOUND] INDICATE FOUND AS FONTREC.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+             [ FOUND] INDICATE FOUND AS FONTREC.NATUREZA     EQ 'RO'
+             [ FOUND] INDICATE FOUND AS FONTREC.CODIGO       EQ MOVREC.NUMERO
+             [ FOUND] INDICATE FOUND AS FONTREC.N_FONTE      EQ ST@FONTE
+             [ FOUND] BEGIN
+                       IF FONTREC.N_FUNDO EQ ST@CODIGO@APLICACAO BEGIN
+                                                                  MOVE RELSIOP.CODIGO_SIOP TO ST@RESULTADO@BUSCA
+                                                                 END
+                      END
+            UNTIL [~FOUND]
+            
+            INDICATE FOUND TRUE
+           END
+ UNTIL [~FOUND]
+ 
+ IF ST@RESULTADO@BUSCA NE '' BEGIN
+                              MOVE ST@RESULTADO@BUSCA TO !4
+                             END
+#ENDCOMMAND
+
+STRING  ST_PROPRIA_ENTIDADE ST_ARQUIVO 255       ST_AUX           255 ST_DIRETORIO    255 ST_EXERCICIO        ST_HORA             ST_COD_DESPESA_SIOPS
+STRING  ST_MES              ST_MINUTO            ST_NOME_MES          ST_PERIODO          ST_SEGUNDO          ST_ENTIDADE_SELECAO ST_COD_ECONOMICA
+STRING  ST@NUMERO           ST@JUNCAO            ST@PAGINAS           ST_JUNTA        255 ST_JUNTANDO         ST_DATA             ST_ENTIDADE_SAUDE
+STRING  ST_MES_BUSCA        ST_BIMESTRE          ST_BODY          255 ST_ENTIDADE_RPPS    ST_TIPO_VALOR       ST_MES_INICIAL      ST_FUNCAO
+STRING  ST_MES_FINAL        ST_CODIGO_PERIODO    ST_COD_PADRAO        ST_VALOR            ST_SUBFUNCAO        ST_COD_SIOPS_ITEM   ST_INICIAL
+STRING  ST_CODIGO       255 ST_DADOS         255 ST_FONTE             ST_COD_APLICACAO    ST_COD_SIOPS_FIXADO ST_BUSCA            ST_FINAL
+STRING  ST_CODIGO_ITEM      ST_CODIGO_COLUNA     ST_PASTA_RESPONSAVEL ST_NOME_ARQUIVO 255 ST_SAIDA        255
+STRING  ST_CODIGO_TCE       ST_APLICACAO         ST_NATUREZA
+
+DATE    DT_DATA DT_DATA_FINAL DT_DATA_INICIO_ANO
+
+INTEGER RECCOUNT IT@NUMERO IT_MES IT_MES_FINAL IT_AUX IT_POS IT_GRAU IT_RECNUM IT_VERSAO_LOA IT_FONTE IT_SUBFUNCAO IT_BUSCA_CNR
+
+NUMBER  NB_VALOR
+
+AUTOPAGE MSG
+NAME JN_LENDO
+
+AUTOPAGE HEADER
+NAME JHD_PREFEITURA
+NAME JHD_PERIODO
+NAME JHD_DATA       JHD_PAGINA
+
+AUTOPAGE BODY
+NAME JBD_DESCRICAO
+
+AUTOPAGE TELA
+NAME JN_COD_ENTIDADE  JN_ENTIDADE
+NAME JN_MES
+
+AUTOPAGE LINHA_CONFERE
+NAME JN_FIXADO_INICIAL JN_FIXADO_ATUAL JN_EMPENHADO JN_LIQUIDADO JN_PAGO JN_RESTOS_PAGAR JN_ORCADO
+
+AUTOPAGE LINHA_CONFERE_PASTA
+NAME JNS_PASTA JNS_FIXADO_INICIAL JNS_FIXADO_ATUAL JNS_EMPENHADO JNS_LIQUIDADO JNS_PAGO JNS_RESTOS_PAGAR JNS_ORCADO
+
+AUTOPAGE LINHA_CONFERE_PASTA_TOTAL
+NAME JNST_PASTA JNST_FIXADO_INICIAL JNST_FIXADO_ATUAL JNST_EMPENHADO JNST_LIQUIDADO JNST_PAGO JNST_RESTOS_PAGAR JNST_ORCADO
+
+PAGE SET TELA     AT  4  0 COLORS IT_COR_TARJA  IT_COR_MOLDURA
+PAGE SET MSG      AT 05 01 COLORS IT_COR_TITULO IT_COR_TITULO
+PAGE SET CONFIRMA AT 21 00 COLORS IT_COR_TARJA  IT_COR_MOLDURA
+
+OPEN ARQ_PRN
+OPEN ENTIDADE
+OPEN TEMPCALC
+OPEN TEMPAUDE
+OPEN PLANO
+OPEN MOVDES
+OPEN SUPLEMEN
+OPEN EMPENHO
+OPEN LIQUIDA
+OPEN ESTLIQUI
+OPEN MOVEMP
+OPEN FUNDOS
+OPEN DESP_ENT
+OPEN SUPL_ENT
+OPEN VERSAO
+OPEN PLANDES
+OPEN RELSIOP
+OPEN CADSIOP
+OPEN IBGE
+OPEN MOVREC
+OPEN FONTREC
+OPEN ECONORCA
+ABRE_CONTACOR ST@EXERCICIO@FINANCEIRO CONTACOR
+
+MOVE PARGERAL.COD_ENTIDADE TO ST_PROPRIA_ENTIDADE
+
+DEFINE_CODIGO_RECEITA PARGERAL.EXERCICIO
+
+INDICATE TCEMG! AS PARGERAL.ESTADO       EQ 'MG'
+INDICATE PREFE! AS PARGERAL.COD_ENTIDADE EQ '01'
+
+CLEAR ENTIDADE
+MOVE ST@EXERCICIO@FINANCEIRO TO ENTIDADE.EXERCICIO 
+REPEAT
+ FIND GT ENTIDADE BY INDEX.1
+ [ FOUND] INDICATE FOUND AS ENTIDADE.EXERCICIO EQ ST@EXERCICIO@FINANCEIRO
+ [ FOUND] BEGIN
+           IF ENTIDADE.TP_ENTIDADE EQ '1' MOVE ENTIDADE.CODIGO TO ST_ENTIDADE_RPPS
+           IF ENTIDADE.TP_ENTIDADE EQ '2' MOVE ENTIDADE.CODIGO TO ST_ENTIDADE_SAUDE
+          END
+UNTIL [~FOUND]
+
+[~PREFE!] IF PARGERAL.COD_ENTIDADE NE ST_ENTIDADE_SAUDE BEGIN
+                                                         ADVERTE 'OPCAO DESABILITADA PARA ESSA ENTIDADE'
+                                                         ABORT
+                                                        END
+
+[ PREFE!] BEGIN
+           ADVERTE 'CERTIFIQUE-SE SE OS DADOS DAS DEMAIS ENTIDADES DO MUNICIPIO FORAM IMPORTADOS, PARA A CORRETA ALIMENTACAO DO SIOPS.'
+          END
+
+INICIO:
+SCREENMODE IT_COR_TARJA ON
+PAGE TELA
+
+[ PREFE!] BEGIN
+           ACCEPT JN_COD_ENTIDADE {AUTOCLEAR}
+           [KEY.ESCAPE] ABORT
+           IF JN_COD_ENTIDADE NE '' BEGIN
+                                     COMZEROS JN_COD_ENTIDADE 2
+                                     CLEAR ENTIDADE
+                                     MOVE ST@EXERCICIO@FINANCEIRO TO ENTIDADE.EXERCICIO 
+                                     MOVE JN_COD_ENTIDADE         TO ENTIDADE.CODIGO
+                                     FIND EQ ENTIDADE BY INDEX.1
+                                     [~FOUND] BEGIN
+                                               ADVERTE 'ENTIDADE NŽO CADASTRADA'
+                                               GOTO INICIO
+                                              END
+                                     MOVE ENTIDADE.DESCRICAO TO JN_ENTIDADE
+                                    END
+           ELSE MOVE 'CONSOLIDADO' TO JN_ENTIDADE
+          END
+[~PREFE!] BEGIN
+           MOVE PARGERAL.COD_ENTIDADE TO JN_COD_ENTIDADE
+           
+           CLEAR ENTIDADE
+           MOVE ST@EXERCICIO@FINANCEIRO TO ENTIDADE.EXERCICIO 
+           MOVE JN_COD_ENTIDADE         TO ENTIDADE.CODIGO
+           FIND EQ ENTIDADE BY INDEX.1
+           MOVE ENTIDADE.DESCRICAO TO JN_ENTIDADE
+          END
+
+IF JN_COD_ENTIDADE EQ '02' BEGIN
+                            ADVERTE 'ENTIDADE SELECIONADA INVALIDA'
+                            GOTO INICIO
+                           END
+
+INDICATE TODAS! AS JN_COD_ENTIDADE EQ ''
+MOVE JN_COD_ENTIDADE TO ST_ENTIDADE_SELECAO
+
+LB_MES:
+REPEAT
+ ACCEPT JN_MES
+ [KEY.ESCAPE] ABORT
+ COMZEROS JN_MES 2
+ IF NOT JN_MES IN '02a04a06a08a10a12' BEGIN
+                                       MENSAGEM 353
+                                       CLEARFORM JN_MES
+                                      END
+UNTIL JN_MES NE ''
+
+INDICATE LE_MOV! AS ((JN_COD_ENTIDADE       LE '01')  OR (PARGERAL.COD_ENTIDADE GT '01')) //--ler movimento da propria entidade
+INDICATE LE_XML! AS ((PARGERAL.COD_ENTIDADE EQ '01') AND (ST_ENTIDADE_SELECAO   NE '01')) //--ler movimento de outra entidade
+
+IF (OBTER_CONFIGURACAO('SIOPS_DADOS_XML',ST@CODIGO@ENTIDADE,ST@EXERCICIO@FINANCEIRO)) NE '' BEGIN
+ INDICATE LE_MOV! FALSE
+ INDICATE LE_XML! TRUE
+END
+
+MOVE JN_MES             TO ST_MES
+MOVE PARGERAL.EXERCICIO TO ST_JUNTANDO
+MOVE PARGERAL.EXERCICIO TO ST_EXERCICIO
+
+MOVEALL '' TO ST_NOME_MES ST_AUX
+APPEND ST_NOME_MES 'JANEIRO A '
+MONTH JN_MES ST_AUX
+APPEND ST_NOME_MES ST_AUX ST_JUNTANDO
+
+MOVE '01/01/' TO ST_DATA
+APPEND ST_DATA PARGERAL.EXERCICIO
+MOVE ST_DATA  TO DT_DATA_INICIO_ANO
+
+MOVE '01/'    TO ST_DATA
+IF ST_MES LT '12' APPEND ST_DATA (ST_MES + 1) '/' PARGERAL.EXERCICIO
+IF ST_MES EQ '12' APPEND ST_DATA  '01' '/' (PARGERAL.EXERCICIO + 1)
+MOVE ST_DATA TO DT_DATA_FINAL
+CALC (DT_DATA_FINAL - 1) TO DT_DATA_FINAL
+
+PAGE TELA
+PAGE MSG
+GOTOXY 25 0
+
+MOVE 0 TO RECCOUNT
+INDICATE GERRELAT! TRUE
+
+PAGE TELA
+
+//--seleciona pasta para gravacao do arquivo
+PASTA_CAMINHO ST_ARQUIVO 'TEXTOS' ' ' ST@CODIGO@ENTIDADE
+
+// chamar programa para atualizar depara
+MOVE 0 TO CURRENT_IMAGE
+PAGE TELA
+MOVE 'ATZ_SIOP_CLIENTE ' TO ST_JUNTA
+APPEND ST_JUNTA 'SFPM'
+CHAIN WAIT ST_JUNTA EXPORT_ONLY
+GET_CURRENT_DIRECTORY TO ST_JUNTA
+APPEND ST_JUNTA '/relsiop'
+ERASEFILE ST_JUNTA
+//--
+
+MOVE 0 TO CURRENT_IMAGE
+PAGE MSG
+
+GOSUB LB_EXCLUI_DEPARA_SINTETICO
+
+//--verificacao
+GOSUB LB_VERIFICACAO
+PAGE TELA
+PAGE MSG
+//--
+
+APAGA_TEMPAUDE ''
+APAGA_TEMPCALC JN_LENDO
+
+//--monta temporario
+//--movimento de despesa pegar at‚ mes 13, no mes 14 ‚ efetuado o encerramento
+[ LE_XML!] BEGIN
+            //--pega fixado inicial e final dos dados externos audesp (elemento)
+            CLEAR DESP_ENT
+            CONSTRAINT_SET 1
+            CONSTRAIN DESP_ENT.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+            CONSTRAIN DESP_ENT.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+            [~TODAS!] CONSTRAIN DESP_ENT.COD_ENTIDADE EQ ST_ENTIDADE_SELECAO
+                      CONSTRAIN DESP_ENT.COD_ENTIDADE NE ST_PROPRIA_ENTIDADE
+            CONSTRAIN DESP_ENT.FUNCAO                 EQ '10'
+            CONSTRAIN DESP_ENT.DATA                   LE DT_DATA_FINAL
+            CONSTRAINED_FIND FIRST DESP_ENT BY INDEX.1
+            WHILE [FOUND]
+             CALC (JN_LENDO + 1) TO JN_LENDO
+             KEYCHECK GOSUB LB_ROTINA_PARADA
+             
+             BUSCA_CODIGO_SIOPS DESP_ENT.ECONOMICA ST_COD_SIOPS_FIXADO
+             
+             [~TCEMG!] MOVE (TRIM(DESP_ENT.COD_APLICACAO)) TO ST_COD_APLICACAO
+             [ TCEMG!] MOVE (TRIM(DESP_ENT.N_FONTE))       TO ST_COD_APLICACAO
+             PAD ST_COD_APLICACAO TO ST_COD_APLICACAO 7
+             
+             IF ((DESP_ENT.TIPO_DESPESA EQ 'OR') AND (DESP_ENT.COD_INSTRUM EQ '')) BEGIN
+              GRAVA_TEMPCALC ST_COD_SIOPS_FIXADO 'FI' DESP_ENT.FIXADO_INICIAL DESP_ENT.SUBFUNCAO DESP_ENT.N_FONTE ST_COD_APLICACAO
+             END
+             GRAVA_TEMPCALC ST_COD_SIOPS_FIXADO 'FA' DESP_ENT.FIXADO_INICIAL DESP_ENT.SUBFUNCAO DESP_ENT.N_FONTE ST_COD_APLICACAO
+             
+             CLEAR SUPL_ENT
+             CONSTRAINT_SET 2
+             CONSTRAIN SUPL_ENT.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+             CONSTRAIN SUPL_ENT.COD_ENTIDADE EQ DESP_ENT.COD_ENTIDADE
+             CONSTRAIN SUPL_ENT.N_DESPESA    EQ DESP_ENT.NUMERO
+             CONSTRAIN SUPL_ENT.DATA         GE DT_DATA_INICIO_ANO
+             CONSTRAIN SUPL_ENT.DATA         LE DT_DATA_FINAL
+             CONSTRAINED_FIND FIRST SUPL_ENT BY INDEX.5
+             WHILE [FOUND]
+              PRINT (JN_LENDO + 1) TO JN_LENDO
+              KEYCHECK GOSUB LB_ROTINA_PARADA
+              
+              GRAVA_TEMPCALC ST_COD_SIOPS_FIXADO 'FA' SUPL_ENT.VALOR DESP_ENT.SUBFUNCAO DESP_ENT.N_FONTE ST_COD_APLICACAO
+              
+              CONSTRAINED_FIND NEXT
+              END
+             CONSTRAINT_SET 2 CLEAR
+             
+             CONSTRAINT_SET 1
+             CONSTRAINED_FIND NEXT
+             END
+            CONSTRAINT_SET 1 CLEAR
+            
+            MOVE JN_MES TO IT_MES_FINAL
+
+            FOR IT_MES FROM 1 TO IT_MES_FINAL
+             MOVE IT_MES TO ST_MES_BUSCA
+             COMZEROS ST_MES_BUSCA 2
+
+             CLEAR CONTACOR
+             CONSTRAINT_SET 1
+             CONSTRAIN CONTACOR.ANO                    EQ ST_EXERCICIO
+             CONSTRAIN CONTACOR.MES                    EQ ST_MES_BUSCA
+             [~TCEMG!] CONSTRAIN CONTACOR.XML          EQ '27'
+             [ TCEMG!] CONSTRAIN CONTACOR.XML          EQ '11'
+             CONSTRAIN CONTACOR AS ((CONTACOR.CONTA EQ '6.2.2.1.3.01.00.00') OR;
+                                    (CONTACOR.CONTA EQ '6.2.2.1.3.02.00.00') OR;
+                                    (CONTACOR.CONTA EQ '6.2.2.1.3.03.00.00') OR;
+                                    (CONTACOR.CONTA EQ '6.2.2.1.3.04.00.00'))
+             [~TODAS!] CONSTRAIN CONTACOR.COD_ENTIDADE EQ ST_ENTIDADE_SELECAO
+                       CONSTRAIN CONTACOR.COD_ENTIDADE NE ST_PROPRIA_ENTIDADE
+             CONSTRAINED_FIND FIRST CONTACOR BY INDEX.3
+             WHILE [FOUND]
+              CALC (JN_LENDO + 1) TO JN_LENDO
+              KEYCHECK GOSUB LB_ROTINA_PARADA
+              
+              MOVEALL '' TO ST_FUNCAO ST_SUBFUNCAO ST_FONTE ST_COD_APLICACAO ST_COD_ECONOMICA
+              
+              [~TCEMG!] BEGIN
+                         MOVE (MID(CONTACOR.DADOS,2,38))  TO ST_FUNCAO
+                         MOVE (MID(CONTACOR.DADOS,3,41))  TO ST_SUBFUNCAO
+                         MOVE (MID(CONTACOR.DADOS,5,68))  TO ST_FONTE
+                         MOVE (MID(CONTACOR.DADOS,7,74))  TO ST_COD_APLICACAO
+                         MOVE (MID(CONTACOR.DADOS,12,55)) TO ST_COD_ECONOMICA
+                        END
+              [ TCEMG!] BEGIN
+                         MOVE (MID(CONTACOR.DADOS,2,32))  TO ST_FUNCAO
+                         MOVE (MID(CONTACOR.DADOS,3,35))  TO ST_SUBFUNCAO
+                         MOVE (MID(CONTACOR.DADOS,5,67))  TO ST_FONTE
+                         MOVE (MID(CONTACOR.DADOS,12,54)) TO ST_COD_ECONOMICA
+                         
+                         MOVE (TRIM(ST_FONTE)) TO ST_COD_APLICACAO
+                         PAD ST_COD_APLICACAO TO ST_COD_APLICACAO 7
+                        END
+              
+              IF ST_FUNCAO EQ '10' BEGIN
+                                    BUSCA_CODIGO_SIOPS ST_COD_ECONOMICA ST_COD_SIOPS_ITEM
+                                    
+                                    IF (LEFT(CONTACOR.CONTA,9)) EQ '6.2.2.1.3' BEGIN //--empenhado
+                                                                                GRAVA_TEMPCALC ST_COD_SIOPS_ITEM   'EP' (CONTACOR.VALOR_2 - CONTACOR.VALOR_1) ST_SUBFUNCAO ST_FONTE ST_COD_APLICACAO
+                                                                                GRAVA_TEMPCALC ST_COD_SIOPS_ITEM   'FA' (CONTACOR.VALOR_2 - CONTACOR.VALOR_1) ST_SUBFUNCAO ST_FONTE ST_COD_APLICACAO
+                                                                                GRAVA_TEMPCALC ST_COD_SIOPS_ITEM   'RP' (CONTACOR.VALOR_2 - CONTACOR.VALOR_1) ST_SUBFUNCAO ST_FONTE ST_COD_APLICACAO
+                                                                                
+                                                                                //--atualiza fixado pelo empenhado
+                                                                                MOVE (MID(ST_COD_ECONOMICA,9,1)) TO ST_AUX
+                                                                                APPEND ST_AUX '.00'
+                                                                                BUSCA_CODIGO_SIOPS ST_AUX ST_COD_SIOPS_FIXADO
+                                                                                
+                                                                                GRAVA_TEMPCALC ST_COD_SIOPS_FIXADO 'FA' ((CONTACOR.VALOR_2 - CONTACOR.VALOR_1) * (-1)) ST_SUBFUNCAO ST_FONTE ST_COD_APLICACAO
+                                                                               END
+
+                                    IF ((CONTACOR.CONTA EQ '6.2.2.1.3.03.00.00') OR (CONTACOR.CONTA EQ '6.2.2.1.3.04.00.00')) BEGIN //--liquidado
+                                                                                                                               GRAVA_TEMPCALC ST_COD_SIOPS_ITEM 'LQ' (CONTACOR.VALOR_2 - CONTACOR.VALOR_1) ST_SUBFUNCAO ST_FONTE ST_COD_APLICACAO
+                                                                               
+                                                                                                                               GRAVA_TEMPCALC ST_COD_SIOPS_ITEM 'RP' ((CONTACOR.VALOR_2 - CONTACOR.VALOR_1) * (-1)) ST_SUBFUNCAO ST_FONTE ST_COD_APLICACAO
+                                                                                                                              END
+
+                                    IF CONTACOR.CONTA EQ '6.2.2.1.3.04.00.00' BEGIN //--pago
+                                                                               GRAVA_TEMPCALC ST_COD_SIOPS_ITEM 'PG' (CONTACOR.VALOR_2 - CONTACOR.VALOR_1) ST_SUBFUNCAO ST_FONTE ST_COD_APLICACAO
+                                                                              END
+                                   END
+              CONSTRAINT_SET 1
+              CONSTRAINED_FIND NEXT
+              END
+             CONSTRAINT_SET 1 CLEAR
+            LOOP 
+           END
+
+//--
+[ LE_MOV!] BEGIN
+            //--despesas
+            CLEAR MOVDES
+            CONSTRAINT_SET 1
+            CONSTRAIN MOVDES.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+            CONSTRAIN MOVDES.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+            CONSTRAIN MOVDES.FUNCAO       EQ '10'
+            CONSTRAIN MOVDES.DATA         LE DT_DATA_FINAL
+            CONSTRAINED_FIND FIRST MOVDES BY INDEX.6
+            WHILE [FOUND]
+             CALC (JN_LENDO + 1) TO JN_LENDO
+             KEYCHECK GOSUB LB_ROTINA_PARADA
+             
+             BUSCA_CODIGO_SIOPS MOVDES.ECONOMICA ST_COD_SIOPS_FIXADO
+             
+             [~TCEMG!] MOVE (TRIM(MOVDES.COD_APLICACAO)) TO ST_COD_APLICACAO
+             [ TCEMG!] MOVE (TRIM(MOVDES.N_FONTE))       TO ST_COD_APLICACAO
+             PAD ST_COD_APLICACAO TO ST_COD_APLICACAO 7
+             
+             IF ((MOVDES.TIPO_DESPESA EQ 'OR') AND (MOVDES.COD_INSTRUM EQ '')) BEGIN
+              GRAVA_TEMPCALC ST_COD_SIOPS_FIXADO 'FI' MOVDES.FIXADO_INICIAL MOVDES.SUBFUNCAO MOVDES.N_FONTE ST_COD_APLICACAO
+             END
+             GRAVA_TEMPCALC ST_COD_SIOPS_FIXADO 'FA' MOVDES.FIXADO_INICIAL MOVDES.SUBFUNCAO MOVDES.N_FONTE ST_COD_APLICACAO
+             
+             CLEAR SUPLEMEN
+             CONSTRAINT_SET 2
+             CONSTRAIN SUPLEMEN.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+             CONSTRAIN SUPLEMEN.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+             CONSTRAIN SUPLEMEN.N_DESPESA    EQ MOVDES.NUMERO
+             CONSTRAIN SUPLEMEN.DATA         GE DT_DATA_INICIO_ANO
+             CONSTRAIN SUPLEMEN.DATA         LE DT_DATA_FINAL
+             CONSTRAINED_FIND FIRST SUPLEMEN BY INDEX.6
+             WHILE [FOUND]
+              PRINT (JN_LENDO + 1) TO JN_LENDO
+              KEYCHECK GOSUB LB_ROTINA_PARADA
+              
+              GRAVA_TEMPCALC ST_COD_SIOPS_FIXADO 'FA' SUPLEMEN.VALOR MOVDES.SUBFUNCAO MOVDES.N_FONTE ST_COD_APLICACAO
+              
+              CONSTRAINED_FIND NEXT
+              END
+             CONSTRAINT_SET 2 CLEAR
+             
+             CLEAR EMPENHO
+             CONSTRAINT_SET 3
+             CONSTRAIN EMPENHO.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+             CONSTRAIN EMPENHO.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+             CONSTRAIN EMPENHO.N_DESPESA    EQ MOVDES.NUMERO
+             CONSTRAIN EMPENHO.DATA         GE DT_DATA_INICIO_ANO
+             CONSTRAIN EMPENHO.DATA         LE DT_DATA_FINAL
+             CONSTRAINED_FIND FIRST EMPENHO BY INDEX.9
+             WHILE [FOUND]
+              CALC (JN_LENDO + 1)    TO JN_LENDO
+              KEYCHECK GOSUB LB_ROTINA_PARADA
+             
+              BUSCA_CODIGO_SIOPS EMPENHO.ECONOMICA ST_COD_SIOPS_ITEM
+              
+              GRAVA_TEMPCALC ST_COD_SIOPS_ITEM   'EP' EMPENHO.V_EMPENHO MOVDES.SUBFUNCAO MOVDES.N_FONTE ST_COD_APLICACAO
+              GRAVA_TEMPCALC ST_COD_SIOPS_ITEM   'FA' EMPENHO.V_EMPENHO MOVDES.SUBFUNCAO MOVDES.N_FONTE ST_COD_APLICACAO
+              GRAVA_TEMPCALC ST_COD_SIOPS_ITEM   'RP' EMPENHO.V_EMPENHO MOVDES.SUBFUNCAO MOVDES.N_FONTE ST_COD_APLICACAO
+              
+              //--atualiza fixado pelo empenhado
+              GRAVA_TEMPCALC ST_COD_SIOPS_FIXADO 'FA' (EMPENHO.V_EMPENHO * (-1)) MOVDES.SUBFUNCAO MOVDES.N_FONTE ST_COD_APLICACAO
+              
+              //--grava despeas covid
+              BUSCA_CODIGO_SIOPS_COVID MOVDES.N_FONTE ST_COD_APLICACAO MOVDES.SUBFUNCAO ST_COD_SIOPS_ITEM ST_NATUREZA
+              
+              GRAVA_TEMPCALC_COVID ST_COD_SIOPS_ITEM ST_NATUREZA 'E' EMPENHO.V_EMPENHO
+              
+              CONSTRAINED_FIND NEXT
+              END
+             CONSTRAINT_SET 3 CLEAR
+             
+             CLEAR LIQUIDA
+             CONSTRAINT_SET 3
+             CONSTRAIN LIQUIDA.COD_ENTIDADE    EQ ST@CODIGO@ENTIDADE
+             CONSTRAIN LIQUIDA.EXERCICIO       EQ ST@EXERCICIO@FINANCEIRO
+             CONSTRAIN LIQUIDA.N_DESPESA       EQ MOVDES.NUMERO
+             CONSTRAIN LIQUIDA.DATA_LIQUIDACAO GE DT_DATA_INICIO_ANO
+             CONSTRAIN LIQUIDA.DATA_LIQUIDACAO LE DT_DATA_FINAL
+             CONSTRAINED_FIND FIRST LIQUIDA BY INDEX.13
+             WHILE [FOUND]
+              CALC (JN_LENDO + 1) TO JN_LENDO
+              KEYCHECK GOSUB LB_ROTINA_PARADA
+
+              BUSCA_CODIGO_SIOPS LIQUIDA.ECONOMICA ST_COD_SIOPS_ITEM
+              
+              GRAVA_TEMPCALC ST_COD_SIOPS_ITEM 'LQ' LIQUIDA.VALOR_LIQUIDADO MOVDES.SUBFUNCAO MOVDES.N_FONTE ST_COD_APLICACAO
+              
+              GRAVA_TEMPCALC ST_COD_SIOPS_ITEM 'RP' (LIQUIDA.VALOR_LIQUIDADO * (-1)) MOVDES.SUBFUNCAO MOVDES.N_FONTE ST_COD_APLICACAO
+              
+              //--grava despeas covid
+              BUSCA_CODIGO_SIOPS_COVID MOVDES.N_FONTE ST_COD_APLICACAO MOVDES.SUBFUNCAO ST_COD_SIOPS_ITEM ST_NATUREZA
+              
+              GRAVA_TEMPCALC_COVID ST_COD_SIOPS_ITEM ST_NATUREZA 'L' LIQUIDA.VALOR_LIQUIDADO
+              
+              CONSTRAINED_FIND NEXT
+              END
+             CONSTRAINT_SET 3 CLEAR
+                          
+             CLEAR ESTLIQUI
+             CONSTRAINT_SET 4
+             CONSTRAIN ESTLIQUI.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+             CONSTRAIN ESTLIQUI.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+             CONSTRAIN ESTLIQUI.N_DESPESA    EQ MOVDES.NUMERO
+             CONSTRAIN ESTLIQUI.DATA         GE DT_DATA_INICIO_ANO
+             CONSTRAIN ESTLIQUI.DATA         LE DT_DATA_FINAL
+             CONSTRAINED_FIND FIRST ESTLIQUI BY INDEX.2
+             WHILE [FOUND]
+              CALC (JN_LENDO + 1) TO JN_LENDO
+              KEYCHECK GOSUB LB_ROTINA_PARADA
+              
+              BUSCA_CODIGO_SIOPS ESTLIQUI.ECONOMICA ST_COD_SIOPS_ITEM
+              
+              GRAVA_TEMPCALC ST_COD_SIOPS_ITEM 'LQ' (ESTLIQUI.VALOR * (-1)) MOVDES.SUBFUNCAO MOVDES.N_FONTE ST_COD_APLICACAO
+              
+              GRAVA_TEMPCALC ST_COD_SIOPS_ITEM 'RP' ESTLIQUI.VALOR MOVDES.SUBFUNCAO MOVDES.N_FONTE ST_COD_APLICACAO
+              
+              //--grava despeas covid
+              BUSCA_CODIGO_SIOPS_COVID MOVDES.N_FONTE ST_COD_APLICACAO MOVDES.SUBFUNCAO ST_COD_SIOPS_ITEM ST_NATUREZA
+              
+              GRAVA_TEMPCALC_COVID ST_COD_SIOPS_ITEM ST_NATUREZA 'L' (ESTLIQUI.VALOR * (-1))
+              
+              CONSTRAINED_FIND NEXT
+              END
+             CONSTRAINT_SET 4 CLEAR
+
+             CLEAR MOVEMP
+             CONSTRAINT_SET 4
+             CONSTRAIN MOVEMP.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+             CONSTRAIN MOVEMP.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+             CONSTRAIN MOVEMP.TIPO         EQ 'O'
+             CONSTRAIN MOVEMP.N_DESPESA    EQ MOVDES.NUMERO
+             CONSTRAIN MOVEMP.DATA         GE DT_DATA_INICIO_ANO
+             CONSTRAIN MOVEMP.DATA         LE DT_DATA_FINAL
+             CONSTRAINED_FIND FIRST MOVEMP BY INDEX.4
+             WHILE [FOUND]
+              CALC (JN_LENDO + 1) TO JN_LENDO
+              KEYCHECK GOSUB LB_ROTINA_PARADA
+
+              BUSCA_CODIGO_SIOPS MOVEMP.ECONOMICA ST_COD_SIOPS_ITEM
+              
+              GRAVA_TEMPCALC ST_COD_SIOPS_ITEM 'PG' MOVEMP.VALOR MOVDES.SUBFUNCAO MOVDES.N_FONTE ST_COD_APLICACAO
+
+              //--grava despeas covid
+              BUSCA_CODIGO_SIOPS_COVID MOVDES.N_FONTE ST_COD_APLICACAO MOVDES.SUBFUNCAO ST_COD_SIOPS_ITEM ST_NATUREZA
+              
+              GRAVA_TEMPCALC_COVID ST_COD_SIOPS_ITEM ST_NATUREZA 'P' MOVEMP.VALOR
+              
+              CONSTRAINED_FIND NEXT
+              END
+             CONSTRAINT_SET 4 CLEAR
+             
+             CONSTRAINT_SET 1
+             CONSTRAINED_FIND NEXT
+             END
+            CONSTRAINT_SET 1 CLEAR
+            
+            //--orcado proximo exercicio
+            IF JN_MES EQ '12' BEGIN
+                               MOVE 0 TO IT_VERSAO_LOA
+                               CLEAR VERSAO
+                               MOVE 'LOA'                    TO VERSAO.TIPO
+                               MOVE 'A'                      TO VERSAO.ATIVO
+                               MOVE (PARGERAL.EXERCICIO + 1) TO VERSAO.ANO_VIGENCIA_I
+                               MOVE 2                        TO VERSAO.NUMERO
+                               FIND EQ VERSAO BY INDEX.2
+                               [ FOUND] BEGIN
+                                         MOVE VERSAO.ID_VERSAO TO IT_VERSAO_LOA
+                               
+                                         CLEAR PLANDES
+                                         CONSTRAINT_SET 1
+                                         CONSTRAIN PLANDES.ID_VERSAO EQ IT_VERSAO_LOA
+                                         [~TODAS!] CONSTRAIN PLANDES.COD_ENTIDADE EQ ST_ENTIDADE_SELECAO
+                                         CONSTRAIN PLANDES.FUNCAO EQ '10'
+                                         CONSTRAINED_FIND FIRST PLANDES BY INDEX.6
+                                         WHILE [FOUND]
+                                          CALC (JN_LENDO + 1) TO JN_LENDO
+                                          KEYCHECK GOSUB LB_ROTINA_PARADA
+                                          
+                                          BUSCA_CODIGO_SIOPS PLANDES.ECONOMICA ST_COD_SIOPS_FIXADO
+                                          
+                                          [~TCEMG!] MOVE (TRIM(PLANDES.COD_APLICACAO)) TO ST_COD_APLICACAO
+                                          [ TCEMG!] MOVE (TRIM(PLANDES.FONTE))         TO ST_COD_APLICACAO
+                                          PAD ST_COD_APLICACAO TO ST_COD_APLICACAO 7
+                                          
+                                          GRAVA_TEMPCALC ST_COD_SIOPS_FIXADO 'OR' PLANDES.FIXADO PLANDES.SUBFUNCAO PLANDES.FONTE ST_COD_APLICACAO
+                                          
+                                          CONSTRAINT_SET 1
+                                          CONSTRAINED_FIND NEXT
+                                          END
+                                         CONSTRAINT_SET 1 CLEAR
+                                        END
+                              END
+           END
+
+//--
+//--define pastas por fonte de recurso e codigo de aplicacao (relacionamento conam)
+//--
+//--fontes de recurso                         n.pasta
+//--
+//--recursos ordinarios                        3
+//--receitas de impostos e transferencias      4
+//--transferencias fundo a fundo sus federal   5
+//--transferencias fundo a fundo sus estadual  6
+//--transferencias de convenios                7
+//--operacoes de credito                       8
+//--royalties do petroleo                      9
+//--outros recursos                           10
+//--
+//--subfuncoes
+//--administrativas                           11
+//--301 atencao basica                        12
+//--302 assistencia hospitalar e ambulatorial 13
+//--303 suporte profilatico e terapeutico     14
+//--304 vigilancia sanitaria                  15
+//--305 vigilancia epidemiologica             16
+//--306 alimentacao e nutricao                17
+//--informacoes complementares                18
+
+CLEAR TEMPCALC
+CONSTRAINT_SET 1
+CONSTRAIN TEMPCALC.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+CONSTRAIN TEMPCALC.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+CONSTRAIN TEMPCALC.USUARIO      EQ ST@USUARIO
+CONSTRAIN TEMPCALC.NUMERO       EQ 'DES_SIOPS'
+CONSTRAINED_FIND FIRST TEMPCALC BY INDEX.2
+WHILE [FOUND]
+ KEYCHECK GOSUB LB_ROTINA_PARADA
+ CALC (JN_LENDO + 1) TO JN_LENDO
+ 
+ MOVEALL '' TO ST_CODIGO_ITEM ST_CODIGO_COLUNA ST_DADOS ST_COD_DESPESA_SIOPS
+ 
+ MOVE (MID(TEMPCALC.CODIGO,15,1)) TO ST_COD_DESPESA_SIOPS
+ MOVE (MID(TEMPCALC.CODIGO,3,22)) TO ST_SUBFUNCAO
+ MOVE (MID(TEMPCALC.CODIGO,5,26)) TO ST_FONTE
+ MOVE (MID(TEMPCALC.CODIGO,7,32)) TO ST_COD_APLICACAO
+ 
+ MOVE '' TO ST_PASTA_RESPONSAVEL
+ 
+ IF PARGERAL.EXERCICIO LE '2018' BEGIN
+                                  TRIM ST_FONTE TO ST_FONTE
+                                  
+                                  [~TCEMG!] BEGIN
+                                             IF ST_FONTE IN '01-91' BEGIN
+                                                                          IF       ST_COD_APLICACAO     EQ '1100000' MOVE '3' TO ST_PASTA_RESPONSAVEL
+                                                                     ELSE IF (LEFT(ST_COD_APLICACAO,1)) EQ '3'       MOVE '4' TO ST_PASTA_RESPONSAVEL
+                                                                    END
+                                             ELSE IF ST_FONTE IN '07-97' BEGIN
+                                                                          IF (LEFT(ST_COD_APLICACAO,1)) EQ '3' MOVE '8' TO ST_PASTA_RESPONSAVEL
+                                                                         END
+                                             ELSE BEGIN
+                                                   IF ST_COD_APLICACAO EQ '1400000' MOVE '9' TO ST_PASTA_RESPONSAVEL
+                                                  END
+                                              
+                                             CLEAR MOVREC
+                                             CONSTRAINT_SET 2
+                                             CONSTRAIN MOVREC.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+                                             CONSTRAIN MOVREC.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+                                             CONSTRAIN MOVREC.TIPO         EQ 'A'
+                                             CONSTRAINED_FIND FIRST MOVREC BY INDEX.1
+                                             WHILE [FOUND]
+                                              KEYCHECK GOSUB LB_ROTINA_PARADA
+                                              CALC (JN_LENDO + 1) TO JN_LENDO
+                                              
+                                                              INDICATE SUS_FEDERAL! AS (MID(MOVREC.CODIGO,14,1)) EQ '1.7.1.8.03.1.1'
+                                              [~SUS_FEDERAL!] INDICATE SUS_FEDERAL! AS (MID(MOVREC.CODIGO,14,1)) EQ '1.7.1.8.10.1.1'
+                                              [~SUS_FEDERAL!] INDICATE SUS_FEDERAL! AS (MID(MOVREC.CODIGO,14,1)) EQ '2.4.1.8.03.1.1'
+                                              [~SUS_FEDERAL!] INDICATE SUS_FEDERAL! AS (MID(MOVREC.CODIGO,14,1)) EQ '2.4.1.8.10.1.1'
+                                              [~SUS_FEDERAL!] INDICATE SUS_FEDERAL! AS (MID(MOVREC.CODIGO,12,1)) EQ '1.3.2.1.00.5'
+                                              [~SUS_FEDERAL!] INDICATE SUS_FEDERAL! AS (MID(MOVREC.CODIGO,12,1)) EQ '1.3.2.1.00.1'
+                                              [ SUS_FEDERAL!] BEGIN
+                                                               CLEAR FONTREC
+                                                               CONSTRAINT_SET 3
+                                                               CONSTRAIN FONTREC.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+                                                               CONSTRAIN FONTREC.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+                                                               CONSTRAIN FONTREC.NATUREZA     EQ 'RO'
+                                                               CONSTRAIN FONTREC.CODIGO       EQ MOVREC.NUMERO
+                                                               CONSTRAINED_FIND FIRST FONTREC BY INDEX.1
+                                                               WHILE [FOUND]
+                                                                KEYCHECK GOSUB LB_ROTINA_PARADA
+                                                                CALC (JN_LENDO + 1) TO JN_LENDO
+                                                                
+                                                                       INDICATE OK! AS FONTREC.N_FONTE           EQ '05'
+                                                                [~OK!] INDICATE OK! AS FONTREC.N_FONTE           EQ '95'
+                                                                [ OK!] INDICATE OK! AS (LEFT(FONTREC.N_FUNDO,1)) EQ '3'
+                                                                [ OK!] BEGIN
+                                                                        IF ((ST_FONTE EQ FONTREC.N_FONTE) AND (ST_COD_APLICACAO EQ FONTREC.N_FUNDO)) MOVE '5' TO ST_PASTA_RESPONSAVEL
+                                                                       END
+                                                                
+                                                                CONSTRAINT_SET 3
+                                                                CONSTRAINED_FIND NEXT
+                                                               END
+                                                               CONSTRAINT_SET 3 CLEAR
+                                                              END
+                                                              
+                                                               INDICATE SUS_ESTADUAL! AS (MID(MOVREC.CODIGO,14,1)) EQ '1.7.2.8.03.1.1'
+                                              [~SUS_ESTADUAL!] INDICATE SUS_ESTADUAL! AS (MID(MOVREC.CODIGO,14,1)) EQ '1.7.2.8.10.1.1'
+                                              [~SUS_ESTADUAL!] INDICATE SUS_ESTADUAL! AS (MID(MOVREC.CODIGO,14,1)) EQ '2.4.2.8.03.1.1'
+                                              [~SUS_ESTADUAL!] INDICATE SUS_ESTADUAL! AS (MID(MOVREC.CODIGO,14,1)) EQ '2.4.2.8.10.1.1'
+                                              [~SUS_ESTADUAL!] INDICATE SUS_ESTADUAL! AS (MID(MOVREC.CODIGO,12,1)) EQ '1.3.2.1.00.5'
+                                              [~SUS_ESTADUAL!] INDICATE SUS_ESTADUAL! AS (MID(MOVREC.CODIGO,12,1)) EQ '1.3.2.1.00.1'
+                                              [ SUS_ESTADUAL!] BEGIN
+                                                                CLEAR FONTREC
+                                                                CONSTRAINT_SET 3
+                                                                CONSTRAIN FONTREC.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+                                                                CONSTRAIN FONTREC.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+                                                                CONSTRAIN FONTREC.NATUREZA     EQ 'RO'
+                                                                CONSTRAIN FONTREC.CODIGO       EQ MOVREC.NUMERO
+                                                                CONSTRAINED_FIND FIRST FONTREC BY INDEX.1
+                                                                WHILE [FOUND]
+                                                                 KEYCHECK GOSUB LB_ROTINA_PARADA
+                                                                 CALC (JN_LENDO + 1) TO JN_LENDO
+                                                                 
+                                                                        INDICATE OK! AS FONTREC.N_FONTE           EQ '02'
+                                                                 [~OK!] INDICATE OK! AS FONTREC.N_FONTE           EQ '92'
+                                                                 [ OK!] INDICATE OK! AS (LEFT(FONTREC.N_FUNDO,1)) EQ '3'
+                                                                 [ OK!] BEGIN
+                                                                         IF ((ST_FONTE EQ FONTREC.N_FONTE) AND (ST_COD_APLICACAO EQ FONTREC.N_FUNDO)) MOVE '6' TO ST_PASTA_RESPONSAVEL
+                                                                        END
+                                                                 
+                                                                 CONSTRAINT_SET 3
+                                                                 CONSTRAINED_FIND NEXT
+                                                                END
+                                                                CONSTRAINT_SET 3 CLEAR
+                                                               END
+                                                               
+                                                            INDICATE CONVENIOS! AS (MID(MOVREC.CODIGO,14,1)) EQ '1.7.1.8.10.9.1'
+                                              [~CONVENIOS!] INDICATE CONVENIOS! AS (MID(MOVREC.CODIGO,14,1)) EQ '1.7.2.8.10.9.1'
+                                              [~CONVENIOS!] INDICATE CONVENIOS! AS (MID(MOVREC.CODIGO,14,1)) EQ '1.7.3.8.10.9.1'
+                                              [~CONVENIOS!] INDICATE CONVENIOS! AS (MID(MOVREC.CODIGO,14,1)) EQ '1.7.4.8.10.1.1'
+                                              [~CONVENIOS!] INDICATE CONVENIOS! AS (MID(MOVREC.CODIGO,14,1)) EQ '1.7.6.8.10.1.1'
+                                              [~CONVENIOS!] INDICATE CONVENIOS! AS (MID(MOVREC.CODIGO,14,1)) EQ '2.4.1.8.10.9.1'
+                                              [~CONVENIOS!] INDICATE CONVENIOS! AS (MID(MOVREC.CODIGO,14,1)) EQ '2.4.2.8.10.9.1'
+                                              [~CONVENIOS!] INDICATE CONVENIOS! AS (MID(MOVREC.CODIGO,14,1)) EQ '2.4.3.8.10.9.1'
+                                              [~CONVENIOS!] INDICATE CONVENIOS! AS (MID(MOVREC.CODIGO,14,1)) EQ '2.4.4.8.10.1.1'
+                                              [~CONVENIOS!] INDICATE CONVENIOS! AS (MID(MOVREC.CODIGO,12,1)) EQ '1.3.2.1.00.5'
+                                              [~CONVENIOS!] INDICATE CONVENIOS! AS (MID(MOVREC.CODIGO,12,1)) EQ '1.3.2.1.00.1'
+                                              [ CONVENIOS!] BEGIN
+                                                             CLEAR FONTREC
+                                                             CONSTRAINT_SET 3
+                                                             CONSTRAIN FONTREC.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+                                                             CONSTRAIN FONTREC.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+                                                             CONSTRAIN FONTREC.NATUREZA     EQ 'RO'
+                                                             CONSTRAIN FONTREC.CODIGO       EQ MOVREC.NUMERO
+                                                             CONSTRAINED_FIND FIRST FONTREC BY INDEX.1
+                                                             WHILE [FOUND]
+                                                              KEYCHECK GOSUB LB_ROTINA_PARADA
+                                                              CALC (JN_LENDO + 1) TO JN_LENDO
+                                                              
+                                                                     INDICATE OK! AS (TRIM(FONTREC.N_FONTE))   IN '02-03-04-05-06'
+                                                              [~OK!] INDICATE OK! AS (TRIM(FONTREC.N_FONTE))   IN '92-93-94-95-96'
+                                                              [ OK!] INDICATE OK! AS (LEFT(FONTREC.N_FUNDO,1)) EQ '3'
+                                                              [ OK!] BEGIN
+                                                                      IF ((ST_FONTE EQ FONTREC.N_FONTE) AND (ST_COD_APLICACAO EQ FONTREC.N_FUNDO)) MOVE '7' TO ST_PASTA_RESPONSAVEL
+                                                                     END
+                                                              
+                                                              CONSTRAINT_SET 3
+                                                              CONSTRAINED_FIND NEXT
+                                                             END
+                                                             CONSTRAINT_SET 3 CLEAR
+                                                            END
+
+                                                                  INDICATE OUTROS_RECURSOS! AS (MID(MOVREC.CODIGO,14,1)) EQ '1.7.1.8.08.1.1'
+                                              [~OUTROS_RECURSOS!] INDICATE OUTROS_RECURSOS! AS (MID(MOVREC.CODIGO,14,1)) EQ '1.7.3.8.01.1.1'
+                                              [~OUTROS_RECURSOS!] INDICATE OUTROS_RECURSOS! AS (MID(MOVREC.CODIGO,14,1)) EQ '1.7.3.8.10.1.1'
+                                              [~OUTROS_RECURSOS!] INDICATE OUTROS_RECURSOS! AS (MID(MOVREC.CODIGO,14,1)) EQ '2.4.1.8.08.1.1'
+                                              [~OUTROS_RECURSOS!] INDICATE OUTROS_RECURSOS! AS (MID(MOVREC.CODIGO,14,1)) EQ '2.4.3.8.10.1.1'
+                                              [~OUTROS_RECURSOS!] INDICATE OUTROS_RECURSOS! AS (MID(MOVREC.CODIGO,14,1)) EQ '2.4.3.8.99.1.1'
+                                              [~OUTROS_RECURSOS!] INDICATE OUTROS_RECURSOS! AS (MID(MOVREC.CODIGO,12,1)) EQ '1.1.2.1.01.1'
+                                              [~OUTROS_RECURSOS!] INDICATE OUTROS_RECURSOS! AS (MID(MOVREC.CODIGO,12,1)) EQ '1.6.3.0.01.1'
+                                              [ OUTROS_RECURSOS!] BEGIN
+                                                                   CLEAR FONTREC
+                                                                   CONSTRAINT_SET 3
+                                                                   CONSTRAIN FONTREC.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+                                                                   CONSTRAIN FONTREC.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+                                                                   CONSTRAIN FONTREC.NATUREZA     EQ 'RO'
+                                                                   CONSTRAIN FONTREC.CODIGO       EQ MOVREC.NUMERO
+                                                                   CONSTRAINED_FIND FIRST FONTREC BY INDEX.1
+                                                                   WHILE [FOUND]
+                                                                    KEYCHECK GOSUB LB_ROTINA_PARADA
+                                                                    CALC (JN_LENDO + 1) TO JN_LENDO
+                                                                    
+                                                                           INDICATE OK! AS (TRIM(FONTREC.N_FONTE)) IN '02-03-04-05-06-08'
+                                                                    [~OK!] INDICATE OK! AS (TRIM(FONTREC.N_FONTE)) IN '92-93-94-95-96-98'
+                                                                    [ OK!] BEGIN
+                                                                                   INDICATE OK! AS (LEFT(FONTREC.N_FUNDO,1)) EQ '3'
+                                                                            [~OK!] INDICATE OK! AS (LEFT(FONTREC.N_FUNDO,3)) EQ '100'
+                                                                           END
+                                                                   
+                                                                    [ OK!] BEGIN
+                                                                            IF ((ST_FONTE EQ FONTREC.N_FONTE) AND (ST_COD_APLICACAO EQ FONTREC.N_FUNDO)) MOVE '10' TO ST_PASTA_RESPONSAVEL
+                                                                           END
+                                                                    
+                                                                    CONSTRAINT_SET 3
+                                                                    CONSTRAINED_FIND NEXT
+                                                                   END
+                                                                   CONSTRAINT_SET 3 CLEAR
+                                                                  END
+
+                                              CONSTRAINT_SET 2
+                                              CONSTRAINED_FIND NEXT
+                                             END
+                                             CONSTRAINT_SET 2 CLEAR
+                                            END
+                                  
+                                  [ TCEMG!] BEGIN
+                                                  IF ST_FONTE IN '100-200'                                                     MOVE  '3' TO ST_PASTA_RESPONSAVEL
+                                             ELSE IF ST_FONTE IN '102-202'                                                     MOVE  '4' TO ST_PASTA_RESPONSAVEL
+                                             ELSE IF ST_FONTE IN '148-149-150-151-152-153-154-223-248-249-250-251-252-253-254' MOVE  '5' TO ST_PASTA_RESPONSAVEL
+                                             ELSE IF ST_FONTE IN '155-255'                                                     MOVE  '6' TO ST_PASTA_RESPONSAVEL
+                                             ELSE IF ST_FONTE IN '123-223'                                                     MOVE  '7' TO ST_PASTA_RESPONSAVEL
+                                             ELSE IF ST_FONTE IN '190-191-290-291'                                             MOVE  '8' TO ST_PASTA_RESPONSAVEL
+                                             ELSE IF ST_FONTE IN '112-188-212-288'                                             MOVE '10' TO ST_PASTA_RESPONSAVEL
+                                            END
+                                 END
+ ELSE BEGIN
+       TRIM ST_FONTE         TO ST_FONTE
+       TRIM ST_COD_APLICACAO TO ST_COD_APLICACAO
+       
+       [ TCEMG!] MOVE '' TO ST_COD_APLICACAO
+       
+       //--monta codigo tce (fonte + codigo de aplicao)
+       MOVE ST_FONTE TO ST_CODIGO_TCE
+       APPEND ST_CODIGO_TCE ' ' ST_COD_APLICACAO
+       
+       MOVE '' TO ST_PASTA_RESPONSAVEL
+       
+       CLEAR RELSIOP
+       MOVE PARGERAL.ESTADO    TO RELSIOP.UF
+       MOVE PARGERAL.EXERCICIO TO RELSIOP.ANO
+       MOVE 'SIOPS'            TO RELSIOP.SISTEMA
+       MOVE 'FONTES'           TO RELSIOP.NATUREZA
+       MOVE ST_CODIGO_TCE      TO RELSIOP.CODIGO_TCE
+       MOVE ''                 TO RELSIOP.CNR
+       FIND EQ RELSIOP BY INDEX.2
+       [ FOUND] BEGIN
+                 MOVE (TRIM(RELSIOP.CODIGO_SIOP)) TO ST_PASTA_RESPONSAVEL
+                END
+       
+       IF ST_PASTA_RESPONSAVEL EQ '' BEGIN
+                                      FOR IT_BUSCA_CNR FROM 1 TO 3
+                                       MOVE '' TO ST_APLICACAO
+                                       
+                                            IF IT_BUSCA_CNR EQ 1 MOVE (MID(ST_CODIGO_TCE,4,1))  TO ST_APLICACAO
+                                       ELSE IF IT_BUSCA_CNR EQ 2 MOVE (MID(ST_CODIGO_TCE,6,1))  TO ST_APLICACAO
+                                       ELSE IF IT_BUSCA_CNR EQ 3 MOVE (MID(ST_CODIGO_TCE,10,1)) TO ST_APLICACAO
+                                       
+                                       CLEAR RELSIOP
+                                       MOVE PARGERAL.ESTADO    TO RELSIOP.UF
+                                       MOVE PARGERAL.EXERCICIO TO RELSIOP.ANO
+                                       MOVE 'SIOPS'            TO RELSIOP.SISTEMA
+                                       MOVE 'FONTES'           TO RELSIOP.NATUREZA
+                                       MOVE ST_APLICACAO       TO RELSIOP.CODIGO_TCE
+                                       REPEAT
+                                        FIND GT RELSIOP BY INDEX.2
+                                        [ FOUND] INDICATE FOUND AS RELSIOP.UF                    EQ PARGERAL.ESTADO
+                                        [ FOUND] INDICATE FOUND AS RELSIOP.ANO                   EQ PARGERAL.EXERCICIO
+                                        [ FOUND] INDICATE FOUND AS RELSIOP.SISTEMA               EQ 'SIOPS'
+                                        [ FOUND] INDICATE FOUND AS RELSIOP.NATUREZA              EQ 'FONTES'
+                                        [ FOUND] BEGIN
+                                                       IF IT_BUSCA_CNR EQ 1 INDICATE FOUND AS (MID(RELSIOP.CODIGO_TCE,4,1))  EQ ST_APLICACAO
+                                                  ELSE IF IT_BUSCA_CNR EQ 2 INDICATE FOUND AS (MID(RELSIOP.CODIGO_TCE,6,1))  EQ ST_APLICACAO
+                                                  ELSE IF IT_BUSCA_CNR EQ 3 INDICATE FOUND AS (MID(RELSIOP.CODIGO_TCE,10,1)) EQ ST_APLICACAO
+                                                 END
+                                        [ FOUND] BEGIN
+                                                  IF RELSIOP.CNR NE '' BEGIN
+                                                                        BUSCA_APLICACAO_RECEITA RELSIOP.CNR ST_FONTE ST_CODIGO_TCE ST_PASTA_RESPONSAVEL
+                                                                       END
+                                                  INDICATE FOUND TRUE
+                                                 END
+                                       UNTIL [~FOUND]
+                                      LOOP
+                                     END
+
+       IF ST_PASTA_RESPONSAVEL EQ '' BEGIN
+                                      CLEAR RELSIOP
+                                      MOVE PARGERAL.ESTADO    TO RELSIOP.UF
+                                      MOVE PARGERAL.EXERCICIO TO RELSIOP.ANO
+                                      MOVE 'SIOPS'            TO RELSIOP.SISTEMA
+                                      MOVE 'FONTES'           TO RELSIOP.NATUREZA
+                                      MOVE ST_CODIGO_TCE      TO RELSIOP.CODIGO_TCE
+                                      FIND GT RELSIOP BY INDEX.2
+                                      [ FOUND] INDICATE FOUND AS RELSIOP.UF       EQ PARGERAL.ESTADO
+                                      [ FOUND] INDICATE FOUND AS RELSIOP.ANO      EQ PARGERAL.EXERCICIO
+                                      [ FOUND] INDICATE FOUND AS RELSIOP.SISTEMA  EQ 'SIOPS'
+                                      [ FOUND] INDICATE FOUND AS RELSIOP.NATUREZA EQ 'FONTES'
+                                      [ FOUND] BEGIN
+                                                IF RELSIOP.CNR EQ '' BEGIN
+                                                                      IF (MID(RELSIOP.CODIGO_TCE,6,5)) EQ 'XXXXXX' BEGIN
+                                                                                                                    IF (LEFT(ST_CODIGO_TCE,4)) EQ (LEFT(RELSIOP.CODIGO_TCE,4)) BEGIN
+                                                                                                                                                                                MOVE (TRIM(RELSIOP.CODIGO_SIOP)) TO ST_PASTA_RESPONSAVEL
+                                                                                                                                                                               END
+                                                                                                                   END
+                                                                      ELSE IF (MID(RELSIOP.CODIGO_TCE,4,7)) EQ 'XXXX' BEGIN
+                                                                                                                       IF (LEFT(ST_CODIGO_TCE,6)) EQ (LEFT(RELSIOP.CODIGO_TCE,6)) BEGIN
+                                                                                                                                                                                   MOVE (TRIM(RELSIOP.CODIGO_SIOP)) TO ST_PASTA_RESPONSAVEL
+                                                                                                                                                                                  END
+                                                                                                                      END
+                                                                      ELSE BEGIN
+                                                                            IF (LEFT(ST_CODIGO_TCE,10)) EQ (LEFT(RELSIOP.CODIGO_TCE,10)) BEGIN
+                                                                                                                                          MOVE (TRIM(RELSIOP.CODIGO_SIOP)) TO ST_PASTA_RESPONSAVEL
+                                                                                                                                         END
+                                                                           END
+                                                                     END
+                                               END
+                                     END
+      END
+
+ TRIM ST_PASTA_RESPONSAVEL TO ST_PASTA_RESPONSAVEL
+ 
+ IF ST_PASTA_RESPONSAVEL EQ '' MOVE '10' TO ST_PASTA_RESPONSAVEL
+ 
+      IF ST_SUBFUNCAO EQ '301' APPEND ST_PASTA_RESPONSAVEL '_12'
+ ELSE IF ST_SUBFUNCAO EQ '302' APPEND ST_PASTA_RESPONSAVEL '_13'
+ ELSE IF ST_SUBFUNCAO EQ '303' APPEND ST_PASTA_RESPONSAVEL '_14'
+ ELSE IF ST_SUBFUNCAO EQ '304' APPEND ST_PASTA_RESPONSAVEL '_15'
+ ELSE IF ST_SUBFUNCAO EQ '305' APPEND ST_PASTA_RESPONSAVEL '_16'
+ ELSE IF ST_SUBFUNCAO EQ '306' APPEND ST_PASTA_RESPONSAVEL '_17'
+ ELSE                          APPEND ST_PASTA_RESPONSAVEL '_11'
+ 
+ INDICATE ERR FALSE
+ ON ERROR GOSUB CHECA_GRAVACAO
+ REREAD TEMPCALC
+ MOVE ST_PASTA_RESPONSAVEL TO TEMPCALC.AUXILIAR_1
+ SAVERECORD TEMPCALC
+ UNLOCK
+ ON ERROR OFF
+ 
+ CONSTRAINT_SET 1
+ CONSTRAINED_FIND NEXT
+END
+CONSTRAINT_SET 1 CLEAR
+
+//--
+//--acumular por CND para exportacao
+//--
+CLEAR TEMPCALC
+CONSTRAINT_SET 1
+CONSTRAIN TEMPCALC.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+CONSTRAIN TEMPCALC.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+CONSTRAIN TEMPCALC.USUARIO      EQ ST@USUARIO
+CONSTRAIN TEMPCALC.NUMERO       EQ 'DES_SIOPS'
+CONSTRAINED_FIND FIRST TEMPCALC BY INDEX.2
+WHILE [FOUND]
+ CALC (JN_LENDO + 1) TO JN_LENDO
+ 
+ MOVE (MID(TEMPCALC.CODIGO,20,1)) TO ST_CODIGO
+ 
+ CLEAR TEMPAUDE
+ MOVE ST@CODIGO@ENTIDADE      TO TEMPAUDE.COD_ENTIDADE
+ MOVE ST@EXERCICIO@FINANCEIRO TO TEMPAUDE.EXERCICIO
+ MOVE ST@USUARIO              TO TEMPAUDE.USUARIO
+ MOVE ST_CODIGO               TO TEMPAUDE.CODIGO
+ MOVE TEMPCALC.AUXILIAR_1     TO TEMPAUDE.NUMERO
+ FIND EQ TEMPAUDE BY INDEX.1
+ INDICATE ERR FALSE
+ ON ERROR GOSUB CHECA_GRAVACAO
+ [ FOUND] REREAD TEMPAUDE
+ MOVE TEMPCALC.AUXILIAR_1                   TO TEMPAUDE.AUXILIAR_1
+ CALC (TEMPAUDE.VALOR_1 + TEMPCALC.VALOR_1) TO TEMPAUDE.VALOR_1 
+ CALC (TEMPAUDE.VALOR_2 + TEMPCALC.VALOR_2) TO TEMPAUDE.VALOR_2 
+ CALC (TEMPAUDE.VALOR_3 + TEMPCALC.VALOR_3) TO TEMPAUDE.VALOR_3 
+ CALC (TEMPAUDE.VALOR_4 + TEMPCALC.VALOR_4) TO TEMPAUDE.VALOR_4 
+ CALC (TEMPAUDE.VALOR_5 + TEMPCALC.VALOR_5) TO TEMPAUDE.VALOR_5 
+ CALC (TEMPAUDE.VALOR_6 + TEMPCALC.VALOR_6) TO TEMPAUDE.VALOR_6 
+ CALC (TEMPAUDE.VALOR_7 + TEMPCALC.VALOR_7) TO TEMPAUDE.VALOR_7 
+ SAVERECORD TEMPAUDE
+ UNLOCK
+ ON ERROR OFF
+
+ CONSTRAINT_SET 1
+ CONSTRAINED_FIND NEXT
+ END
+CONSTRAINT_SET 1 CLEAR
+
+//--
+//--
+//--geracao do arquivo texto
+//--
+FOR IT_FONTE FROM 3 TO 89
+ FOR IT_SUBFUNCAO FROM 11 TO 18
+  
+  MOVE 'despesas_siops_' TO ST_NOME_ARQUIVO
+  APPEND ST_NOME_ARQUIVO PARGERAL.EXERCICIO '_' JN_MES
+  
+       IF IT_FONTE     EQ  3 APPEND ST_NOME_ARQUIVO '_Fonte_Recursos_Ordinarios'
+  ELSE IF IT_FONTE     EQ  4 APPEND ST_NOME_ARQUIVO '_Fonte_Impostos'
+  ELSE IF IT_FONTE     EQ  5 APPEND ST_NOME_ARQUIVO '_Fonte_SUS_Federal'
+  ELSE IF IT_FONTE     EQ  6 APPEND ST_NOME_ARQUIVO '_Fonte_SUS_Estadual'
+  ELSE IF IT_FONTE     EQ  7 APPEND ST_NOME_ARQUIVO '_Fonte_Convenios'
+  ELSE IF IT_FONTE     EQ  8 APPEND ST_NOME_ARQUIVO '_Fonte_Op_Creditos'
+  ELSE IF IT_FONTE     EQ  9 APPEND ST_NOME_ARQUIVO '_Fonte_Royalties'
+  ELSE IF IT_FONTE     EQ 10 APPEND ST_NOME_ARQUIVO '_Fonte_Outras_Fontes'
+  
+  ELSE IF IT_FONTE     EQ 86 APPEND ST_NOME_ARQUIVO '_Fonte_SUS_Federal_fonte_i'
+  ELSE IF IT_FONTE     EQ 87 APPEND ST_NOME_ARQUIVO '_Fonte_SUS_Federal_fonte_ii'
+  ELSE IF IT_FONTE     EQ 88 APPEND ST_NOME_ARQUIVO '_Fonte_SUS_Federal_fonte_iii'
+  ELSE IF IT_FONTE     EQ 89 APPEND ST_NOME_ARQUIVO '_Fonte_SUS_Federal_fonte_iv'
+  
+       IF IT_SUBFUNCAO EQ 11 APPEND ST_NOME_ARQUIVO '_Subfuncao_Administrativas'
+  ELSE IF IT_SUBFUNCAO EQ 12 APPEND ST_NOME_ARQUIVO '_Subfuncao_301_Atencao_Basica'
+  ELSE IF IT_SUBFUNCAO EQ 13 APPEND ST_NOME_ARQUIVO '_Subfuncao_302_Assistencia_Hospitalar_Ambulatorial'
+  ELSE IF IT_SUBFUNCAO EQ 14 APPEND ST_NOME_ARQUIVO '_Subfuncao_303_Suporte_Profilatico_Terapeutico'
+  ELSE IF IT_SUBFUNCAO EQ 15 APPEND ST_NOME_ARQUIVO '_Subfuncao_304_Vigilancia_Sanitaria'
+  ELSE IF IT_SUBFUNCAO EQ 16 APPEND ST_NOME_ARQUIVO '_Subfuncao_305_Vigilancia_Epidemiologica'
+  ELSE IF IT_SUBFUNCAO EQ 17 APPEND ST_NOME_ARQUIVO '_Subfuncao_306_Alimentacao_Nutricao'
+  ELSE IF IT_SUBFUNCAO EQ 18 APPEND ST_NOME_ARQUIVO '_Subfuncao_Informacoes_complementares'
+  
+  MOVE ST_ARQUIVO TO ST_SAIDA
+  APPEND ST_SAIDA ST_NOME_ARQUIVO '.impt'
+  TRIM ST_SAIDA TO ST_SAIDA
+  
+  DIRECT_OUTPUT ST_SAIDA
+  
+  MOVE IT_FONTE TO ST_BUSCA
+  APPEND ST_BUSCA '_' IT_SUBFUNCAO
+  
+  INDICATE TEM_REGISTRO! FALSE
+  
+  CLEAR CADSIOP
+  CONSTRAINT_SET 1
+  CONSTRAIN CADSIOP.SISTEMA  EQ 'SIOPS'
+  CONSTRAIN CADSIOP.ANO      EQ PARGERAL.EXERCICIO
+  CONSTRAIN CADSIOP.NATUREZA EQ 'DESPESA'
+  CONSTRAINED_FIND FIRST CADSIOP BY INDEX.1
+  WHILE [FOUND]
+   CALC (JN_LENDO + 1) TO JN_LENDO
+   
+   CLEAR TEMPAUDE
+   MOVE ST@CODIGO@ENTIDADE      TO TEMPAUDE.COD_ENTIDADE
+   MOVE ST@EXERCICIO@FINANCEIRO TO TEMPAUDE.EXERCICIO
+   MOVE ST@USUARIO              TO TEMPAUDE.USUARIO
+   MOVE ST_BUSCA                TO TEMPAUDE.NUMERO
+   MOVE CADSIOP.CODIGO          TO TEMPAUDE.CODIGO
+   FIND EQ TEMPAUDE BY INDEX.3
+   [ FOUND] BEGIN
+             CALC (JN_LENDO + 1) TO JN_LENDO
+             
+             WRITE (TRIM(TEMPAUDE.AUXILIAR_1)) ';' (TRIM(CADSIOP.CODIGO)) ';'  (TRIM(CADSIOP.CODIGO_ITEM)) ';' 
+             
+             WRITE 'V0:' '[>R$' TEMPAUDE.VALOR_1 '<]' ':-[13];'
+             WRITE 'V1:' '[>R$' TEMPAUDE.VALOR_2 '<]' ':-[12];'
+             WRITE 'V2:' '[>R$' TEMPAUDE.VALOR_3 '<]' ':-[9];'
+             WRITE 'V3:' '[>R$' TEMPAUDE.VALOR_4 '<]' ':-[10];'
+             WRITE 'V4:' '[>R$' TEMPAUDE.VALOR_5 '<]' ':-[11];'
+             WRITE 'V5:' '[>R$' TEMPAUDE.VALOR_6 '<]' ':-[14];'
+             
+             IF JN_MES EQ '12' BEGIN
+                                WRITE 'V6:' '[>R$' TEMPAUDE.VALOR_7 '<]' ':-[8];'
+                               END
+             
+             WRITELN (TRIM(CADSIOP.L_ADM_D)) ';' (TRIM(CADSIOP.C_ADM_D))
+             
+             INDICATE TEM_REGISTRO! TRUE
+            END
+   
+   CONSTRAINT_SET 1
+   CONSTRAINED_FIND NEXT
+   END
+  CONSTRAINT_SET 1 CLEAR
+  
+  CLOSE_OUTPUT ST_SAIDA
+  
+  [~TEM_REGISTRO!] ERASEFILE ST_SAIDA
+ 
+ LOOP
+LOOP
+
+//--
+//--
+//--geracao do arquivo texto COVID
+//--
+FOR IT_FONTE FROM 1 TO 3
+  MOVE 'despesas_siops_' TO ST_NOME_ARQUIVO
+  APPEND ST_NOME_ARQUIVO PARGERAL.EXERCICIO '_' JN_MES
+  
+       IF IT_FONTE EQ  1 APPEND ST_NOME_ARQUIVO '_covid_proprio'
+  ELSE IF IT_FONTE EQ  2 APPEND ST_NOME_ARQUIVO '_covid_estado'
+  ELSE IF IT_FONTE EQ  3 APPEND ST_NOME_ARQUIVO '_covid_uniao'
+  
+  MOVE ST_ARQUIVO TO ST_SAIDA
+  APPEND ST_SAIDA ST_NOME_ARQUIVO '.impt'
+  TRIM ST_SAIDA TO ST_SAIDA
+  
+  DIRECT_OUTPUT ST_SAIDA
+  
+  INDICATE TEM_REGISTRO! FALSE
+  
+       IF IT_FONTE EQ 1 MOVE 'COVID_D_PROPRIO' TO ST_NATUREZA
+  ELSE IF IT_FONTE EQ 2 MOVE 'COVID_D_ESTADO'  TO ST_NATUREZA
+  ELSE IF IT_FONTE EQ 3 MOVE 'COVID_D_UNIAO'   TO ST_NATUREZA
+  
+  CLEAR CADSIOP
+  CONSTRAINT_SET 1
+  CONSTRAIN CADSIOP.SISTEMA  EQ 'SIOPS'
+  CONSTRAIN CADSIOP.ANO      EQ PARGERAL.EXERCICIO
+  CONSTRAIN CADSIOP.NATUREZA EQ ST_NATUREZA
+  CONSTRAINED_FIND FIRST CADSIOP BY INDEX.1
+  WHILE [FOUND]
+   CALC (JN_LENDO + 1) TO JN_LENDO
+   
+   CLEAR TEMPCALC
+   MOVE ST@CODIGO@ENTIDADE      TO TEMPCALC.COD_ENTIDADE
+   MOVE ST@EXERCICIO@FINANCEIRO TO TEMPCALC.EXERCICIO
+   MOVE ST@USUARIO              TO TEMPCALC.USUARIO
+   MOVE CADSIOP.CODIGO          TO TEMPCALC.CODIGO
+   MOVE CADSIOP.NATUREZA        TO TEMPCALC.NUMERO
+   FIND EQ TEMPCALC BY INDEX.1
+   [ FOUND] BEGIN
+             CALC (JN_LENDO + 1) TO JN_LENDO
+             
+             WRITE (TRIM(CADSIOP.PASTA_RESP)) ';' (TRIM(TEMPCALC.CODIGO)) ';' (TRIM(CADSIOP.CODIGO_ITEM)) ';' 
+             
+             WRITE 'V0:' '[>R$' TEMPCALC.VALOR_3 '<]' ':-[9];'
+             WRITE 'V1:' '[>R$' TEMPCALC.VALOR_4 '<]' ':-[10];'
+             WRITE 'V2:' '[>R$' TEMPCALC.VALOR_5 '<]' ':-[11];'
+             
+             WRITELN (TRIM(CADSIOP.L_ADM_D)) ';' (TRIM(CADSIOP.C_ADM_D))
+             
+             INDICATE TEM_REGISTRO! TRUE
+            END
+   
+   CONSTRAINT_SET 1
+   CONSTRAINED_FIND NEXT
+   END
+  CONSTRAINT_SET 1 CLEAR
+  
+  CLOSE_OUTPUT ST_SAIDA
+  
+  [~TEM_REGISTRO!] ERASEFILE ST_SAIDA
+LOOP
+
+
+//--
+//-- gera total geral em txt pra conferencia
+//--
+CLOSE_OUTPUT
+DIRECT_OUTPUT 'total-siops.txt'
+
+OUTPUT HEADER_CONFERE
+
+CLEAR TEMPAUDE
+CONSTRAINT_SET 1
+CONSTRAIN TEMPAUDE.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+CONSTRAIN TEMPAUDE.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+CONSTRAIN TEMPAUDE.USUARIO      EQ ST@USUARIO
+CONSTRAINED_FIND FIRST TEMPAUDE BY INDEX.1
+WHILE [FOUND]
+ CALC (JN_LENDO + 1) TO JN_LENDO
+ 
+ PRINT (JN_FIXADO_INICIAL + TEMPAUDE.VALOR_1) TO JN_FIXADO_INICIAL
+ PRINT (JN_FIXADO_ATUAL   + TEMPAUDE.VALOR_2) TO JN_FIXADO_ATUAL
+ PRINT (JN_EMPENHADO      + TEMPAUDE.VALOR_3) TO JN_EMPENHADO
+ PRINT (JN_LIQUIDADO      + TEMPAUDE.VALOR_4) TO JN_LIQUIDADO
+ PRINT (JN_PAGO           + TEMPAUDE.VALOR_5) TO JN_PAGO
+ PRINT (JN_RESTOS_PAGAR   + TEMPAUDE.VALOR_6) TO JN_RESTOS_PAGAR
+ PRINT (JN_ORCADO         + TEMPAUDE.VALOR_7) TO JN_ORCADO
+
+ CONSTRAINT_SET 1
+ CONSTRAINED_FIND NEXT
+ END
+CONSTRAINT_SET 1 CLEAR
+
+OUTPUT LINHA_CONFERE
+CLOSE_OUTPUT
+
+//-- gera subtotal em txt pra conferencia por pastas
+
+DIRECT_OUTPUT 'sub-total-siops.txt'
+
+FOR IT_FONTE FROM 3 TO 89
+ FOR IT_SUBFUNCAO FROM 11 TO 18
+  
+  MOVE 'despesas_siops_' TO ST_NOME_ARQUIVO
+  APPEND ST_NOME_ARQUIVO PARGERAL.EXERCICIO '_' JN_MES
+  
+       IF IT_FONTE     EQ  3 APPEND ST_NOME_ARQUIVO '_Fonte_Recursos_Ordinarios'
+  ELSE IF IT_FONTE     EQ  4 APPEND ST_NOME_ARQUIVO '_Fonte_Impostos'
+  ELSE IF IT_FONTE     EQ  5 APPEND ST_NOME_ARQUIVO '_Fonte_SUS_Federal'
+  ELSE IF IT_FONTE     EQ  6 APPEND ST_NOME_ARQUIVO '_Fonte_SUS_Estadual'
+  ELSE IF IT_FONTE     EQ  7 APPEND ST_NOME_ARQUIVO '_Fonte_Convenios'
+  ELSE IF IT_FONTE     EQ  8 APPEND ST_NOME_ARQUIVO '_Fonte_Op_Creditos'
+  ELSE IF IT_FONTE     EQ  9 APPEND ST_NOME_ARQUIVO '_Fonte_Royalties'
+  ELSE IF IT_FONTE     EQ 10 APPEND ST_NOME_ARQUIVO '_Fonte_Outras_Fontes'
+  
+  ELSE IF IT_FONTE     EQ 86 APPEND ST_NOME_ARQUIVO '_Fonte_SUS_Federal_fonte_i'
+  ELSE IF IT_FONTE     EQ 87 APPEND ST_NOME_ARQUIVO '_Fonte_SUS_Federal_fonte_ii'
+  ELSE IF IT_FONTE     EQ 88 APPEND ST_NOME_ARQUIVO '_Fonte_SUS_Federal_fonte_iii'
+  ELSE IF IT_FONTE     EQ 89 APPEND ST_NOME_ARQUIVO '_Fonte_SUS_Federal_fonte_iv'
+  
+       IF IT_SUBFUNCAO EQ 11 APPEND ST_NOME_ARQUIVO '_Subfuncao_Administrativas'
+  ELSE IF IT_SUBFUNCAO EQ 12 APPEND ST_NOME_ARQUIVO '_Subfuncao_301_Atencao_Basica'
+  ELSE IF IT_SUBFUNCAO EQ 13 APPEND ST_NOME_ARQUIVO '_Subfuncao_302_Assistencia_Hospitalar_Ambulatorial'
+  ELSE IF IT_SUBFUNCAO EQ 14 APPEND ST_NOME_ARQUIVO '_Subfuncao_303_Suporte_Profilatico_Terapeutico'
+  ELSE IF IT_SUBFUNCAO EQ 15 APPEND ST_NOME_ARQUIVO '_Subfuncao_304_Vigilancia_Sanitaria'
+  ELSE IF IT_SUBFUNCAO EQ 16 APPEND ST_NOME_ARQUIVO '_Subfuncao_305_Vigilancia_Epidemiologica'
+  ELSE IF IT_SUBFUNCAO EQ 17 APPEND ST_NOME_ARQUIVO '_Subfuncao_306_Alimentacao_Nutricao'
+  ELSE IF IT_SUBFUNCAO EQ 18 APPEND ST_NOME_ARQUIVO '_Subfuncao_Informacoes_complementares'
+  
+  MOVE IT_FONTE TO ST_BUSCA
+  APPEND ST_BUSCA '_' IT_SUBFUNCAO
+  
+  BLANKFORM LINHA_CONFERE_PASTA
+  
+  CLEAR TEMPAUDE
+  MOVE ST@CODIGO@ENTIDADE      TO TEMPAUDE.COD_ENTIDADE
+  MOVE ST@EXERCICIO@FINANCEIRO TO TEMPAUDE.EXERCICIO
+  MOVE ST@USUARIO              TO TEMPAUDE.USUARIO
+  MOVE ST_BUSCA                TO TEMPAUDE.NUMERO
+  REPEAT
+   FIND GT TEMPAUDE BY INDEX.3
+   [ FOUND] INDICATE FOUND AS TEMPAUDE.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+   [ FOUND] INDICATE FOUND AS TEMPAUDE.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+   [ FOUND] INDICATE FOUND AS TEMPAUDE.USUARIO      EQ ST@USUARIO
+   [ FOUND] INDICATE FOUND AS TEMPAUDE.NUMERO       EQ ST_BUSCA
+   [ FOUND] BEGIN
+             CALC (JN_LENDO + 1) TO JN_LENDO
+             
+             PRINT (JNS_FIXADO_INICIAL  + TEMPAUDE.VALOR_1) TO JNS_FIXADO_INICIAL
+             PRINT (JNS_FIXADO_ATUAL    + TEMPAUDE.VALOR_2) TO JNS_FIXADO_ATUAL
+             PRINT (JNS_EMPENHADO       + TEMPAUDE.VALOR_3) TO JNS_EMPENHADO
+             PRINT (JNS_LIQUIDADO       + TEMPAUDE.VALOR_4) TO JNS_LIQUIDADO
+             PRINT (JNS_PAGO            + TEMPAUDE.VALOR_5) TO JNS_PAGO
+             PRINT (JNS_RESTOS_PAGAR    + TEMPAUDE.VALOR_6) TO JNS_RESTOS_PAGAR
+             PRINT (JNS_ORCADO          + TEMPAUDE.VALOR_7) TO JNS_ORCADO
+            
+             PRINT (JNST_FIXADO_INICIAL + TEMPAUDE.VALOR_1) TO JNST_FIXADO_INICIAL
+             PRINT (JNST_FIXADO_ATUAL   + TEMPAUDE.VALOR_2) TO JNST_FIXADO_ATUAL
+             PRINT (JNST_EMPENHADO      + TEMPAUDE.VALOR_3) TO JNST_EMPENHADO
+             PRINT (JNST_LIQUIDADO      + TEMPAUDE.VALOR_4) TO JNST_LIQUIDADO
+             PRINT (JNST_PAGO           + TEMPAUDE.VALOR_5) TO JNST_PAGO
+             PRINT (JNST_RESTOS_PAGAR   + TEMPAUDE.VALOR_6) TO JNST_RESTOS_PAGAR
+             PRINT (JNST_ORCADO         + TEMPAUDE.VALOR_7) TO JNST_ORCADO
+            END
+  UNTIL [~FOUND]
+  
+  PRINT ST_NOME_ARQUIVO TO JNS_PASTA
+  OUTPUT LINHA_CONFERE_PASTA
+ LOOP
+LOOP
+
+PRINT 'TOTAL GERAL' TO JNST_PASTA
+OUTPUT LINHA_CONFERE_PASTA_TOTAL
+
+CLOSE_OUTPUT
+//--
+//--
+//--
+
+APAGA_TEMPAUDE ''
+APAGA_TEMPCALC JN_LENDO
+ABORT
+
+LB_VERIFICACAO:
+ ABREREL_GERRELAT 'INCONSISTˆNCIAS P/ GERA€ŽO DO SIOPE - DESPESA' '132C+' 'T'
+ 
+ MOVE 1 TO PAGECOUNT
+ MOVE 0 TO RECCOUNT
+
+ CABEC ST@PREFEITURA JHD_PREFEITURA
+ SYSDATA             JHD_DATA
+ PRINT PAGECOUNT  TO JHD_PAGINA
+ CABEC ST_PERIODO    JHD_PERIODO
+ OUTPUT HEADER
+
+ SCREENMODE IT_COR_TARJA ON
+ PAGE MSG
+
+ [ LE_XML!] BEGIN
+             MOVE JN_MES TO IT_MES_FINAL
+
+             FOR IT_MES FROM 1 TO IT_MES_FINAL
+              MOVE IT_MES TO ST_MES_BUSCA
+              COMZEROS ST_MES_BUSCA 2
+
+              CLEAR CONTACOR
+              CONSTRAINT_SET 1
+              CONSTRAIN CONTACOR.ANO                    EQ ST_EXERCICIO
+              CONSTRAIN CONTACOR.MES                    EQ ST_MES_BUSCA
+              [~TCEMG!] CONSTRAIN CONTACOR.XML          EQ '27'
+              [ TCEMG!] CONSTRAIN CONTACOR.XML          EQ '11'
+              [~TODAS!] CONSTRAIN CONTACOR.COD_ENTIDADE EQ ST_ENTIDADE_SELECAO
+                        CONSTRAIN CONTACOR.COD_ENTIDADE NE ST_PROPRIA_ENTIDADE
+              CONSTRAINED_FIND FIRST CONTACOR BY INDEX.4
+              WHILE [FOUND]
+               CALC (JN_LENDO + 1) TO JN_LENDO
+               KEYCHECK GOSUB LB_ROTINA_PARADA
+               
+              MOVEALL '' TO ST_FUNCAO ST_SUBFUNCAO ST_FONTE ST_COD_APLICACAO ST_COD_ECONOMICA
+              
+              [~TCEMG!] BEGIN
+                         MOVE (MID(CONTACOR.DADOS,2,38))  TO ST_FUNCAO
+                         MOVE (MID(CONTACOR.DADOS,3,41))  TO ST_SUBFUNCAO
+                         MOVE (MID(CONTACOR.DADOS,5,68))  TO ST_FONTE
+                         MOVE (MID(CONTACOR.DADOS,7,74))  TO ST_COD_APLICACAO
+                         MOVE (MID(CONTACOR.DADOS,12,55)) TO ST_COD_ECONOMICA
+                        END
+              [ TCEMG!] BEGIN
+                         MOVE (MID(CONTACOR.DADOS,2,32))  TO ST_FUNCAO
+                         MOVE (MID(CONTACOR.DADOS,3,35))  TO ST_SUBFUNCAO
+                         MOVE (MID(CONTACOR.DADOS,5,67))  TO ST_FONTE
+                         MOVE (MID(CONTACOR.DADOS,12,54)) TO ST_COD_ECONOMICA
+                         
+                         PAD ST_COD_APLICACAO TO ST_COD_APLICACAO 7
+                        END
+               
+               INDICATE SAUDE! AS ST_FUNCAO EQ '10'
+               [ SAUDE!] BEGIN
+                          BUSCA_CODIGO_SIOPS ST_COD_ECONOMICA ST_COD_DESPESA_SIOPS
+                          [~@CODIGO@RELACIONADO!] BEGIN
+                                                   INCREMENT RECCOUNT
+                                                 
+                                                   MOVE 'CAT. ECONOMICA ' TO ST_BODY
+                                                   APPEND ST_BODY ' ' ST_COD_ECONOMICA ' SEM RELACIONAMENTO COM O PLANO DE DESPESAS DO SIOPE'
+                                                   PRINT ST_BODY TO JBD_DESCRICAO
+                                                   OUTPUT BODY
+                                                   GOSUB LB_PULA_PAGINA
+                                                  END
+                          [ @CODIGO@RELACIONADO!] BEGIN
+                                                   CLEAR CADSIOP
+                                                   MOVE 'SIOPS'              TO CADSIOP.SISTEMA
+                                                   MOVE PARGERAL.EXERCICIO   TO CADSIOP.ANO
+                                                   MOVE 'DESPESA'            TO CADSIOP.NATUREZA
+                                                   MOVE ST_COD_DESPESA_SIOPS TO CADSIOP.CODIGO
+                                                   FIND EQ CADSIOP BY INDEX.1
+                                                   [~FOUND] BEGIN
+                                                             INCREMENT RECCOUNT
+                                                           
+                                                             MOVE 'COD. DESPESA ' TO ST_BODY
+                                                             APPEND ST_BODY ' ' (TRIM(ST_COD_DESPESA_SIOPS)) ' INEXISTENTE NO CADASTRO DE DESPESAS DO SIOPS'
+                                                             PRINT ST_BODY TO JBD_DESCRICAO
+                                                             OUTPUT BODY
+                                                             GOSUB LB_PULA_PAGINA
+                                                            END
+                                                   [ FOUND] BEGIN
+                                                             IF CADSIOP.TIPO NE 'A' BEGIN
+                                                                                     INCREMENT RECCOUNT
+                                                                                     
+                                                                                     MOVE 'COD. DESPESA ' TO ST_BODY
+                                                                                     APPEND ST_BODY ' ' (TRIM(ST_COD_DESPESA_SIOPS)) ' COM TIPO DIFERENTE DE ANALITICA NO CADASTRO DO SIOPS - XML ' ST_COD_ECONOMICA
+                                                                                     PRINT ST_BODY TO JBD_DESCRICAO
+                                                                                     OUTPUT BODY
+                                                                                     GOSUB LB_PULA_PAGINA
+                                                                                    END
+                                                             IF CADSIOP.CODIGO_ITEM EQ '' BEGIN
+                                                                                           INCREMENT RECCOUNT
+                                                                                         
+                                                                                           MOVE 'COD. DESPESA ' TO ST_BODY
+                                                                                           APPEND ST_BODY ' ' (TRIM(ST_COD_DESPESA_SIOPS)) ' SEM CODIGO DE ITEM NO CADASTRO DO SIOPS'
+                                                                                           PRINT ST_BODY TO JBD_DESCRICAO
+                                                                                           OUTPUT BODY
+                                                                                           GOSUB LB_PULA_PAGINA
+                                                                                          END
+                                                            END
+                                                  END
+                         END
+                       
+               CONSTRAINT_SET 1         
+               CONSTRAINED_FIND NEXT
+               END
+              CONSTRAINT_SET 1 CLEAR
+             LOOP 
+            END
+
+ //--
+ [ LE_MOV!] BEGIN
+             //--despesas
+             CLEAR MOVDES
+             CONSTRAINT_SET 1
+             CONSTRAIN MOVDES.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+             CONSTRAIN MOVDES.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+             CONSTRAIN MOVDES.FUNCAO       EQ '10'
+             CONSTRAIN MOVDES.DATA         LE DT_DATA_FINAL
+             CONSTRAINED_FIND FIRST MOVDES BY INDEX.6
+             WHILE [FOUND]
+              CALC (JN_LENDO + 1) TO JN_LENDO
+              KEYCHECK GOSUB LB_ROTINA_PARADA
+              
+              BUSCA_CODIGO_SIOPS MOVDES.ECONOMICA ST_COD_DESPESA_SIOPS
+              [~@CODIGO@RELACIONADO!] BEGIN
+                                       INCREMENT RECCOUNT
+                                     
+                                       MOVE 'CAT. ECONOMICA ' TO ST_BODY
+                                       APPEND ST_BODY ' ' MOVDES.ECONOMICA ' SEM RELACIONAMENTO COM O PLANO DE DESPESAS DO SIOPE'
+                                       PRINT ST_BODY TO JBD_DESCRICAO
+                                       OUTPUT BODY
+                                       GOSUB LB_PULA_PAGINA
+                                      END
+              [ @CODIGO@RELACIONADO!] BEGIN
+                                       CLEAR CADSIOP
+                                       MOVE 'SIOPS'              TO CADSIOP.SISTEMA
+                                       MOVE PARGERAL.EXERCICIO   TO CADSIOP.ANO
+                                       MOVE 'DESPESA'            TO CADSIOP.NATUREZA
+                                       MOVE ST_COD_DESPESA_SIOPS TO CADSIOP.CODIGO
+                                       FIND EQ CADSIOP BY INDEX.1
+                                       [~FOUND] BEGIN
+                                                 INCREMENT RECCOUNT
+                                               
+                                                 MOVE 'COD. DESPESA ' TO ST_BODY
+                                                 APPEND ST_BODY ' ' (TRIM(ST_COD_DESPESA_SIOPS)) ' INEXISTENTE NO CADASTRO DE DESPESAS DO SIOPS'
+                                                 PRINT ST_BODY TO JBD_DESCRICAO
+                                                 OUTPUT BODY
+                                                 GOSUB LB_PULA_PAGINA
+                                                END
+                                       [ FOUND] BEGIN
+                                                 IF CADSIOP.TIPO NE 'A' BEGIN
+                                                                         INCREMENT RECCOUNT
+                                                                       
+                                                                         MOVE 'COD. DESPESA ' TO ST_BODY
+                                                                         APPEND ST_BODY ' ' (TRIM(ST_COD_DESPESA_SIOPS)) ' COM TIPO DIFERENTE DE ANALITICA NO CADASTRO DO SIOPS - DESPESA ' MOVDES.ECONOMICA
+                                                                         PRINT ST_BODY TO JBD_DESCRICAO
+                                                                         OUTPUT BODY
+                                                                         GOSUB LB_PULA_PAGINA
+                                                                        END
+                                                 IF CADSIOP.CODIGO_ITEM EQ '' BEGIN
+                                                                               INCREMENT RECCOUNT
+                                                                             
+                                                                               MOVE 'COD. DESPESA ' TO ST_BODY
+                                                                               APPEND ST_BODY ' ' (TRIM(ST_COD_DESPESA_SIOPS)) ' SEM CODIGO DE ITEM NO CADASTRO DO SIOPS'
+                                                                               PRINT ST_BODY TO JBD_DESCRICAO
+                                                                               OUTPUT BODY
+                                                                               GOSUB LB_PULA_PAGINA
+                                                                              END
+                                                END
+                                      END
+              
+              //--busca depara fontes
+              MOVE '' TO ST_PASTA_RESPONSAVEL
+              
+              MOVE (TRIM(MOVDES.N_FONTE)) TO ST_CODIGO_TCE
+              APPEND ST_CODIGO_TCE ' ' MOVDES.COD_APLICACAO
+              
+              //--apenas fonte e primeiro digito do cod de aplicacao
+              MOVE (MID(ST_CODIGO_TCE,4,1)) TO ST_APLICACAO
+              
+              CLEAR RELSIOP
+              MOVE PARGERAL.ESTADO    TO RELSIOP.UF
+              MOVE PARGERAL.EXERCICIO TO RELSIOP.ANO
+              MOVE 'SIOPS'            TO RELSIOP.SISTEMA
+              MOVE 'FONTES'           TO RELSIOP.NATUREZA
+              MOVE ST_CODIGO_TCE      TO RELSIOP.CODIGO_TCE
+              MOVE ''                 TO RELSIOP.CNR
+              FIND EQ RELSIOP BY INDEX.2
+              [ FOUND] BEGIN
+                        MOVE (TRIM(RELSIOP.CODIGO_SIOP)) TO ST_PASTA_RESPONSAVEL
+                       END
+              
+              IF ST_PASTA_RESPONSAVEL EQ '' BEGIN
+                                             CLEAR RELSIOP
+                                             MOVE PARGERAL.ESTADO    TO RELSIOP.UF
+                                             MOVE PARGERAL.EXERCICIO TO RELSIOP.ANO
+                                             MOVE 'SIOPS'            TO RELSIOP.SISTEMA
+                                             MOVE 'FONTES'           TO RELSIOP.NATUREZA
+                                             MOVE ST_APLICACAO       TO RELSIOP.CODIGO_TCE
+                                             REPEAT
+                                              FIND GT RELSIOP BY INDEX.2
+                                              [ FOUND] INDICATE FOUND AS RELSIOP.UF                    EQ PARGERAL.ESTADO
+                                              [ FOUND] INDICATE FOUND AS RELSIOP.ANO                   EQ PARGERAL.EXERCICIO
+                                              [ FOUND] INDICATE FOUND AS RELSIOP.SISTEMA               EQ 'SIOPS'
+                                              [ FOUND] INDICATE FOUND AS RELSIOP.NATUREZA              EQ 'FONTES'
+                                              [ FOUND] INDICATE FOUND AS (MID(RELSIOP.CODIGO_TCE,4,1)) EQ ST_APLICACAO
+                                              [ FOUND] BEGIN
+                                                        IF RELSIOP.CNR NE '' BEGIN
+                                                                              BUSCA_APLICACAO_RECEITA RELSIOP.CNR ST_FONTE ST_CODIGO_TCE ST_PASTA_RESPONSAVEL
+                                                                             END
+                                                        INDICATE FOUND TRUE
+                                                       END
+                                             UNTIL [~FOUND]
+                                            END
+
+              IF ST_PASTA_RESPONSAVEL EQ '' BEGIN
+                                             CLEAR RELSIOP
+                                             MOVE PARGERAL.ESTADO    TO RELSIOP.UF
+                                             MOVE PARGERAL.EXERCICIO TO RELSIOP.ANO
+                                             MOVE 'SIOPS'            TO RELSIOP.SISTEMA
+                                             MOVE 'FONTES'           TO RELSIOP.NATUREZA
+                                             MOVE ST_CODIGO_TCE      TO RELSIOP.CODIGO_TCE
+                                             FIND GT RELSIOP BY INDEX.2
+                                             [ FOUND] INDICATE FOUND AS RELSIOP.UF       EQ PARGERAL.ESTADO
+                                             [ FOUND] INDICATE FOUND AS RELSIOP.ANO      EQ PARGERAL.EXERCICIO
+                                             [ FOUND] INDICATE FOUND AS RELSIOP.SISTEMA  EQ 'SIOPS'
+                                             [ FOUND] INDICATE FOUND AS RELSIOP.NATUREZA EQ 'FONTES'
+                                             [ FOUND] BEGIN
+                                                       IF RELSIOP.CNR EQ '' BEGIN
+                                                                             IF (MID(RELSIOP.CODIGO_TCE,6,5)) EQ 'XXXXXX' BEGIN
+                                                                                                                           IF (LEFT(ST_CODIGO_TCE,4)) EQ (LEFT(RELSIOP.CODIGO_TCE,4)) BEGIN
+                                                                                                                                                                                       MOVE (TRIM(RELSIOP.CODIGO_SIOP)) TO ST_PASTA_RESPONSAVEL
+                                                                                                                                                                                       
+//                                                                                                                                                                                        clearxy 0 0
+//                                                                                                                                                                                        showln movdes.economica
+//                                                                                                                                                                                        showln movdes.funcao
+//                                                                                                                                                                                        showln movdes.subfuncao
+//                                                                                                                                                                                        showln movdes.n_fonte
+//                                                                                                                                                                                        showln movdes.cod_aplicacao
+//                                                                                                                                                                                        showln movdes.numero
+//                                                                                                                                                                                        showln ST_PASTA_RESPONSAVEL
+//                                                                                                                                                                                        
+//                                                                                                                                                                                        if movdes.funcao eq '10';
+//                                                                                                                                                                                        if movdes.subfuncao eq '301';
+//                                                                                                                                                                                        if movdes.n_fonte eq '08';
+//                                                                                                                                                                                        if movdes.cod_aplicacao eq '3020000';
+//                                                                                                                                                                                        pause .
+//                                                                                                                                                                                        KEYCHECK abort
+                                                                                                                                                                                       END
+                                                                                                                          END
+                                                                             ELSE IF (MID(RELSIOP.CODIGO_TCE,4,7)) EQ 'XXXX' BEGIN
+                                                                                                                              IF (LEFT(ST_CODIGO_TCE,6)) EQ (LEFT(RELSIOP.CODIGO_TCE,6)) BEGIN
+                                                                                                                                                                                          MOVE (TRIM(RELSIOP.CODIGO_SIOP)) TO ST_PASTA_RESPONSAVEL
+                                                                                                                                                                                         END
+                                                                                                                             END
+                                                                             ELSE BEGIN
+                                                                                   IF (LEFT(ST_CODIGO_TCE,10)) EQ (LEFT(RELSIOP.CODIGO_TCE,10)) BEGIN
+                                                                                                                                                 MOVE (TRIM(RELSIOP.CODIGO_SIOP)) TO ST_PASTA_RESPONSAVEL
+                                                                                                                                                END
+                                                                                  END
+                                                                            END
+                                                      END
+                                            END
+              
+              //--
+              IF ST_PASTA_RESPONSAVEL EQ '' BEGIN
+                                             INCREMENT RECCOUNT
+                                           
+                                             MOVE 'ENTIDADE  ' TO ST_BODY
+                                             APPEND ST_BODY ' ' PARGERAL.COD_ENTIDADE ' ' MOVDES.ECONOMICA ' ' MOVDES.FUNCAO ' ' MOVDES.SUBFUNCAO ' ' (TRIM(MOVDES.N_FONTE)) ' ' MOVDES.COD_APLICACAO ' NAO EXPORTADA PARA O SIOPS'
+                                             PRINT ST_BODY TO JBD_DESCRICAO
+                                             OUTPUT BODY
+                                             GOSUB LB_PULA_PAGINA
+                                            END
+              
+//               clearxy 15 0
+//               showln movdes.economica
+//               showln movdes.funcao
+//               showln movdes.subfuncao
+//               showln movdes.n_fonte
+//               showln movdes.cod_aplicacao
+//               showln movdes.numero
+//               showln ST_PASTA_RESPONSAVEL
+//               
+//               if movdes.funcao eq '10';
+//               if movdes.subfuncao eq '301';
+//               if movdes.n_fonte eq '08';
+//               if movdes.cod_aplicacao eq '3020000';
+//               if ST_PASTA_RESPONSAVEL eq '' ;
+//               pause .
+//               KEYCHECK abort
+              
+              CLEAR EMPENHO
+              CONSTRAINT_SET 2
+              CONSTRAIN EMPENHO.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+              CONSTRAIN EMPENHO.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+              CONSTRAIN EMPENHO.N_DESPESA    EQ MOVDES.NUMERO
+              CONSTRAIN EMPENHO.DATA         GE DT_DATA_INICIO_ANO
+              CONSTRAIN EMPENHO.DATA         LE DT_DATA_FINAL
+              CONSTRAINED_FIND FIRST EMPENHO BY INDEX.9
+              WHILE [FOUND]
+               CALC (JN_LENDO + 1)    TO JN_LENDO
+               KEYCHECK GOSUB LB_ROTINA_PARADA
+               
+               BUSCA_CODIGO_SIOPS EMPENHO.ECONOMICA ST_COD_DESPESA_SIOPS
+               TRIM ST_COD_DESPESA_SIOPS TO ST_COD_DESPESA_SIOPS
+               
+               [~@CODIGO@RELACIONADO!] BEGIN
+                                        INCREMENT RECCOUNT
+                                      
+                                        MOVE 'CAT. ECONOMICA ' TO ST_BODY
+                                        APPEND ST_BODY ' ' EMPENHO.ECONOMICA ' SEM RELACIONAMENTO COM O PLANO DE DESPESAS DO SIOPE'
+                                        PRINT ST_BODY TO JBD_DESCRICAO
+                                        OUTPUT BODY
+                                        GOSUB LB_PULA_PAGINA
+                                       END
+               [ @CODIGO@RELACIONADO!] BEGIN
+                                        CLEAR CADSIOP
+                                        MOVE 'SIOPS'              TO CADSIOP.SISTEMA
+                                        MOVE PARGERAL.EXERCICIO   TO CADSIOP.ANO
+                                        MOVE 'DESPESA'            TO CADSIOP.NATUREZA
+                                        MOVE ST_COD_DESPESA_SIOPS TO CADSIOP.CODIGO
+                                        FIND EQ CADSIOP BY INDEX.1
+                                        [~FOUND] BEGIN
+                                                  INCREMENT RECCOUNT
+                                                
+                                                  MOVE 'COD. DESPESA ' TO ST_BODY
+                                                  APPEND ST_BODY ' ' ST_COD_DESPESA_SIOPS ' INEXISTENTE NO CADASTRO DE DESPESAS DO SIOPS'
+                                                  PRINT ST_BODY TO JBD_DESCRICAO
+                                                  OUTPUT BODY
+                                                  GOSUB LB_PULA_PAGINA
+                                                 END
+                                        [ FOUND] BEGIN
+                                                  IF CADSIOP.TIPO NE 'A' BEGIN
+                                                                          INCREMENT RECCOUNT
+                                                                          
+                                                                          MOVE 'COD. DESPESA ' TO ST_BODY
+                                                                          APPEND ST_BODY ' ' ST_COD_DESPESA_SIOPS ' COM TIPO DIFERENTE DE ANALITICA NO CADASTRO DO SIOPS - TCE: ' EMPENHO.ECONOMICA
+                                                                          PRINT ST_BODY TO JBD_DESCRICAO
+                                                                          OUTPUT BODY
+                                                                          GOSUB LB_PULA_PAGINA
+                                                                         END
+                                                  IF CADSIOP.CODIGO_ITEM EQ '' BEGIN
+                                                                                INCREMENT RECCOUNT
+                                                                              
+                                                                                MOVE 'COD. DESPESA ' TO ST_BODY
+                                                                                APPEND ST_BODY ' ' ST_COD_DESPESA_SIOPS ' SEM CODIGO DE ITEM NO CADASTRO DO SIOPS'
+                                                                                PRINT ST_BODY TO JBD_DESCRICAO
+                                                                                OUTPUT BODY
+                                                                                GOSUB LB_PULA_PAGINA
+                                                                               END
+                                                 END
+                                       END
+              
+               CONSTRAINED_FIND NEXT
+               END
+              CONSTRAINT_SET 2 CLEAR
+
+              CONSTRAINT_SET 1         
+              CONSTRAINED_FIND NEXT
+              END
+             CONSTRAINT_SET 1 CLEAR
+             
+             BLANKFORM BODY
+             OUTPUT BODY
+            END
+
+ OUTPUT TOTAL
+ BUSCA_CAMINHO_MENU 'GSIOPSD' ''
+ FORMFEED
+ GRAVAPAG 'C'
+ CLOSE_OUTPUT
+ 
+ IF RECCOUNT NE 0 BEGIN
+  ADVERTE 'VERIFIQUE RELAT¢RIO DE INCONSISTˆNCIAS DO SIOPS - DESPESA'
+//  ABORT
+  END
+ 
+ CLOSE_OUTPUT
+RETURN
+
+//-----------------------------------------------------------
+
+LB_ROTINA_PARADA:
+ CABEC 'GOSTARIA REALMENTE DE SAIR < S/N >?' CONFIRMA.1
+ PAGE CONFIRMA
+ INKEYCHECK ST_TECLA IN 'SsNn'
+ IF ST_TECLA IN 'Ss' BEGIN
+                      MOVE 0 TO RECCOUNT
+                      LIMPA_PRN
+                     END
+ 
+ MOVE 0 TO CURRENT_IMAGE
+ PAGE TELA
+ PAGE MSG
+RETURN
+
+LB_PULA_PAGINA:
+ IF LINECOUNT GE 58 BEGIN
+                     OUTPUT TOTAL
+                     FORMFEED
+                     PRINT PAGECOUNT TO JHD_PAGINA
+                     OUTPUT HEADER
+                    END
+RETURN
+
+KEYPROC KEY.UP
+ IF CURRENT_WINDOW EQ 3 BEGIN
+                         [ PREFE!] BACKFIELD
+                         [~PREFE!] RETURN LB_MES
+                        END
+ ELSE BACKFIELD
+RETURN
+
+KEYPROC KEY.FIELD
+ IF CURRENT_WINDOW EQ 1 BEGIN
+                         MOVE 'CENTIDAD 1 ' TO ST_JUNTA
+                         APPEND ST_JUNTA ST@USUARIO ' ' ST@OPCAO ' ' ST@PROGRAMA ' ' ST@CODIGO@ENTIDADE ' ' ST@EXERCICIO@FINANCEIRO
+                         CHAIN WAIT ST_JUNTA EXPORT_FILES
+                         MOVE 0 TO CURRENT_IMAGE
+                         PAGE TELA
+                         IF ENTIDADE.CODIGO NE "" BEGIN
+                                                   TRIM ENTIDADE.CODIGO    TO JN_COD_ENTIDADE
+                                                   TRIM ENTIDADE.DESCRICAO TO JN_ENTIDADE
+                                                  END
+                         ELSE ENTAGAIN
+                         RETURN
+                        END
+ ENTAGAIN
+RETURN
+
+LB_EXCLUI_DEPARA_SINTETICO:
+ IF PARGERAL.EXERCICIO EQ '2019' BEGIN
+                                  CLEAR RELSIOP
+                                  CONSTRAINT_SET 1
+                                  CONSTRAIN RELSIOP.UF       EQ PARGERAL.ESTADO
+                                  CONSTRAIN RELSIOP.ANO      EQ PARGERAL.EXERCICIO
+                                  CONSTRAIN RELSIOP.SISTEMA  EQ 'SIOPS'
+                                  CONSTRAIN RELSIOP.NATUREZA EQ 'DESPESA'
+                                  CONSTRAINED_FIND FIRST RELSIOP BY INDEX.1
+                                  WHILE [FOUND]
+                                   PRINT (JN_LENDO + 1) TO JN_LENDO
+                                   
+                                   CLEAR ECONORCA
+                                   MOVE PARGERAL.ESTADO    TO ECONORCA.UF
+                                   MOVE PARGERAL.EXERCICIO TO ECONORCA.ANO
+                                   MOVE RELSIOP.CODIGO_TCE TO ECONORCA.CODIGO
+                                   FIND EQ ECONORCA BY INDEX.1
+                                   [ FOUND] BEGIN
+                                             IF ECONORCA.TIPO EQ 'S' BEGIN
+                                                                      INDICATE ERR FALSE
+                                                                      ON ERROR GOSUB CHECA_GRAVACAO
+                                                                      REREAD RELSIOP
+                                                                      DELETE RELSIOP
+                                                                      UNLOCK
+                                                                      ON ERROR OFF
+                                                                     END
+                                            END
+                                   
+                                   CONSTRAINED_FIND NEXT
+                                   END
+                                  CONSTRAINT_SET 1 CLEAR
+                                 
+                                 END
+
+RETURN
+
+#INCLUDE INTEGRID.INC
+
+
+

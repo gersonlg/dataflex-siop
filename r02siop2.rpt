@@ -1,0 +1,1621 @@
+/TELA RESIDENT
+ÆÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍµ
+³                                                                              ³
+ÃÄÄÄÄÄÄÄÄÄÄ RELATORIO AUXILIAR SIOPE - SIOPS Ä RECEITA ORCAMENTARIA ÄÄÄÄÄÄÄÄÄÄÄ´
+³                                                                              ³
+³Entidade               <F2>: __ _____________________________________________ ³
+³                                                                              ³
+³Posicao ate o mes          : __                                               ³
+³                                                                              ³
+³Codigo de Receita          : _   <1/2/3> 1-Tce  2-Siops  3-Siope              ³
+³                                                                              ³
+³Previsao da Receita Bruta  : _   <S/N>                                        ³
+³                                                                              ³
+³Separa receitas dedutorias : _   <S/N>   Listar pelo Cod. Relacionado _ <S/N> ³
+³                                                                              ³
+³Separa Intraorcamentarias  : _   <S/N>                                        ³
+³                                                                              ³
+³Sintetico ou Analitico     : _   <S/A>                                        ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                               <ESC>  Retorna                                 ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/CONFIRMA RESIDENT
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³______________________________________________________________________________³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/MSG RESIDENT
+ÚÄÄÄÄÄÄÄÄÄ RELATORIO AUXILIAR SIOPE - SIOPS Ä RECEITA ORCAMENTARIA ÄÄÄÄÄÄÄÄÄÄ¿
+³                                                                            ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ SOLICITADO ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                                                                            ³
+³                                                                            ³
+³           ____________________________________________________             ³
+³                                                                            ³
+³                                                                            ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ PROCESSANDO ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                                                                            ³
+³                                                                            ³
+³       Dados      : ___________________________________________________     ³
+³                                                                            ³
+³                                                                            ³
+³       Lendo      :   ________.   Imprimindo : _____.    P gs.: ___.        ³
+³                                                                            ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/HEADER RESIDENT
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+|                                                                              ____________________________________________________________                                                                                |
+|                                                                                                                                                                                                                          |
+|                                                                              ____________________________________________________________                                                                                |
+|                                                                                                                                                                                                                          |
+|                                                                                                                                                                                                                          |
+|                                                                            Receita Orcamentaria Total - Balancete _________ - Codigos ______                                                                             |
+|                                                                                                                                                                                                                          |
+| DATA  __/__/____                                                             ____________________________________________________________                                                                  Pagina _____. |
+|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|                    |                                                                       |              Previsao             |                                Receitas                               |    Previsao     |
+|                    |                                                                       |-----------------------------------|-----------------------------------------------------------------------|-----------------|
+|      Receita       |                      Especificacao                                    |          Inicial|       Atualizada|       Realizadas|  Deducoes Fundeb|  Outras Deducoes|Intraorcamentaria|Proximo Exercicio|
+|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+/BODY RESIDENT
+|____________________|____________________________________________________________ __ _______|__________,___.__|__________,___.__|__________,___.__|__________,___.__|__________,___.__|__________,___.__|__________,___.__|
+/LINHA RESIDENT
+|                    |                                                                       |                 |                 |                 |                 |                 |                 |                 |
+/LINHA2 RESIDENT
+|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+/SUBTOTAL RESIDENT
+|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|                    |_______________________________________________________________________|__________,___.__|__________,___.__|__________,___.__|__________,___.__|__________,___.__|__________,___.__|__________,___.__|
+|                    |                                                                       |                 |                 |                 |                 |                 |                 |                 |
+/TOTAL RESIDENT
+|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|                    |_______________________________________________________________________|__________,___.__|__________,___.__|__________,___.__|__________,___.__|__________,___.__|__________,___.__|__________,___.__|
+|                    |                                                                       |                 |                 |                 |                 |                 |                 |                 |
+ --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/FOOTER_COMPLETE RESIDENT
+|                    |                                                                       |                 |                 |                 |                 |                 |                 |                 |
+/FOOTER RESIDENT
+ --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/*
+#INCLUDE CONAM.LIB
+#INCLUDE ZERAARQ.LIB
+
+//--
+//-- !1 = string st_dados
+//-- !2 = conta contabil
+//-- !3 = codigo da receita
+//-- !4 = tipo de linha (total ou linha)
+//--
+//--
+#COMMAND MONTA_DADOS
+ MOVE '' TO !1
+ 
+ CLEAR PLANO
+ MOVE PARGERAL.ESTADO    TO PLANO.UF
+ MOVE PARGERAL.EXERCICIO TO PLANO.ANO
+ MOVE !2                 TO PLANO.CODIGO
+ FIND EQ PLANO BY INDEX.1
+ [~FOUND] CLEAR PLANO
+
+ INDICATE @DEDUTORIA! FALSE
+ IF (((LEFT(!2,1)) EQ '5') AND (PLANO.SALDO_DC EQ 'C')) INDICATE @DEDUTORIA! TRUE
+ IF (((LEFT(!2,1)) EQ '6') AND (PLANO.SALDO_DC EQ 'D')) INDICATE @DEDUTORIA! TRUE
+ IF !2 EQ '5.2.1.2.9.00.00.00' INDICATE @DEDUTORIA! FALSE
+ 
+ IF !4 NE 'TOTAL' BEGIN
+                   [~RECEITA_INTRA!] BEGIN
+                                      [~SEPARA_DEDUTORIAS!] BEGIN
+                                                             MOVE 'A' TO !1
+                                                             APPEND !1 !3
+                                                            END
+                                      [ SEPARA_DEDUTORIAS!] BEGIN
+                                                             [ @DEDUTORIA!] MOVE 'C' TO !1
+                                                             [~@DEDUTORIA!] MOVE 'A' TO !1
+                                                             APPEND !1 !3
+                                                            END
+                                     END
+                   [ RECEITA_INTRA!] BEGIN
+                                      [~SEPARA_INTRA!] BEGIN
+                                                        MOVE 'A' TO !1
+                                                        APPEND !1 !3
+                                                       END
+                                      [ SEPARA_INTRA!] BEGIN
+                                                        MOVE 'B' TO !1
+                                                        APPEND !1 !3
+                                                       END
+                                     END
+                  END
+ ELSE BEGIN
+       [~RECEITA_INTRA!] BEGIN
+                          [~SEPARA_DEDUTORIAS!] BEGIN
+                                                 MOVE 'A' TO !1
+                                                 APPEND !1 'X'
+                                                END
+                          [ SEPARA_DEDUTORIAS!] BEGIN
+                                                 [ @DEDUTORIA!] MOVE 'C' TO !1
+                                                 [~@DEDUTORIA!] MOVE 'A' TO !1
+                                                 APPEND !1 'X'
+                                                END
+                         END
+       [ RECEITA_INTRA!] BEGIN
+                          [~SEPARA_INTRA!] BEGIN
+                                            MOVE 'A' TO !1
+                                            APPEND !1 'X'
+                                           END
+                          [ SEPARA_INTRA!] BEGIN
+                                            MOVE 'B' TO !1
+                                            APPEND !1 'X'
+                                           END
+                         END
+      END
+#ENDCOMMAND
+
+//--
+//-- !1 = string para montar os dados
+//-- !2 = st-aux         = codigo da receita
+//-- !3 = st-cod-receita = codigo da receita
+//-- !4 = st-cod-origem  = codigo relacionado
+//-- !5 = indicate TOTAL ou LINHA
+//-- !6 = codigo original do movrec
+//-- 
+#COMMAND MONTA_DADOS_PROPRIO
+ MOVE '' TO !1
+ 
+ IF !5 NE 'TOTAL' BEGIN
+                   [~RECEITA_INTRA!] BEGIN
+                                      [~SEPARA_DEDUTORIAS!] BEGIN
+                                                             MOVE 'A' TO !1
+                                                             APPEND !1 !4
+                                                            END
+                                      [ SEPARA_DEDUTORIAS!] BEGIN
+                                                             [ RECEITA_DEDUTORIA!] BEGIN
+                                                                                    MOVE 'C' TO !1
+                                                                                    APPEND !1 !4
+                                                                                   END
+                                                             [~RECEITA_DEDUTORIA!] BEGIN
+                                                                                    MOVE 'A' TO !1
+                                                                                    APPEND !1 !3
+                                                                                   END
+                                                            END
+                                     END
+                   [ RECEITA_INTRA!] BEGIN
+                                      [~SEPARA_INTRA!] BEGIN
+                                                        MOVE 'A' TO !1
+                                                        APPEND !1 !4
+                                                       END
+                                      [ SEPARA_INTRA!] BEGIN
+                                                        MOVE 'B' TO !1
+                                                        APPEND !1 !4
+                                                       END
+                                     END
+                  END
+ ELSE BEGIN
+       [~RECEITA_INTRA!] BEGIN
+                          [~SEPARA_DEDUTORIAS!] BEGIN
+                                                 MOVE 'A' TO !1
+                                                 APPEND !1 'X'
+                                                END
+                          [ SEPARA_DEDUTORIAS!] BEGIN
+                                                 [ RECEITA_DEDUTORIA!] BEGIN
+                                                                        MOVE 'C' TO !1
+                                                                        APPEND !1 'X'
+                                                                       END
+                                                 [~RECEITA_DEDUTORIA!] BEGIN
+                                                                        MOVE 'A' TO !1
+                                                                        APPEND !1 'X'
+                                                                       END
+                                                END
+                         END
+       [ RECEITA_INTRA!] BEGIN
+                          [~SEPARA_INTRA!] BEGIN
+                                            MOVE 'A' TO !1
+                                            APPEND !1 'X'
+                                           END
+                          [ SEPARA_INTRA!] BEGIN
+                                            MOVE 'B' TO !1
+                                            APPEND !1 'X'
+                                           END
+                         END
+      END
+#ENDCOMMAND
+
+//--
+//-- !1 = string st_dados (preenchida pelo monta_dados)
+//-- !2 = tipo valor
+//-- !3 = valor
+//-- !4 = tipo (Analitica ou Sintetica)
+//--
+#COMMAND GRAVA_TEMPCALC_MOVREC
+ CLEAR TEMPCALC
+ MOVE ST@CODIGO@ENTIDADE      TO TEMPCALC.COD_ENTIDADE
+ MOVE ST@EXERCICIO@FINANCEIRO TO TEMPCALC.EXERCICIO
+ MOVE ST@USUARIO              TO TEMPCALC.USUARIO
+ MOVE !1                      TO TEMPCALC.CODIGO
+ FIND EQ TEMPCALC BY INDEX.1
+ [ FOUND] BEGIN
+           INDICATE ERR FALSE
+           ON ERROR GOSUB CHECA_GRAVACAO
+           REREAD TEMPCALC
+          END
+ 
+ //--previsao inicial
+ IF !2 EQ 'PI' CALC (TEMPCALC.VALOR_1 + !3) TO TEMPCALC.VALOR_1
+ //--previsao atualizada
+ IF !2 EQ 'PA' CALC (TEMPCALC.VALOR_2 + !3) TO TEMPCALC.VALOR_2
+ //--arrecadado
+ IF !2 EQ 'AR' CALC (TEMPCALC.VALOR_3 + !3) TO TEMPCALC.VALOR_3
+ //--deducao fundeb
+ IF !2 EQ 'DF' CALC (TEMPCALC.VALOR_4 + !3) TO TEMPCALC.VALOR_4
+ //--outras deducoes
+ IF !2 EQ 'DO' CALC (TEMPCALC.VALOR_5 + !3) TO TEMPCALC.VALOR_5
+ //--intraorcamentaria
+ IF !2 EQ 'IN' CALC (TEMPCALC.VALOR_6 + !3) TO TEMPCALC.VALOR_6
+ //--previsao proximo exercicio
+ IF !2 EQ 'PE' CALC (TEMPCALC.VALOR_7 + !3) TO TEMPCALC.VALOR_7
+ 
+ MOVE !4 TO TEMPCALC.AUXILIAR
+ SAVERECORD TEMPCALC
+ UNLOCK
+ ON ERROR OFF
+#ENDCOMMAND
+
+//--!1 codigo cliente
+//--!2 codigo padrao
+//--!3 codigo dedutoria
+//--!4 variavel destino codigo encontrado
+//--!5 ano para buscar o depara
+#COMMAND BUSCA_CODIGO_SIOP
+#IFDEF ST@COD@REC@AUX
+#ELSE
+ STRING ST@COD@REC@AUX
+#ENDIF
+#IFDEF ST@COD@REC@ACHADO
+#ELSE
+ STRING ST@COD@REC@ACHADO
+#ENDIF
+#IFDEF ST@EXERCICIO
+#ELSE
+ STRING ST@EXERCICIO
+#ENDIF
+ 
+ MOVEALL '' TO ST@COD@REC@AUX ST@COD@REC@ACHADO
+ 
+ [~@NOVO_CNR!] MOVE      !2        TO ST@COD@REC@AUX
+ [ @NOVO_CNR!] MOVE (MID(!2,14,1)) TO ST@COD@REC@AUX
+ 
+ MOVE !5 TO ST@EXERCICIO
+ 
+ IF !3 NE '' BEGIN
+              CLEAR RELSIOP
+              MOVE PARGERAL.ESTADO    TO RELSIOP.UF
+              MOVE ST@EXERCICIO       TO RELSIOP.ANO
+              MOVE ST_SISTEMA         TO RELSIOP.SISTEMA
+              MOVE 'RECEITA'          TO RELSIOP.NATUREZA
+              MOVE !3                 TO RELSIOP.CODIGO_TCE
+              MOVE ''                 TO RELSIOP.CNR
+              FIND EQ RELSIOP BY INDEX.2
+              [ FOUND] MOVE RELSIOP.CODIGO_SIOP TO ST@COD@REC@ACHADO
+             END
+ 
+ IF ST@COD@REC@ACHADO EQ '' BEGIN
+                             CLEAR RELSIOP
+                             MOVE PARGERAL.ESTADO    TO RELSIOP.UF
+                             MOVE ST@EXERCICIO       TO RELSIOP.ANO
+                             MOVE ST_SISTEMA         TO RELSIOP.SISTEMA
+                             MOVE 'RECEITA'          TO RELSIOP.NATUREZA
+                             MOVE !1                 TO RELSIOP.CODIGO_TCE
+                             MOVE ''                 TO RELSIOP.CNR
+                             FIND EQ RELSIOP BY INDEX.2
+                             [ FOUND] MOVE RELSIOP.CODIGO_SIOP TO ST@COD@REC@ACHADO
+                             [~FOUND] BEGIN
+                                       CLEAR RELSIOP
+                                       MOVE PARGERAL.ESTADO    TO RELSIOP.UF
+                                       MOVE ST@EXERCICIO       TO RELSIOP.ANO
+                                       MOVE ST_SISTEMA         TO RELSIOP.SISTEMA
+                                       MOVE 'RECEITA'          TO RELSIOP.NATUREZA
+                                       MOVE ST@COD@REC@AUX     TO RELSIOP.CODIGO_TCE
+                                       MOVE ''                 TO RELSIOP.CNR
+                                       FIND EQ RELSIOP BY INDEX.2
+                                       [ FOUND] MOVE RELSIOP.CODIGO_SIOP TO ST@COD@REC@ACHADO
+                                      END
+                            END
+ 
+ IF ST@COD@REC@ACHADO NE '' MOVE ST@COD@REC@ACHADO TO !4
+ ELSE MOVE !1                                      TO !4
+#ENDCOMMAND
+
+//--grava linha valores nas sinteticas
+//-- !1 = grau
+//-- !2 = receita origem
+//-- !3 = conta contabil ou codigo da receita
+//-- !4 = valor 1 (debito)
+//-- !5 = valor 2 (credito)
+//-- !6 = SISTEMA
+//-- !7 = CONTACOR ou MOVREC ou PLANREC
+//-- !8 = tipo valor
+//-- 
+#COMMAND GRAVA_RECEITAS_SINTETICAS
+#IFDEF    IT@AUX
+#ELSE
+ INTEGER  IT@AUX
+#ENDIF
+#IFDEF    ST@CODIGO@SINTETICO
+#ELSE
+ STRING   ST@CODIGO@SINTETICO
+#ENDIF
+#IFDEF    ST@DADOS
+#ELSE
+ STRING   ST@DADOS
+#ENDIF
+ 
+ MOVE 0 TO IT@AUX
+ 
+ INDICATE   @SIOPS! AS !6         EQ 'SIOPS'
+ INDICATE @PROPRIO! AS (TRIM(!7)) IN 'MOVREC-PLANREC'
+              
+ FOR IT@AUX FROM 1 TO (!1 - 1)
+  [~SINTETICO!] BEGIN
+                 IF IT@AUX EQ 7 BEGIN
+                                 [~DEPARA!] BEGIN
+                                             MOVE (LEFT(!2,15)) TO ST@CODIGO@SINTETICO
+                                             APPEND ST@CODIGO@SINTETICO '0000'
+                                            END
+                                END
+                 IF IT@AUX EQ 6 BEGIN
+                                 [~DEPARA!] BEGIN
+                                             MOVE (LEFT(!2,13)) TO ST@CODIGO@SINTETICO
+                                             APPEND ST@CODIGO@SINTETICO '0.0000'
+                                            END
+                                 [ DEPARA!] BEGIN
+                                             [ @SIOPS!] BEGIN
+                                                         MOVE (LEFT(!2,13)) TO ST@CODIGO@SINTETICO
+                                                         APPEND ST@CODIGO@SINTETICO '00'
+                                                        END
+                                             [~@SIOPS!] BEGIN
+                                                         MOVE (LEFT(!2,13)) TO ST@CODIGO@SINTETICO
+                                                         APPEND ST@CODIGO@SINTETICO '0'
+                                                        END
+                                            END
+                                 
+                                 [~@PROPRIO!] MONTA_DADOS         ST@DADOS !3 ST@CODIGO@SINTETICO                     'LINHA'
+                                 [ @PROPRIO!] MONTA_DADOS_PROPRIO ST@DADOS !3 ST@CODIGO@SINTETICO ST@CODIGO@SINTETICO 'LINHA'
+                                END
+                 IF IT@AUX EQ 5 BEGIN
+                                 [~DEPARA!] BEGIN
+                                             MOVE (LEFT(!2,11)) TO ST@CODIGO@SINTETICO
+                                             APPEND ST@CODIGO@SINTETICO '0.0.0000'
+                                            END
+                                 [ DEPARA!] BEGIN
+                                             [ @SIOPS!] BEGIN
+                                                         MOVE (LEFT(!2,10)) TO ST@CODIGO@SINTETICO
+                                                         APPEND ST@CODIGO@SINTETICO '00.00'
+                                                        END
+                                             [~@SIOPS!] BEGIN
+                                                         MOVE (LEFT(!2,11)) TO ST@CODIGO@SINTETICO
+                                                         APPEND ST@CODIGO@SINTETICO '0.0'
+                                                        END
+                                            END
+                                 
+                                 [~@PROPRIO!] MONTA_DADOS         ST@DADOS !3 ST@CODIGO@SINTETICO                     'LINHA'
+                                 [ @PROPRIO!] MONTA_DADOS_PROPRIO ST@DADOS !3 ST@CODIGO@SINTETICO ST@CODIGO@SINTETICO 'LINHA'
+                                END
+                 IF IT@AUX EQ 4 BEGIN
+                                 [~DEPARA!] BEGIN
+                                             MOVE (LEFT(!2,8)) TO ST@CODIGO@SINTETICO
+                                             APPEND ST@CODIGO@SINTETICO '00.0.0.0000'
+                                            END
+                                 [ DEPARA!] BEGIN
+                                             [ @SIOPS!] BEGIN
+                                                         MOVE (LEFT(!2,7)) TO ST@CODIGO@SINTETICO
+                                                         APPEND ST@CODIGO@SINTETICO '00.00.00'
+                                                        END
+                                             [~@SIOPS!] BEGIN
+                                                         MOVE (LEFT(!2,8)) TO ST@CODIGO@SINTETICO
+                                                         APPEND ST@CODIGO@SINTETICO '00.0.0'
+                                                        END
+                                            END
+                                 
+                                 [~@PROPRIO!] MONTA_DADOS         ST@DADOS !3 ST@CODIGO@SINTETICO                     'LINHA'
+                                 [ @PROPRIO!] MONTA_DADOS_PROPRIO ST@DADOS !3 ST@CODIGO@SINTETICO ST@CODIGO@SINTETICO 'LINHA'
+                                END
+                 IF IT@AUX EQ 3 BEGIN
+                                 [~DEPARA!] BEGIN
+                                             MOVE (LEFT(!2,6)) TO ST@CODIGO@SINTETICO
+                                             APPEND ST@CODIGO@SINTETICO '0.00.0.0.0000'
+                                            END
+                                 [ DEPARA!] BEGIN
+                                             [ @SIOPS!] BEGIN
+                                                         MOVE (LEFT(!2,5)) TO ST@CODIGO@SINTETICO
+                                                         APPEND ST@CODIGO@SINTETICO '0.00.00.00'
+                                                        END
+                                             [~@SIOPS!] BEGIN
+                                                         MOVE (LEFT(!2,6)) TO ST@CODIGO@SINTETICO
+                                                         APPEND ST@CODIGO@SINTETICO '0.00.0.0'
+                                                        END
+                                            END
+                                 
+                                 [~@PROPRIO!] MONTA_DADOS         ST@DADOS !3 ST@CODIGO@SINTETICO                     'LINHA'
+                                 [ @PROPRIO!] MONTA_DADOS_PROPRIO ST@DADOS !3 ST@CODIGO@SINTETICO ST@CODIGO@SINTETICO 'LINHA'
+                                END
+                END
+   
+  IF IT@AUX EQ 2 BEGIN
+                  [~DEPARA!] BEGIN 
+                              MOVE (LEFT(!2,4)) TO ST@CODIGO@SINTETICO
+                              APPEND ST@CODIGO@SINTETICO '0.0.00.0.0.0000'
+                             END
+                  
+                  [ DEPARA!] BEGIN
+                              [ @SIOPS!] BEGIN
+                                          MOVE (LEFT(!2,4)) TO ST@CODIGO@SINTETICO
+                                          APPEND ST@CODIGO@SINTETICO '00.00.00.00'
+                                         END
+                              [~@SIOPS!] BEGIN
+                                          MOVE (LEFT(!2,4)) TO ST@CODIGO@SINTETICO
+                                          APPEND ST@CODIGO@SINTETICO '0.0.00.0.0'
+                                         END
+                             END
+                  
+                  [~@PROPRIO!] MONTA_DADOS         ST@DADOS !3 ST@CODIGO@SINTETICO                     'LINHA'
+                  [ @PROPRIO!] MONTA_DADOS_PROPRIO ST@DADOS !3 ST@CODIGO@SINTETICO ST@CODIGO@SINTETICO 'LINHA'
+                 END
+  IF IT@AUX EQ 1 BEGIN
+                  [~DEPARA!] BEGIN
+                              MOVE (LEFT(!2,2)) TO ST@CODIGO@SINTETICO
+                              APPEND ST@CODIGO@SINTETICO '0.0.0.00.0.0.0000'
+                             END
+                  
+                  [ DEPARA!] BEGIN
+                              [ @SIOPS!] BEGIN
+                                          MOVE (LEFT(!2,2)) TO ST@CODIGO@SINTETICO
+                                          APPEND ST@CODIGO@SINTETICO '0.00.00.00.00'
+                                         END
+                              [~@SIOPS!] BEGIN
+                                          MOVE (LEFT(!2,2)) TO ST@CODIGO@SINTETICO
+                                          APPEND ST@CODIGO@SINTETICO '0.0.0.00.0.0'
+                                         END
+                             END
+                  
+                  [~@PROPRIO!] MONTA_DADOS         ST@DADOS !3 ST@CODIGO@SINTETICO                     'LINHA'
+                  [ @PROPRIO!] MONTA_DADOS_PROPRIO ST@DADOS !3 ST@CODIGO@SINTETICO ST@CODIGO@SINTETICO 'LINHA'
+                 END
+
+  INDICATE @EXISTE! TRUE
+  
+  [~DEPARA!] BEGIN
+              CLEAR RECEITAS
+              MOVE PARGERAL.ESTADO     TO RECEITAS.UF
+              MOVE ST_EXERCICIO        TO RECEITAS.ANO
+              MOVE ST@CODIGO@SINTETICO TO RECEITAS.CODIGO
+              FIND EQ RECEITAS BY INDEX.1
+              [ FOUND] IF RECEITAS.GRAU NE IT@AUX INDICATE @EXISTE! FALSE
+              [~FOUND] BEGIN
+                        CLEAR RECEITAS
+                        INDICATE @EXISTE! FALSE
+                       END
+             END
+  [ DEPARA!] BEGIN
+              CLEAR CADSIOP
+              MOVE ST_SISTEMA          TO CADSIOP.SISTEMA
+              MOVE ST_EXERCICIO        TO CADSIOP.ANO
+              MOVE 'RECEITA'           TO CADSIOP.NATUREZA
+              MOVE ST@CODIGO@SINTETICO TO CADSIOP.CODIGO
+              FIND EQ CADSIOP BY INDEX.1
+              [ FOUND] IF CADSIOP.GRAU NE IT@AUX INDICATE @EXISTE! FALSE
+              [~FOUND] BEGIN
+                        CLEAR CADSIOP
+                        INDICATE @EXISTE! FALSE
+                       END
+              
+              [~@EXISTE!] [ SEPARA_DEDUTORIAS!] [~CODIGO_RELACIONADO!] BEGIN
+                                                                        IF (MID(ST@CODIGO@SINTETICO,1,1)) EQ '9'  INDICATE @EXISTE! TRUE
+                                                                       END
+             END
+  
+  [ @EXISTE!] BEGIN
+               GRAVA_TEMPCALC_MOVREC ST@DADOS !8 !4 'S'
+              END
+ LOOP
+#ENDCOMMAND
+
+STRING  ST_EXERCICIO         4 ST_MES_INICIAL      ST_MES_FINAL ST_PERIODO          ST_JUNTA      ST_DADOS         255 ST_COD_RECEITA  ST_COD_SINTETICO_ANTERIOR
+STRING  ST_CODIGO_SINTETICO    ST_DESCRICAO        ST_QUEBRA    ST_PROPRIA_ENTIDADE ST_MES_BUSCA  ST_COD_PADRAO        ST_SISTEMA      ST_COD_AUX
+STRING  ST_BODY            255 ST_ENTIDADE_SELECAO ST_MES       ST_JUNTANDO     255 ST_NOME_MES   ST_AUX               ST_DATA         ST_COD_DEDUTORIA
+STRING  ST_COD_RETORNO
+
+INTEGER IT_AUX IT_GRAU RECCOUNT IT_MES_FINAL IT_MES
+
+DATE    DT_INICIO_ANO DT_FINAL
+
+NUMBER  NB_ARRECADADO NB_PREVISTO_ATUALIZADO NB_PREVISTO_INICIAL NB_DEDUCAO_OUTRAS NB_VALOR
+
+AUTOPAGE HEADER
+NAME JHD_PREFEITURA JHD_ENTIDADE
+NAME JHD_TIPO       JHD_DEPARA
+NAME JHD_DATA
+NAME JHD_PERIODO
+NAME JHD_PAGINA
+
+AUTOPAGE BODY
+NAME JBD_CODIGO            JBD_DESCRICAO           JBD_FONTE              JBD_COD_APLICACAO
+NAME JBD_PREVISAO_INICIAL  JBD_PREVISAO_ATUALIZADA
+NAME JBD_ARRECADADO        JBD_DEDUCAO_FUNDEB      JBD_DEDUCAO_OUTRAS     JBD_INTRAORCAMENTARIA
+NAME JBD_PROXIMO_EXERCICIO
+
+AUTOPAGE TOTAL 
+NAME JT_TITULO 
+
+AUTOPAGE MSG
+NAME JN_INICIAL
+NAME JN_DADOS 
+NAME JN_LENDO JN_IMPRIMINDO JN_PAGINA
+
+AUTOPAGE TELA
+NAME JN_COD_ENTIDADE      JN_ENTIDADE
+NAME JN_MES
+NAME JN_DEPARA
+NAME JN_PREVISAO_BRUTA
+NAME JN_SEPARA_DEDUTORIAS JN_CODIGO_RELACIONADO
+NAME JN_SEPARA_INTRA
+NAME JN_SINTETICO
+
+OPEN ENTIDADE
+OPEN TEMPCALC
+OPEN RECEITAS
+OPEN FONTES
+OPEN FUNDOS
+OPEN PLANREC
+OPEN VERSAO
+OPEN MOVREC
+OPEN MOVDREC
+OPEN ATUAREC
+OPEN PLANO
+OPEN CADSIOP
+OPEN RELSIOP
+ABRE_CONTACOR ST@EXERCICIO@FINANCEIRO CONTACOR
+
+PAGE SET MSG      AT 05 01 COLORS IT_COR_TITULO IT_COR_TITULO
+PAGE SET TELA     AT  4  0 COLORS IT_COR_TARJA  IT_COR_MOLDURA
+PAGE SET CONFIRMA AT 21 00 COLORS IT_COR_TARJA  IT_COR_MOLDURA
+
+INDICATE TCEMG! AS PARGERAL.ESTADO       EQ 'MG'
+INDICATE PREFE! AS PARGERAL.COD_ENTIDADE EQ '01'
+
+MOVE PARGERAL.COD_ENTIDADE TO ST_PROPRIA_ENTIDADE
+
+DEFINE_CODIGO_RECEITA PARGERAL.EXERCICIO
+
+INICIO:
+SCREENMODE IT_COR_TARJA ON
+PAGE TELA
+CLEARFORM TELA
+MOVE 'N' TO JN_SEPARA_DEDUTORIAS
+MOVE 'N' TO JN_SEPARA_INTRA
+MOVE 'A' TO JN_SINTETICO
+MOVE 'S' TO JN_CODIGO_RELACIONADO
+
+[~PREFE!] BEGIN
+           MOVE PARGERAL.COD_ENTIDADE   TO JN_COD_ENTIDADE
+
+           CLEAR ENTIDADE
+           MOVE ST@EXERCICIO@FINANCEIRO TO ENTIDADE.EXERCICIO 
+           MOVE JN_COD_ENTIDADE         TO ENTIDADE.CODIGO
+           FIND EQ ENTIDADE BY INDEX.1
+           [~FOUND] BEGIN
+                     ADVERTE 'FAVOR ATUALIZAR ARQUIVO DE PARAMETROS'
+                     ABORT
+                    END
+
+           MOVE PARGERAL.COD_ENTIDADE   TO JN_COD_ENTIDADE
+           MOVE ENTIDADE.DESCRICAO      TO JN_ENTIDADE
+          END
+[ PREFE!] BEGIN
+           ACCEPT JN_COD_ENTIDADE {AUTOCLEAR}
+           [KEY.ESCAPE] ABORT
+           IF JN_COD_ENTIDADE NE '' BEGIN
+                                     COMZEROS JN_COD_ENTIDADE 2
+                                     CLEAR ENTIDADE
+                                     MOVE ST@EXERCICIO@FINANCEIRO TO ENTIDADE.EXERCICIO 
+                                     MOVE JN_COD_ENTIDADE         TO ENTIDADE.CODIGO
+                                     FIND EQ ENTIDADE BY INDEX.1
+                                     [~FOUND] BEGIN
+                                               ADVERTE 'ENTIDADE NŽO CADASTRADA'
+                                               GOTO INICIO
+                                              END
+                                     MOVE ENTIDADE.DESCRICAO TO JN_ENTIDADE
+                                    END
+           ELSE MOVE 'CONSOLIDADO' TO JN_ENTIDADE
+          END
+
+INDICATE TODAS! AS JN_COD_ENTIDADE EQ ''
+MOVE JN_COD_ENTIDADE TO ST_ENTIDADE_SELECAO
+
+REPEAT
+ ACCEPT JN_MES
+ [KEY.ESCAPE] ABORT
+ COMZEROS JN_MES 2
+ IF NOT JN_MES IN '01a02a03a04a05a06a07a08a09a10a11a12' BEGIN
+                                                         MENSAGEM 353
+                                                         CLEARFORM JN_MES
+                                                        END
+UNTIL JN_MES NE ''
+
+LB_SISTEMA:
+REPEAT
+ ACCEPT JN_DEPARA {AUTOCLEAR, CAPSLOCK}
+ [KEY.ESCAPE] ABORT
+ IF NOT JN_DEPARA IN '123' MOVE '' TO JN_DEPARA
+UNTIL JN_DEPARA NE ''
+
+MOVE '' TO ST_SISTEMA
+INDICATE DEPARA! AS JN_DEPARA NE '1'
+IF JN_DEPARA EQ '2' MOVE 'SIOPS' TO ST_SISTEMA
+IF JN_DEPARA EQ '3' MOVE 'SIOPE' TO ST_SISTEMA
+
+LB_PREVISAO_BRUTA: 
+REPEAT
+ ACCEPT JN_PREVISAO_BRUTA {AUTOCLEAR,CAPSLOCK}
+ [KEY.ESCAPE] ABORT
+ IF NOT JN_PREVISAO_BRUTA IN 'SsNn' MOVE '' TO JN_PREVISAO_BRUTA
+UNTIL JN_PREVISAO_BRUTA NE '' 
+
+//--sistema (todos)
+INDICATE PREVISAO_BRUTA! AS JN_PREVISAO_BRUTA IN 'Ss'
+
+LB_SEPARA_DEDUTORIAS:
+REPEAT
+ ACCEPT JN_SEPARA_DEDUTORIAS {AUTOCLEAR,CAPSLOCK}
+ [KEY.ESCAPE] ABORT
+ IF NOT JN_SEPARA_DEDUTORIAS IN 'SsNn' MOVE '' TO JN_SEPARA_DEDUTORIAS
+UNTIL JN_SEPARA_DEDUTORIAS NE '' 
+
+INDICATE SEPARA_DEDUTORIAS! AS JN_SEPARA_DEDUTORIAS IN 'Ss'
+
+LB_CODIGO_RELACIONADO:
+[ SEPARA_DEDUTORIAS!] BEGIN
+                       REPEAT
+                        ACCEPT JN_CODIGO_RELACIONADO {AUTOCLEAR,CAPSLOCK}
+                        [KEY.ESCAPE] ABORT
+                        IF NOT JN_CODIGO_RELACIONADO IN 'SsNn' MOVE '' TO JN_CODIGO_RELACIONADO
+                       UNTIL JN_CODIGO_RELACIONADO NE '' 
+                       INDICATE CODIGO_RELACIONADO! AS JN_CODIGO_RELACIONADO IN 'Ss'
+                      END
+[~SEPARA_DEDUTORIAS!] MOVE 'S' TO JN_CODIGO_RELACIONADO
+
+INDICATE CODIGO_RELACIONADO! AS JN_CODIGO_RELACIONADO IN 'Ss'
+
+LB_SEPARA_INTRA:
+REPEAT
+ ACCEPT JN_SEPARA_INTRA {AUTOCLEAR,CAPSLOCK}
+ [KEY.ESCAPE] ABORT
+ IF NOT JN_SEPARA_INTRA IN 'SsNn' MOVE '' TO JN_SEPARA_INTRA
+UNTIL JN_SEPARA_INTRA NE '' 
+
+INDICATE SEPARA_INTRA! AS JN_SEPARA_INTRA IN 'Ss'
+
+REPEAT
+ ACCEPT JN_SINTETICO {AUTOCLEAR,CAPSLOCK}
+ [KEY.ESCAPE] ABORT
+ IF NOT JN_SINTETICO IN 'SsAa' MOVE '' TO JN_SINTETICO
+UNTIL JN_SINTETICO NE '' 
+INDICATE SINTETICO! AS JN_SINTETICO IN 'Ss'
+
+
+INDICATE LE_MOV! AS ((JN_COD_ENTIDADE       LE '01')  OR (PARGERAL.COD_ENTIDADE GT '01')) //--ler movimento da propria entidade
+INDICATE LE_XML! AS ((PARGERAL.COD_ENTIDADE EQ '01') AND (ST_ENTIDADE_SELECAO   NE '01')) //--ler movimento de outra entidade
+
+
+MOVE JN_MES                   TO ST_MES
+MOVE PARGERAL.EXERCICIO       TO ST_JUNTANDO
+MOVE PARGERAL.EXERCICIO       TO ST_EXERCICIO
+
+MOVE '' TO ST_NOME_MES
+APPEND ST_NOME_MES 'JANEIRO A '
+MONTH JN_MES ST_AUX
+APPEND ST_NOME_MES ST_AUX ST_JUNTANDO
+
+MOVE '01/01/' TO ST_DATA
+APPEND ST_DATA PARGERAL.EXERCICIO
+MOVE ST_DATA  TO DT_INICIO_ANO
+
+MOVE '01/'    TO ST_DATA
+IF ST_MES LT '12' APPEND ST_DATA (ST_MES + 1) '/' PARGERAL.EXERCICIO
+IF ST_MES EQ '12' APPEND ST_DATA  '01' '/' (PARGERAL.EXERCICIO + 1)
+MOVE ST_DATA TO DT_FINAL
+CALC (DT_FINAL - 1) TO DT_FINAL
+
+[ TODAS!] MOVE 'REC ORCA SIOPE/SIOPS - CONSOLIDADO ' TO ST_JUNTA
+[~TODAS!] MOVE 'REC ORCA SIOPE/SIOPS - ISOLADO '     TO ST_JUNTA
+APPEND ST_JUNTA ST_NOME_MES
+ABREREL ST_JUNTA '132C+'
+
+CABEC ST_NOME_MES JN_INICIAL
+
+PAGE TELA
+PAGE MSG
+GOTOXY 25 0
+
+APAGA_TEMPCALC JN_LENDO
+
+//--monta temporario
+//--movimento de receita pegar at‚ mes 13, no mes 14 ‚ efetuado o encerramento
+[ LE_XML!] BEGIN
+            MOVE JN_MES TO IT_MES_FINAL
+
+            FOR IT_MES FROM 1 TO IT_MES_FINAL
+             MOVE IT_MES TO ST_MES_BUSCA
+             COMZEROS ST_MES_BUSCA 2
+
+             CLEAR CONTACOR
+             CONSTRAINT_SET 1
+             CONSTRAIN CONTACOR.ANO EQ ST_EXERCICIO
+             CONSTRAIN CONTACOR.MES EQ ST_MES_BUSCA
+             
+             [~TCEMG!] CONSTRAIN CONTACOR.XML EQ '06'
+             [ TCEMG!] CONSTRAIN CONTACOR.XML EQ '12'
+             
+             [~TODAS!] CONSTRAIN CONTACOR.COD_ENTIDADE EQ ST_ENTIDADE_SELECAO
+             CONSTRAIN CONTACOR.COD_ENTIDADE NE ST_PROPRIA_ENTIDADE
+             CONSTRAINED_FIND FIRST CONTACOR BY INDEX.3
+             WHILE [FOUND]
+              CALC (JN_LENDO + 1) TO JN_LENDO
+
+              CLEAR PLANO
+              MOVE PARGERAL.ESTADO    TO PLANO.UF
+              MOVE PARGERAL.EXERCICIO TO PLANO.ANO
+              MOVE CONTACOR.CONTA     TO PLANO.CODIGO
+              FIND EQ PLANO BY INDEX.1
+              [~FOUND] CLEAR PLANO
+              
+              MOVEALL '' TO ST_COD_RECEITA ST_COD_PADRAO ST_COD_DEDUTORIA ST_COD_RETORNO
+              MOVE (OBTER_CODIGO_RECEITA_CONTACOR(CONTACOR.DADOS,CONTACOR.ANO)) TO ST_COD_RECEITA
+              
+              INDICATE RECEITA_DEDUTORIA! FALSE
+              INDICATE    DEDUCAO_FUNDEB! FALSE
+              INDICATE    DEDUCAO_OUTRAS! FALSE
+              
+              IF (((LEFT(PLANO.CODIGO,1)) EQ '5') AND (PLANO.SALDO_DC EQ 'C')) INDICATE RECEITA_DEDUTORIA! TRUE
+              IF (((LEFT(PLANO.CODIGO,1)) EQ '6') AND (PLANO.SALDO_DC EQ 'D')) INDICATE RECEITA_DEDUTORIA! TRUE
+              
+              IF PLANO.CODIGO EQ '5.2.1.2.9.00.00.00' INDICATE RECEITA_DEDUTORIA! FALSE
+              
+              [ RECEITA_DEDUTORIA!] BEGIN
+                                     IF (LEFT(PLANO.CODIGO,1)) EQ '5' BEGIN
+                                                                       IF PLANO.CODIGO EQ '5.2.1.1.2.01.01.00' INDICATE DEDUCAO_FUNDEB! TRUE
+                                                                       ELSE                                    INDICATE DEDUCAO_OUTRAS! TRUE
+                                                                      END
+                                     IF (LEFT(PLANO.CODIGO,1)) EQ '6' BEGIN
+                                                                       IF PLANO.CODIGO EQ '6.2.1.3.1.01.00.00' INDICATE DEDUCAO_FUNDEB! TRUE
+                                                                       ELSE                                    INDICATE DEDUCAO_OUTRAS! TRUE
+                                                                      END
+                                    END
+              
+              INDICATE RECEITA_INTRA! AS (LEFT(ST_COD_RECEITA,1)) IN '7-8'
+              
+              [ RECEITA_INTRA!] BEGIN
+                                 [~SEPARA_INTRA!] BEGIN
+                                                        IF (LEFT(ST_COD_RECEITA,1)) EQ '7' MOVE (OVERSTRIKE('1',ST_COD_RECEITA,1)) TO ST_COD_RECEITA
+                                                   ELSE IF (LEFT(ST_COD_RECEITA,1)) EQ '8' MOVE (OVERSTRIKE('2',ST_COD_RECEITA,1)) TO ST_COD_RECEITA
+                                                  END
+                                END
+              
+              INDICATE OK! TRUE
+              
+              //--pega previsao bruta da receita
+              [ RECEITA_DEDUTORIA! PREVISAO_BRUTA!] IF (LEFT(PLANO.CODIGO,1)) EQ '5' INDICATE OK! FALSE
+              
+              [ OK!] BEGIN
+                      MOVE ST_COD_RECEITA TO ST_COD_PADRAO
+                      MOVE ST_COD_PADRAO  TO JN_DADOS
+                      
+                      [~DEPARA!] BEGIN
+                                  CLEAR RECEITAS
+                                  MOVE PARGERAL.ESTADO TO RECEITAS.UF
+                                  MOVE ST_EXERCICIO    TO RECEITAS.ANO
+                                  MOVE ST_COD_PADRAO   TO RECEITAS.CODIGO
+                                  FIND EQ RECEITAS BY INDEX.1
+                                  
+                                  MOVE ST_COD_PADRAO  TO ST_COD_RECEITA
+                                  MOVE RECEITAS.GRAU  TO IT_GRAU
+                                  MOVE ST_COD_RECEITA TO ST_AUX
+                                 END
+                      [ DEPARA!] BEGIN
+                                  BUSCA_CODIGO_SIOP ST_COD_RECEITA ST_COD_PADRAO ST_COD_DEDUTORIA ST_COD_RETORNO ST_EXERCICIO
+
+                                  CLEAR CADSIOP
+                                  MOVE ST_SISTEMA     TO CADSIOP.SISTEMA
+                                  MOVE ST_EXERCICIO   TO CADSIOP.ANO
+                                  MOVE 'RECEITA'      TO CADSIOP.NATUREZA
+                                  MOVE ST_COD_RETORNO TO CADSIOP.CODIGO
+                                  FIND EQ CADSIOP BY INDEX.1
+                                  [~FOUND] CLEAR CADSIOP
+                                  
+                                  MOVE CADSIOP.GRAU   TO IT_GRAU
+                                  MOVE ST_COD_RETORNO TO ST_COD_PADRAO
+                                  MOVE ST_COD_PADRAO  TO ST_COD_RECEITA
+                                  MOVE CADSIOP.CODIGO TO ST_AUX
+                                 END
+                               
+                      [~SINTETICO!] BEGIN
+                                     //--grava linha analitica
+                                     MONTA_DADOS ST_DADOS CONTACOR.CONTA ST_COD_RECEITA 'LINHA'
+
+                                     //--arrecadado
+                                     IF (LEFT(CONTACOR.CONTA,7)) IN '6.2.1.2-6.2.1.3' BEGIN
+                                                                                       CALC (CONTACOR.VALOR_2 - CONTACOR.VALOR_1) TO NB_VALOR
+                                                                                       
+                                                                                       [~RECEITA_DEDUTORIA!] BEGIN
+                                                                                                              [~SEPARA_INTRA!] BEGIN 
+                                                                                                                                [ RECEITA_INTRA!] GRAVA_TEMPCALC_MOVREC ST_DADOS 'IN' NB_VALOR 'A'
+                                                                                                                                [~RECEITA_INTRA!] GRAVA_TEMPCALC_MOVREC ST_DADOS 'AR' NB_VALOR 'A'
+                                                                                                                               END
+                                                                                                              [ SEPARA_INTRA!] GRAVA_TEMPCALC_MOVREC ST_DADOS 'AR' NB_VALOR 'A'
+                                                                                                             END
+                                                                                       [ RECEITA_DEDUTORIA!] BEGIN
+                                                                                                              [~SEPARA_DEDUTORIAS!] BEGIN
+                                                                                                                                     [ DEDUCAO_FUNDEB!] GRAVA_TEMPCALC_MOVREC ST_DADOS 'DF' NB_VALOR 'A'
+                                                                                                                                     [ DEDUCAO_OUTRAS!] GRAVA_TEMPCALC_MOVREC ST_DADOS 'DO' NB_VALOR 'A'
+                                                                                                                                    END
+                                                                                                             
+                                                                                                              [ SEPARA_DEDUTORIAS!] BEGIN
+                                                                                                                                     GRAVA_TEMPCALC_MOVREC ST_DADOS 'AR' NB_VALOR 'A'
+                                                                                                                                    END
+                                                                                                             END
+                                                                                      
+                                                                                       //--grava linha subtotal
+                                                                                       [ SEPARA_DEDUTORIAS!] BEGIN
+                                                                                                              MONTA_DADOS ST_DADOS CONTACOR.CONTA ST_COD_RECEITA 'TOTAL'
+                                                                                                              
+                                                                                                              [~RECEITA_DEDUTORIA!] BEGIN
+                                                                                                                                     [~SEPARA_INTRA!] BEGIN 
+                                                                                                                                                       [ RECEITA_INTRA!] GRAVA_TEMPCALC_MOVREC ST_DADOS 'IN' NB_VALOR 'S'
+                                                                                                                                                       [~RECEITA_INTRA!] GRAVA_TEMPCALC_MOVREC ST_DADOS 'AR' NB_VALOR 'S'
+                                                                                                                                                      END
+                                                                                                                                     [ SEPARA_INTRA!] GRAVA_TEMPCALC_MOVREC ST_DADOS 'AR' NB_VALOR 'S'
+                                                                                                                                    END
+                                                                                                              [ RECEITA_DEDUTORIA!] BEGIN
+                                                                                                                                     [~SEPARA_DEDUTORIAS!] BEGIN
+                                                                                                                                                            [ DEDUCAO_FUNDEB!] GRAVA_TEMPCALC_MOVREC ST_DADOS 'DF' NB_VALOR 'S'
+                                                                                                                                                            [ DEDUCAO_OUTRAS!] GRAVA_TEMPCALC_MOVREC ST_DADOS 'DO' NB_VALOR 'S'
+                                                                                                                                                           END
+                                                                                                                                     [ SEPARA_DEDUTORIAS!] BEGIN
+                                                                                                                                                            GRAVA_TEMPCALC_MOVREC ST_DADOS 'AR' NB_VALOR 'S'
+                                                                                                                                                           END
+                                                                                                                                    END
+                                                                                                             END
+                                                                                      END
+                                     //--previsao inicial
+                                     ELSE IF (LEFT(CONTACOR.CONTA,9)) IN '5.2.1.1.1-5.2.1.1.2' BEGIN
+                                                                                                CALC (CONTACOR.VALOR_1 - CONTACOR.VALOR_2) TO NB_VALOR
+                                                                                                
+                                                                                                GRAVA_TEMPCALC_MOVREC ST_DADOS 'PI' NB_VALOR  'A'
+                                                                                                GRAVA_TEMPCALC_MOVREC ST_DADOS 'PA' NB_VALOR  'A'
+                                                                                                
+                                                                                                [ SEPARA_DEDUTORIAS!] BEGIN
+                                                                                                                       MONTA_DADOS ST_DADOS CONTACOR.CONTA ST_COD_RECEITA 'TOTAL'
+                                                                                                                       
+                                                                                                                       GRAVA_TEMPCALC_MOVREC ST_DADOS 'PI' NB_VALOR  'S'
+                                                                                                                       GRAVA_TEMPCALC_MOVREC ST_DADOS 'PA' NB_VALOR  'S'
+                                                                                                                      END
+                                                                                               END
+                                     //--previsao atualizada
+                                     ELSE IF (LEFT(CONTACOR.CONTA,9)) IN '5.2.1.2.1-5.2.1.2.9' BEGIN
+                                                                                                CALC (CONTACOR.VALOR_1 - CONTACOR.VALOR_2) TO NB_VALOR
+                                                                                                
+                                                                                                GRAVA_TEMPCALC_MOVREC ST_DADOS 'PA' NB_VALOR  'A'
+                                                                                               
+                                                                                                [ SEPARA_DEDUTORIAS!] BEGIN
+                                                                                                                       MONTA_DADOS ST_DADOS CONTACOR.CONTA ST_COD_RECEITA 'TOTAL'
+                                                                                                                       
+                                                                                                                       GRAVA_TEMPCALC_MOVREC ST_DADOS 'PA' NB_VALOR  'S'
+                                                                                                                      END
+                                                                                               END
+                                    END
+                       
+                      //--grava linha total geral
+                      MOVE 'XTOTAL GERAL' TO ST_DADOS
+                      
+                      //--arrecadado
+                      IF (LEFT(CONTACOR.CONTA,7)) IN '6.2.1.2-6.2.1.3' BEGIN
+                                                                        CALC (CONTACOR.VALOR_2 - CONTACOR.VALOR_1) TO NB_VALOR
+                                                                        
+                                                                        [~RECEITA_DEDUTORIA!] BEGIN
+                                                                                               [~SEPARA_INTRA!] BEGIN 
+                                                                                                                 [ RECEITA_INTRA!] GRAVA_TEMPCALC_MOVREC ST_DADOS 'IN' NB_VALOR 'S'
+                                                                                                                 [~RECEITA_INTRA!] GRAVA_TEMPCALC_MOVREC ST_DADOS 'AR' NB_VALOR 'S'
+                                                                                                                END
+                                                                                               [ SEPARA_INTRA!] GRAVA_TEMPCALC_MOVREC ST_DADOS 'AR' NB_VALOR 'S'
+                                                                                              END
+                                                                        [ RECEITA_DEDUTORIA!] BEGIN
+                                                                                               [~SEPARA_DEDUTORIAS!] BEGIN
+                                                                                                                      [ DEDUCAO_FUNDEB!] GRAVA_TEMPCALC_MOVREC ST_DADOS 'DF' NB_VALOR 'S'
+                                                                                                                      [ DEDUCAO_OUTRAS!] GRAVA_TEMPCALC_MOVREC ST_DADOS 'DO' NB_VALOR 'S'
+                                                                                                                     END
+                                                                                               [ SEPARA_DEDUTORIAS!] BEGIN
+                                                                                                                      GRAVA_TEMPCALC_MOVREC ST_DADOS 'AR' NB_VALOR 'S'
+                                                                                                                     END
+                                                                                              END
+                                                                       END
+                      //--previsao inicial
+                      ELSE IF (LEFT(CONTACOR.CONTA,9)) IN '5.2.1.1.1-5.2.1.1.2' BEGIN
+                                                                                 CALC (CONTACOR.VALOR_1 - CONTACOR.VALOR_2) TO NB_VALOR
+                                                                                 
+                                                                                 GRAVA_TEMPCALC_MOVREC ST_DADOS 'PI' NB_VALOR  'S'
+                                                                                 GRAVA_TEMPCALC_MOVREC ST_DADOS 'PA' NB_VALOR  'S'
+                                                                                END
+                      //--previsao atualizada
+                      ELSE IF (LEFT(CONTACOR.CONTA,9)) IN '5.2.1.2.1-5.2.1.2.9' BEGIN
+                                                                                 CALC (CONTACOR.VALOR_1 - CONTACOR.VALOR_2) TO NB_VALOR
+                                                                                 
+                                                                                 GRAVA_TEMPCALC_MOVREC ST_DADOS 'PA' NB_VALOR  'S'
+                                                                                END
+                      
+                      
+                      MOVE '' TO ST_COD_SINTETICO_ANTERIOR
+
+                      //--arrecadado
+                      IF (LEFT(CONTACOR.CONTA,7)) IN '6.2.1.2-6.2.1.3' BEGIN
+                                                                        [~RECEITA_DEDUTORIA!] BEGIN
+                                                                                               [~SEPARA_INTRA!] BEGIN 
+                                                                                                                 [ RECEITA_INTRA!] BEGIN
+                                                                                                                                    GRAVA_RECEITAS_SINTETICAS IT_GRAU ST_COD_PADRAO CONTACOR.CONTA NB_VALOR '' ST_SISTEMA 'CONTACOR' 'IN'
+                                                                                                                                   END
+                                                                                                                 [~RECEITA_INTRA!] BEGIN
+                                                                                                                                    GRAVA_RECEITAS_SINTETICAS IT_GRAU ST_COD_PADRAO CONTACOR.CONTA NB_VALOR '' ST_SISTEMA 'CONTACOR' 'AR'
+                                                                                                                                   END
+                                                                                                                END
+                                                                                               [ SEPARA_INTRA!] BEGIN
+                                                                                                                 GRAVA_RECEITAS_SINTETICAS IT_GRAU ST_COD_PADRAO CONTACOR.CONTA NB_VALOR '' ST_SISTEMA 'CONTACOR' 'AR'
+                                                                                                                END
+                                                                                              END
+                                                                        [ RECEITA_DEDUTORIA!] BEGIN
+                                                                                               [~SEPARA_DEDUTORIAS!] BEGIN
+                                                                                                                      [ DEDUCAO_FUNDEB!] BEGIN
+                                                                                                                                          GRAVA_RECEITAS_SINTETICAS IT_GRAU ST_COD_PADRAO CONTACOR.CONTA NB_VALOR '' ST_SISTEMA 'CONTACOR' 'DF'
+                                                                                                                                         END
+                                                                                                                      [ DEDUCAO_OUTRAS!] BEGIN
+                                                                                                                                          GRAVA_RECEITAS_SINTETICAS IT_GRAU ST_COD_PADRAO CONTACOR.CONTA NB_VALOR '' ST_SISTEMA 'CONTACOR' 'DO'
+                                                                                                                                         END
+                                                                                                                     END
+                                                                                               [ SEPARA_DEDUTORIAS!] BEGIN
+                                                                                                                      GRAVA_RECEITAS_SINTETICAS IT_GRAU ST_COD_PADRAO CONTACOR.CONTA NB_VALOR '' ST_SISTEMA 'CONTACOR' 'AR'
+                                                                                                                     END
+                                                                                              END
+                                                                       END
+                      //--previsao inicial
+                      ELSE IF (LEFT(CONTACOR.CONTA,9)) IN '5.2.1.1.1-5.2.1.1.2' BEGIN
+                                                                                 GRAVA_RECEITAS_SINTETICAS IT_GRAU ST_COD_PADRAO CONTACOR.CONTA NB_VALOR '' ST_SISTEMA 'CONTACOR' 'PI'
+                                                                                 GRAVA_RECEITAS_SINTETICAS IT_GRAU ST_COD_PADRAO CONTACOR.CONTA NB_VALOR '' ST_SISTEMA 'CONTACOR' 'PA'
+                                                                                END
+                      //--previsao atualizada
+                      ELSE IF (LEFT(CONTACOR.CONTA,9)) IN '5.2.1.2.1-5.2.1.2.9' BEGIN
+                                                                                 GRAVA_RECEITAS_SINTETICAS IT_GRAU ST_COD_PADRAO CONTACOR.CONTA NB_VALOR '' ST_SISTEMA 'CONTACOR' 'PA'
+                                                                                END
+                     
+                     END
+
+              CONSTRAINT_SET 1         
+              CONSTRAINED_FIND NEXT
+              END
+             CONSTRAINT_SET 1 CLEAR
+            LOOP 
+           END  
+
+//--
+[ LE_MOV!] BEGIN
+            MOVE PARGERAL.EXERCICIO TO ST_EXERCICIO
+            
+            CLEAR MOVREC
+            CONSTRAINT_SET 1
+            CONSTRAIN MOVREC.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+            CONSTRAIN MOVREC.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+            CONSTRAIN MOVREC.TIPO         EQ 'A'
+            CONSTRAINED_FIND FIRST MOVREC BY INDEX.1
+            WHILE [FOUND]
+             CALC (JN_LENDO + 1) TO JN_LENDO
+
+             MOVEALL '' TO ST_COD_RECEITA ST_COD_PADRAO ST_COD_DEDUTORIA ST_COD_RETORNO
+             
+             INDICATE     RECEITA_INTRA! AS   (LEFT(MOVREC.CODIGO,1)) IN '7-8'
+             INDICATE RECEITA_DEDUTORIA! AS   (LEFT(MOVREC.CODIGO,1)) EQ '9'
+             INDICATE    DEDUCAO_FUNDEB! AS   (LEFT(MOVREC.CODIGO,3)) EQ '9.5'
+             INDICATE    DEDUCAO_OUTRAS! AS (((LEFT(MOVREC.CODIGO,1)) EQ '9') AND ((LEFT(MOVREC.CODIGO,3)) NE '9.5'))
+             
+             MOVE MOVREC.CODIGO                                                   TO ST_COD_RECEITA
+             MOVE (OBTER_CODIGO_PADRAO_RECEITA(MOVREC.CODIGO,PARGERAL.EXERCICIO)) TO ST_COD_PADRAO
+             
+             [ RECEITA_DEDUTORIA!] BEGIN
+                                    [ SEPARA_DEDUTORIAS!] BEGIN
+                                                           [ CODIGO_RELACIONADO!]  BEGIN
+                                                                                    MOVE MOVREC.COD_DIV_ATIVA                                             TO ST_COD_RECEITA
+                                                                                    MOVE (OBTER_CODIGO_PADRAO_RECEITA(ST_COD_RECEITA,PARGERAL.EXERCICIO)) TO ST_COD_PADRAO
+                                                                                   END
+                                                           [~CODIGO_RELACIONADO!]  BEGIN
+                                                                                    MOVE (MID(MOVREC.CODIGO,14,1)) TO ST_COD_RECEITA
+                                                                                    MOVE (OBTER_CODIGO_PADRAO_RECEITA(MOVREC.CODIGO,PARGERAL.EXERCICIO)) TO ST_COD_PADRAO
+                                                                                   END
+                                                         END
+                                    [~SEPARA_DEDUTORIAS!] BEGIN
+                                                           MOVE MOVREC.COD_DIV_ATIVA                                             TO ST_COD_RECEITA
+                                                           MOVE (OBTER_CODIGO_PADRAO_RECEITA(ST_COD_RECEITA,PARGERAL.EXERCICIO)) TO ST_COD_PADRAO
+                                                          END
+                                   END
+             
+             [ RECEITA_INTRA!] BEGIN
+                                [~SEPARA_INTRA!] BEGIN
+                                                       IF (LEFT(MOVREC.CODIGO,1)) EQ '7' MOVE '1' TO ST_COD_RECEITA
+                                                  ELSE IF (LEFT(MOVREC.CODIGO,1)) EQ '8' MOVE '2' TO ST_COD_RECEITA
+                                                  APPEND ST_COD_RECEITA (MID(MOVREC.CODIGO,18,2))
+                                                  MOVE (OBTER_CODIGO_PADRAO_RECEITA(ST_COD_RECEITA,PARGERAL.EXERCICIO)) TO ST_COD_PADRAO
+                                                 END
+                               END
+             
+             INDICATE OK! TRUE
+             
+             //--pega previsao bruta da receita
+             [ RECEITA_DEDUTORIA!    PREVISAO_BRUTA!] INDICATE OK! FALSE
+             [ RECEITA_DEDUTORIA! SEPARA_DEDUTORIAS!] INDICATE OK! TRUE
+
+             [~DEPARA!] BEGIN
+                         CLEAR RECEITAS
+                         MOVE PARGERAL.ESTADO TO RECEITAS.UF
+                         MOVE ST_EXERCICIO    TO RECEITAS.ANO
+                         MOVE ST_COD_PADRAO   TO RECEITAS.CODIGO
+                         FIND EQ RECEITAS BY INDEX.1
+                         
+                         MOVE ST_COD_PADRAO TO ST_COD_RECEITA
+                         MOVE RECEITAS.GRAU TO IT_GRAU
+                         MOVE MOVREC.CODIGO TO ST_AUX
+                        END
+             
+             [ DEPARA!] BEGIN
+                         BUSCA_CODIGO_SIOP ST_COD_RECEITA ST_COD_PADRAO ST_COD_DEDUTORIA ST_COD_RETORNO ST_EXERCICIO
+                         
+                         CLEAR CADSIOP
+                         MOVE ST_SISTEMA     TO CADSIOP.SISTEMA
+                         MOVE ST_EXERCICIO   TO CADSIOP.ANO
+                         MOVE 'RECEITA'      TO CADSIOP.NATUREZA
+                         MOVE ST_COD_RETORNO TO CADSIOP.CODIGO
+                         FIND EQ CADSIOP BY INDEX.1
+                         [~FOUND] CLEAR CADSIOP
+                         
+                         MOVE CADSIOP.GRAU   TO IT_GRAU
+                         MOVE ST_COD_RETORNO TO ST_COD_PADRAO
+                         MOVE ST_COD_PADRAO  TO ST_COD_RECEITA
+                         MOVE CADSIOP.CODIGO TO ST_AUX
+                        END
+             
+             MOVE ST_COD_RECEITA TO JN_DADOS
+             KEYCHECK GOSUB LB_ROTINA_PARADA
+             
+             MOVEALL 0 TO NB_PREVISTO_INICIAL NB_PREVISTO_ATUALIZADO NB_ARRECADADO
+             
+             CLEAR MOVDREC
+             CONSTRAINT_SET 2
+             CONSTRAIN MOVDREC.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+             CONSTRAIN MOVDREC.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+             CONSTRAIN MOVDREC.N_RECEITA    EQ MOVREC.NUMERO
+             CONSTRAIN MOVDREC.DATA         LE DT_FINAL
+             CONSTRAINED_FIND FIRST MOVDREC BY INDEX.2
+             WHILE [FOUND]
+              KEYCHECK GOSUB LB_ROTINA_PARADA
+              CALC (JN_LENDO + 1) TO JN_LENDO
+
+              CALC (NB_ARRECADADO + MOVDREC.VALOR) TO NB_ARRECADADO
+
+              CONSTRAINT_SET 2
+              CONSTRAINED_FIND NEXT
+              END
+             CONSTRAINT_SET 2 CLEAR
+             
+             [ OK!] BEGIN
+                     MOVE MOVREC.VALOR_ORCADO TO NB_PREVISTO_INICIAL
+                     MOVE MOVREC.VALOR_ORCADO TO NB_PREVISTO_ATUALIZADO
+                     
+                     CLEAR ATUAREC
+                     CONSTRAINT_SET 2
+                     CONSTRAIN ATUAREC.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+                     CONSTRAIN ATUAREC.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+                     CONSTRAIN ATUAREC.N_RECEITA    EQ MOVREC.NUMERO
+                     CONSTRAIN ATUAREC.DATA         LE DT_FINAL
+                     CONSTRAINED_FIND FIRST ATUAREC BY INDEX.1
+                     WHILE [FOUND]
+                      KEYCHECK GOSUB LB_ROTINA_PARADA
+                      CALC (JN_LENDO + 1) TO JN_LENDO
+
+                      CALC (NB_PREVISTO_ATUALIZADO + ATUAREC.VALOR) TO NB_PREVISTO_ATUALIZADO
+
+                      CONSTRAINT_SET 2
+                      CONSTRAINED_FIND NEXT
+                      END
+                     CONSTRAINT_SET 2 CLEAR
+                    END
+             
+             [~SINTETICO!] BEGIN
+                            //--grava linha analitica
+                            MONTA_DADOS_PROPRIO ST_DADOS ST_AUX ST_COD_RECEITA ST_COD_PADRAO 'LINHA'
+                            
+                            GRAVA_TEMPCALC_MOVREC ST_DADOS 'PI' NB_PREVISTO_INICIAL    'A'
+                            GRAVA_TEMPCALC_MOVREC ST_DADOS 'PA' NB_PREVISTO_ATUALIZADO 'A'
+                            
+                            [~RECEITA_DEDUTORIA!] BEGIN
+                                                   [~SEPARA_INTRA!] BEGIN 
+                                                                     [ RECEITA_INTRA!] GRAVA_TEMPCALC_MOVREC ST_DADOS 'IN' NB_ARRECADADO 'A'
+                                                                     [~RECEITA_INTRA!] GRAVA_TEMPCALC_MOVREC ST_DADOS 'AR' NB_ARRECADADO 'A'
+                                                                    END
+                                                   [ SEPARA_INTRA!] GRAVA_TEMPCALC_MOVREC ST_DADOS 'AR' NB_ARRECADADO 'A'
+                                                  END
+                            [ RECEITA_DEDUTORIA!] BEGIN
+                                                   [~SEPARA_DEDUTORIAS!] BEGIN
+                                                                          [ DEDUCAO_FUNDEB!] GRAVA_TEMPCALC_MOVREC ST_DADOS 'DF' NB_ARRECADADO 'A'
+                                                                          [ DEDUCAO_OUTRAS!] GRAVA_TEMPCALC_MOVREC ST_DADOS 'DO' NB_ARRECADADO 'A'
+                                                                         END
+                                                  
+                                                   [ SEPARA_DEDUTORIAS!] BEGIN
+                                                                          GRAVA_TEMPCALC_MOVREC ST_DADOS 'AR' NB_ARRECADADO 'A'
+                                                                         END
+                                                  END
+                           END
+
+             //--grava linha total geral
+             MOVE 'XTOTAL GERAL' TO ST_DADOS
+             GRAVA_TEMPCALC_MOVREC ST_DADOS 'PI' NB_PREVISTO_INICIAL    'S'
+             GRAVA_TEMPCALC_MOVREC ST_DADOS 'PA' NB_PREVISTO_ATUALIZADO 'S'
+             
+             [~RECEITA_DEDUTORIA!] BEGIN
+                                    [~SEPARA_INTRA!] BEGIN 
+                                                      [ RECEITA_INTRA!] GRAVA_TEMPCALC_MOVREC ST_DADOS 'IN' NB_ARRECADADO 'S'
+                                                      [~RECEITA_INTRA!] GRAVA_TEMPCALC_MOVREC ST_DADOS 'AR' NB_ARRECADADO 'S'
+                                                     END
+                                    [ SEPARA_INTRA!] GRAVA_TEMPCALC_MOVREC ST_DADOS 'AR' NB_ARRECADADO 'S'
+                                   END
+             [ RECEITA_DEDUTORIA!] BEGIN
+                                    [~SEPARA_DEDUTORIAS!] BEGIN
+                                                           [ DEDUCAO_FUNDEB!] GRAVA_TEMPCALC_MOVREC ST_DADOS 'DF' NB_ARRECADADO 'S'
+                                                           [ DEDUCAO_OUTRAS!] GRAVA_TEMPCALC_MOVREC ST_DADOS 'DO' NB_ARRECADADO 'S'
+                                                          END
+                                    [ SEPARA_DEDUTORIAS!] BEGIN
+                                                           GRAVA_TEMPCALC_MOVREC ST_DADOS 'AR' NB_ARRECADADO 'S'
+                                                          END
+                                   END
+             
+             //--grava linha subtotal
+             [ SEPARA_DEDUTORIAS!] BEGIN
+                                    MONTA_DADOS_PROPRIO ST_DADOS ST_AUX ST_COD_RECEITA ST_COD_PADRAO 'TOTAL'
+                                    
+                                    GRAVA_TEMPCALC_MOVREC ST_DADOS 'PI' NB_PREVISTO_INICIAL    'S'
+                                    GRAVA_TEMPCALC_MOVREC ST_DADOS 'PA' NB_PREVISTO_ATUALIZADO 'S'
+                                    
+                                    [~RECEITA_DEDUTORIA!] BEGIN
+                                                           [~SEPARA_INTRA!] BEGIN 
+                                                                             [ RECEITA_INTRA!] GRAVA_TEMPCALC_MOVREC ST_DADOS 'IN' NB_ARRECADADO 'S'
+                                                                             [~RECEITA_INTRA!] GRAVA_TEMPCALC_MOVREC ST_DADOS 'AR' NB_ARRECADADO 'S'
+                                                                            END
+                                                           [ SEPARA_INTRA!] GRAVA_TEMPCALC_MOVREC ST_DADOS 'AR' NB_ARRECADADO 'S'
+                                                          END
+                                    [ RECEITA_DEDUTORIA!] BEGIN
+                                                           [~SEPARA_DEDUTORIAS!] BEGIN
+                                                                                  [ DEDUCAO_FUNDEB!] GRAVA_TEMPCALC_MOVREC ST_DADOS 'DF' NB_ARRECADADO 'S'
+                                                                                  [ DEDUCAO_OUTRAS!] GRAVA_TEMPCALC_MOVREC ST_DADOS 'DO' NB_ARRECADADO 'S'
+                                                                                 END
+                                                           [ SEPARA_DEDUTORIAS!] BEGIN
+                                                                                  GRAVA_TEMPCALC_MOVREC ST_DADOS 'AR' NB_ARRECADADO 'S'
+                                                                                 END
+                                                          END
+                                   END
+              
+             MOVE '' TO ST_COD_SINTETICO_ANTERIOR
+
+             //--grava linha valores nas sinteticas
+             GRAVA_RECEITAS_SINTETICAS IT_GRAU ST_COD_PADRAO ST_AUX NB_PREVISTO_INICIAL    '' ST_SISTEMA 'MOVREC' 'PI'
+             GRAVA_RECEITAS_SINTETICAS IT_GRAU ST_COD_PADRAO ST_AUX NB_PREVISTO_ATUALIZADO '' ST_SISTEMA 'MOVREC' 'PA'
+             
+             [~RECEITA_DEDUTORIA!] BEGIN
+                                    [~SEPARA_INTRA!] BEGIN 
+                                                      [ RECEITA_INTRA!] BEGIN
+                                                                         GRAVA_RECEITAS_SINTETICAS IT_GRAU ST_COD_PADRAO ST_AUX NB_ARRECADADO '' ST_SISTEMA 'MOVREC' 'IN'
+                                                                        END
+                                                      [~RECEITA_INTRA!] BEGIN
+                                                                         GRAVA_RECEITAS_SINTETICAS IT_GRAU ST_COD_PADRAO ST_AUX NB_ARRECADADO '' ST_SISTEMA 'MOVREC' 'AR'
+                                                                        END
+                                                     END
+                                    [ SEPARA_INTRA!] BEGIN
+                                                      GRAVA_RECEITAS_SINTETICAS IT_GRAU ST_COD_PADRAO ST_AUX NB_ARRECADADO '' ST_SISTEMA 'MOVREC' 'AR'
+                                                     END
+                                   END
+             [ RECEITA_DEDUTORIA!] BEGIN
+                                    [~SEPARA_DEDUTORIAS!] BEGIN
+                                                           [ DEDUCAO_FUNDEB!] BEGIN
+                                                                               GRAVA_RECEITAS_SINTETICAS IT_GRAU ST_COD_PADRAO ST_AUX NB_ARRECADADO '' ST_SISTEMA 'MOVREC' 'DF'
+                                                                              END
+                                                           [ DEDUCAO_OUTRAS!] BEGIN
+                                                                               GRAVA_RECEITAS_SINTETICAS IT_GRAU ST_COD_PADRAO ST_AUX NB_ARRECADADO '' ST_SISTEMA 'MOVREC' 'DO'
+                                                                              END
+                                                          END
+                                    [ SEPARA_DEDUTORIAS!] BEGIN
+                                                           MOVE 3 TO IT_GRAU
+                                                           GRAVA_RECEITAS_SINTETICAS IT_GRAU ST_COD_PADRAO ST_AUX NB_ARRECADADO '' ST_SISTEMA 'MOVREC' 'AR'
+                                                          END
+                                   END
+             
+             CONSTRAINT_SET 1         
+             CONSTRAINED_FIND NEXT
+             END
+            CONSTRAINT_SET 1 CLEAR
+           END
+
+//--
+//--orcado para o proximo exercicio
+//--
+CLEAR VERSAO
+MOVE 'LOA'                    TO VERSAO.TIPO
+MOVE 'A'                      TO VERSAO.ATIVO
+MOVE (PARGERAL.EXERCICIO + 1) TO VERSAO.ANO_VIGENCIA_I
+MOVE 2                        TO VERSAO.NUMERO
+FIND EQ VERSAO BY INDEX.2
+[ FOUND] BEGIN
+          MOVE VERSAO.ANO_VIGENCIA_I TO ST_EXERCICIO
+          
+          CLEAR PLANREC
+          CONSTRAINT_SET 1
+          CONSTRAIN PLANREC.ID_VERSAO EQ VERSAO.ID_VERSAO
+          [~TODAS!] CONSTRAIN PLANREC.COD_ENTIDADE EQ ST_ENTIDADE_SELECAO
+          CONSTRAIN PLANREC.VALOR_ORCADO NE 0
+          CONSTRAINED_FIND FIRST PLANREC BY INDEX.1
+          WHILE [FOUND]
+           CALC (JN_LENDO + 1) TO JN_LENDO
+
+           MOVEALL '' TO ST_COD_RECEITA ST_COD_PADRAO ST_COD_DEDUTORIA ST_COD_RETORNO
+           
+           INDICATE     RECEITA_INTRA! AS   (LEFT(PLANREC.CODIGO,1)) IN '7-8'
+           INDICATE RECEITA_DEDUTORIA! AS   (LEFT(PLANREC.CODIGO,1)) EQ '9'
+           INDICATE    DEDUCAO_FUNDEB! AS   (LEFT(PLANREC.CODIGO,3)) EQ '9.5'
+           INDICATE    DEDUCAO_OUTRAS! AS (((LEFT(PLANREC.CODIGO,1)) EQ '9') AND ((LEFT(PLANREC.CODIGO,3)) NE '9.5'))
+           
+           MOVE PLANREC.CODIGO                                                   TO ST_COD_RECEITA
+           MOVE (OBTER_CODIGO_PADRAO_RECEITA(PLANREC.CODIGO,PARGERAL.EXERCICIO)) TO ST_COD_PADRAO
+           
+           [ RECEITA_DEDUTORIA!] BEGIN
+                                  [ SEPARA_DEDUTORIAS!] BEGIN
+                                                         [ CODIGO_RELACIONADO!]  BEGIN
+                                                                                  MOVE PLANREC.COD_DIV_ATIVA                                            TO ST_COD_RECEITA
+                                                                                  MOVE (OBTER_CODIGO_PADRAO_RECEITA(ST_COD_RECEITA,PARGERAL.EXERCICIO)) TO ST_COD_PADRAO
+                                                                                 END
+                                                         [~CODIGO_RELACIONADO!]  BEGIN
+                                                                                  MOVE PLANREC.CODIGO                                                   TO ST_COD_RECEITA
+                                                                                  MOVE (OBTER_CODIGO_PADRAO_RECEITA(ST_COD_RECEITA,PARGERAL.EXERCICIO)) TO ST_COD_PADRAO
+                                                                                 END
+                                                       END
+                                  [~SEPARA_DEDUTORIAS!] BEGIN
+                                                         MOVE PLANREC.COD_DIV_ATIVA                                            TO ST_COD_RECEITA
+                                                         MOVE (OBTER_CODIGO_PADRAO_RECEITA(ST_COD_RECEITA,PARGERAL.EXERCICIO)) TO ST_COD_PADRAO
+                                                        END
+                                 END
+           
+           [ RECEITA_INTRA!] BEGIN
+                              [~SEPARA_INTRA!] BEGIN
+                                                     IF (LEFT(PLANREC.CODIGO,1)) EQ '7' MOVE '1' TO ST_COD_RECEITA
+                                                ELSE IF (LEFT(PLANREC.CODIGO,1)) EQ '8' MOVE '2' TO ST_COD_RECEITA
+                                                APPEND ST_COD_RECEITA (MID(PLANREC.CODIGO,18,2))
+                                                MOVE (OBTER_CODIGO_PADRAO_RECEITA(PLANREC.CODIGO,PARGERAL.EXERCICIO)) TO ST_COD_PADRAO
+                                               END
+                             END
+           
+           [~DEPARA!] BEGIN
+                       CLEAR RECEITAS
+                       MOVE PARGERAL.ESTADO TO RECEITAS.UF
+                       MOVE ST_EXERCICIO    TO RECEITAS.ANO
+                       MOVE ST_COD_PADRAO   TO RECEITAS.CODIGO
+                       FIND EQ RECEITAS BY INDEX.1
+                       
+                       MOVE ST_COD_PADRAO  TO ST_COD_RECEITA
+                       MOVE RECEITAS.GRAU  TO IT_GRAU
+                       MOVE PLANREC.CODIGO TO ST_AUX
+                      END
+           
+           [ DEPARA!] BEGIN
+                       BUSCA_CODIGO_SIOP ST_COD_RECEITA ST_COD_PADRAO ST_COD_DEDUTORIA ST_COD_RETORNO ST_EXERCICIO
+                       
+                       CLEAR CADSIOP
+                       MOVE ST_SISTEMA     TO CADSIOP.SISTEMA
+                       MOVE ST_EXERCICIO   TO CADSIOP.ANO
+                       MOVE 'RECEITA'      TO CADSIOP.NATUREZA
+                       MOVE ST_COD_RETORNO TO CADSIOP.CODIGO
+                       FIND EQ CADSIOP BY INDEX.1
+                       [~FOUND] CLEAR CADSIOP
+                       
+                       MOVE CADSIOP.GRAU   TO IT_GRAU
+                       MOVE ST_COD_RETORNO TO ST_COD_PADRAO
+                       MOVE ST_COD_PADRAO  TO ST_COD_RECEITA
+                       MOVE CADSIOP.CODIGO TO ST_AUX
+                      END
+
+           MOVE ST_COD_RECEITA TO JN_DADOS
+           KEYCHECK GOSUB LB_ROTINA_PARADA
+           
+           [~SINTETICO!] BEGIN
+                          //--grava linha analitica
+                          MONTA_DADOS_PROPRIO ST_DADOS ST_AUX ST_COD_RECEITA ST_COD_PADRAO 'LINHA'
+                          GRAVA_TEMPCALC_MOVREC ST_DADOS 'PE' PLANREC.VALOR_ORCADO 'A'
+                         END
+
+           //--grava linha total geral
+           MOVE 'XTOTAL GERAL' TO ST_DADOS
+           GRAVA_TEMPCALC_MOVREC ST_DADOS 'PE' PLANREC.VALOR_ORCADO 'S'
+           
+           //--grava linha subtotal
+           [ SEPARA_DEDUTORIAS!] BEGIN
+                                  MONTA_DADOS_PROPRIO ST_DADOS ST_AUX ST_COD_RECEITA ST_COD_PADRAO 'TOTAL'
+                                  GRAVA_TEMPCALC_MOVREC ST_DADOS 'PE' PLANREC.VALOR_ORCADO 'S'
+                                 END
+            
+           MOVE '' TO ST_COD_SINTETICO_ANTERIOR
+
+           //--grava linha valores nas sinteticas
+           GRAVA_RECEITAS_SINTETICAS IT_GRAU ST_COD_PADRAO ST_AUX PLANREC.VALOR_ORCADO '' ST_SISTEMA 'PLANREC' 'PE'
+
+           CONSTRAINT_SET 1         
+           CONSTRAINED_FIND NEXT
+           END
+          CONSTRAINT_SET 1 CLEAR
+         END
+
+MOVE 1 TO PAGECOUNT
+MOVE 0 TO RECCOUNT
+
+MOVE '' TO ST_PERIODO
+APPEND ST_PERIODO 'JANEIRO A '
+MONTH JN_MES ST_AUX
+APPEND ST_PERIODO ST_AUX ST_JUNTANDO
+
+MOVE PARGERAL.EXERCICIO TO ST_EXERCICIO
+
+//--ipressao do relatorio
+CABEC ST@PREFEITURA                JHD_PREFEITURA
+[~TODAS!] CABEC ENTIDADE.DESCRICAO JHD_ENTIDADE
+[ TODAS!] CABEC 'CONSOLIDADO'      JHD_ENTIDADE
+[ SINTETICO!] PRINT 'Sintetico' TO JHD_TIPO
+[~SINTETICO!] PRINT 'Analitico' TO JHD_TIPO
+[~DEPARA!]    PRINT 'Tce'       TO JHD_DEPARA
+[ DEPARA!]    PRINT ST_SISTEMA  TO JHD_DEPARA
+SYSDATA                            JHD_DATA
+CABEC ST_PERIODO                   JHD_PERIODO
+PRINT PAGECOUNT                 TO JHD_PAGINA
+OUTPUT HEADER
+
+CLEAR TEMPCALC
+CONSTRAINT_SET 1
+CONSTRAIN TEMPCALC.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+CONSTRAIN TEMPCALC.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+CONSTRAIN TEMPCALC.USUARIO      EQ ST@USUARIO
+CONSTRAINED_FIND FIRST TEMPCALC BY INDEX.1
+WHILE [FOUND]
+ KEYCHECK GOSUB LB_ROTINA_PARADA
+ INCREMENT RECCOUNT
+ CALC (JN_LENDO + 1)     TO JN_LENDO
+ MOVE RECCOUNT           TO JN_IMPRIMINDO
+ MOVE PAGECOUNT          TO JN_PAGINA
+
+ GOSUB LB_PULA_PAGINA
+ MOVE (LEFT(TEMPCALC.CODIGO,2)) TO ST_QUEBRA
+ 
+ IF ST_QUEBRA IN 'AX-BX-CX' BEGIN
+                                  IF ST_QUEBRA EQ 'AX' CABEC 'SUBTOTAL RECEITAS ORCAMENTARIAS'      SUBTOTAL.1
+                             ELSE IF ST_QUEBRA EQ 'BX' CABEC 'SUBTOTAL RECEITAS INTRAORCAMENTARIAS' SUBTOTAL.1
+                             ELSE                      CABEC 'SUBTOTAL RECEITAS DEDUTORIAS'         SUBTOTAL.1
+                             PRINT TEMPCALC.VALOR_1  TO SUBTOTAL.2
+                             PRINT TEMPCALC.VALOR_2  TO SUBTOTAL.3
+                             PRINT TEMPCALC.VALOR_3  TO SUBTOTAL.4
+                             PRINT TEMPCALC.VALOR_4  TO SUBTOTAL.5
+                             PRINT TEMPCALC.VALOR_5  TO SUBTOTAL.6
+                             PRINT TEMPCALC.VALOR_6  TO SUBTOTAL.7
+                             PRINT TEMPCALC.VALOR_7  TO SUBTOTAL.8
+                             
+                             OUTPUT SUBTOTAL
+//                              IF ST_QUEBRA EQ 'AX' OUTPUT LINHA2
+                             OUTPUT LINHA2
+                            END
+ ELSE IF ST_QUEBRA EQ 'XT' BEGIN
+                            CABEC 'TOTAL GERAL '       TOTAL.1
+                            PRINT TEMPCALC.VALOR_1  TO TOTAL.2
+                            PRINT TEMPCALC.VALOR_2  TO TOTAL.3
+                            PRINT TEMPCALC.VALOR_3  TO TOTAL.4
+                            PRINT TEMPCALC.VALOR_4  TO TOTAL.5
+                            PRINT TEMPCALC.VALOR_5  TO TOTAL.6
+                            PRINT TEMPCALC.VALOR_6  TO TOTAL.7
+                            PRINT TEMPCALC.VALOR_7  TO TOTAL.8
+                            
+                            OUTPUT TOTAL
+                           END
+ ELSE BEGIN
+       BLANKFORM BODY
+
+       MOVEALL '' TO ST_COD_RECEITA
+       MOVE (MID(TEMPCALC.CODIGO,20,2)) TO ST_COD_RECEITA
+       
+                   INDICATE IMPRIME! AS TEMPCALC.VALOR_1 NE 0
+       [~IMPRIME!] INDICATE IMPRIME! AS TEMPCALC.VALOR_2 NE 0
+       [~IMPRIME!] INDICATE IMPRIME! AS TEMPCALC.VALOR_3 NE 0
+       [~IMPRIME!] INDICATE IMPRIME! AS TEMPCALC.VALOR_4 NE 0
+       [~IMPRIME!] INDICATE IMPRIME! AS TEMPCALC.VALOR_5 NE 0
+       [~IMPRIME!] INDICATE IMPRIME! AS TEMPCALC.VALOR_6 NE 0
+       [~IMPRIME!] INDICATE IMPRIME! AS TEMPCALC.VALOR_7 NE 0
+
+       [~DEPARA!] BEGIN
+                   CLEAR RECEITAS
+                   MOVE PARGERAL.ESTADO TO RECEITAS.UF
+                   MOVE ST_EXERCICIO    TO RECEITAS.ANO
+                   MOVE ST_COD_RECEITA  TO RECEITAS.CODIGO
+                   FIND EQ RECEITAS BY INDEX.1
+                   [~FOUND] BEGIN
+                             CLEAR RECEITAS
+                             MOVE PARGERAL.ESTADO   TO RECEITAS.UF
+                             MOVE (ST_EXERCICIO +1) TO RECEITAS.ANO
+                             MOVE ST_COD_RECEITA    TO RECEITAS.CODIGO
+                             FIND EQ RECEITAS BY INDEX.1
+                            END
+
+                   IF RECEITAS.GRAU EQ '1' BEGIN
+                                            OUTPUT BODY
+                                           END
+
+                   MOVE '' TO ST_DESCRICAO
+                   IF RECEITAS.GRAU EQ '1' MOVE RECEITAS.DESCRICAO TO ST_DESCRICAO
+                   IF RECEITAS.GRAU EQ '2' APPEND ST_DESCRICAO ' ' RECEITAS.DESCRICAO
+                   IF RECEITAS.GRAU EQ '3' APPEND ST_DESCRICAO '  ' RECEITAS.DESCRICAO
+                   IF RECEITAS.GRAU EQ '4' APPEND ST_DESCRICAO '   ' RECEITAS.DESCRICAO
+                   IF RECEITAS.GRAU EQ '5' APPEND ST_DESCRICAO '    ' RECEITAS.DESCRICAO
+                   IF RECEITAS.GRAU EQ '6' APPEND ST_DESCRICAO '     ' RECEITAS.DESCRICAO
+                   IF RECEITAS.GRAU EQ '7' APPEND ST_DESCRICAO '      ' RECEITAS.DESCRICAO
+
+                   [~SINTETICO!] IF TEMPCALC.AUXILIAR EQ 'A' LOWERCASE ST_DESCRICAO TO ST_DESCRICAO
+                   [ SINTETICO!] IF RECEITAS.GRAU EQ '2'     LOWERCASE ST_DESCRICAO TO ST_DESCRICAO
+                  END
+       [ DEPARA!] BEGIN
+                   IF (LEFT(ST_COD_RECEITA,1)) NE '9' BEGIN
+                                                       CLEAR CADSIOP
+                                                       MOVE ST_SISTEMA     TO CADSIOP.SISTEMA
+                                                       MOVE ST_EXERCICIO   TO CADSIOP.ANO
+                                                       MOVE 'RECEITA'      TO CADSIOP.NATUREZA
+                                                       MOVE ST_COD_RECEITA TO CADSIOP.CODIGO
+                                                       FIND EQ CADSIOP BY INDEX.1
+                                                       [~FOUND] CLEAR CADSIOP
+                                                       IF CADSIOP.GRAU EQ '1' BEGIN
+                                                                                OUTPUT BODY
+                                                                               END
+
+                                                       MOVE '' TO ST_DESCRICAO
+                                                       IF CADSIOP.GRAU EQ '1' MOVE CADSIOP.DESCRICAO TO ST_DESCRICAO
+                                                       IF CADSIOP.GRAU EQ '2' APPEND ST_DESCRICAO ' ' CADSIOP.DESCRICAO
+                                                       IF CADSIOP.GRAU EQ '3' APPEND ST_DESCRICAO '  ' CADSIOP.DESCRICAO
+                                                       IF CADSIOP.GRAU EQ '4' APPEND ST_DESCRICAO '   ' CADSIOP.DESCRICAO
+                                                       IF CADSIOP.GRAU EQ '5' APPEND ST_DESCRICAO '    ' CADSIOP.DESCRICAO
+                                                       IF CADSIOP.GRAU EQ '6' APPEND ST_DESCRICAO '     ' CADSIOP.DESCRICAO
+                                                       IF CADSIOP.GRAU EQ '7' APPEND ST_DESCRICAO '      ' CADSIOP.DESCRICAO
+                                                      END
+                   ELSE BEGIN
+                         CLEAR RECEITAS
+                         MOVE PARGERAL.ESTADO TO RECEITAS.UF
+                         MOVE ST_EXERCICIO    TO RECEITAS.ANO
+                         MOVE ST_COD_RECEITA  TO RECEITAS.CODIGO
+                         FIND EQ RECEITAS BY INDEX.1
+                         [~FOUND] BEGIN
+                                   CLEAR RECEITAS
+                                   MOVE PARGERAL.ESTADO   TO RECEITAS.UF
+                                   MOVE (ST_EXERCICIO +1) TO RECEITAS.ANO
+                                   MOVE ST_COD_RECEITA    TO RECEITAS.CODIGO
+                                   FIND EQ RECEITAS BY INDEX.1
+                                  END
+
+                         IF RECEITAS.GRAU EQ '1' BEGIN
+                                                  OUTPUT BODY
+                                                 END
+
+                         MOVE '' TO ST_DESCRICAO
+                         IF RECEITAS.GRAU EQ '1' MOVE RECEITAS.DESCRICAO TO ST_DESCRICAO
+                         IF RECEITAS.GRAU EQ '2' APPEND ST_DESCRICAO ' ' RECEITAS.DESCRICAO
+                         IF RECEITAS.GRAU EQ '3' APPEND ST_DESCRICAO '  ' RECEITAS.DESCRICAO
+                         IF RECEITAS.GRAU EQ '4' APPEND ST_DESCRICAO '   ' RECEITAS.DESCRICAO
+                         IF RECEITAS.GRAU EQ '5' APPEND ST_DESCRICAO '    ' RECEITAS.DESCRICAO
+                         IF RECEITAS.GRAU EQ '6' APPEND ST_DESCRICAO '     ' RECEITAS.DESCRICAO
+                         IF RECEITAS.GRAU EQ '7' APPEND ST_DESCRICAO '      ' RECEITAS.DESCRICAO
+                        END
+
+                   [~SINTETICO!] IF TEMPCALC.AUXILIAR EQ 'A' LOWERCASE ST_DESCRICAO TO ST_DESCRICAO
+                   [ SINTETICO!] IF CADSIOP.GRAU EQ '2'      LOWERCASE ST_DESCRICAO TO ST_DESCRICAO
+                  END
+
+       PRINT ST_COD_RECEITA    TO JBD_CODIGO
+       PRINT ST_DESCRICAO      TO JBD_DESCRICAO
+       PRINT TEMPCALC.VALOR_1  TO JBD_PREVISAO_INICIAL
+       PRINT TEMPCALC.VALOR_2  TO JBD_PREVISAO_ATUALIZADA
+       PRINT TEMPCALC.VALOR_3  TO JBD_ARRECADADO
+       PRINT TEMPCALC.VALOR_4  TO JBD_DEDUCAO_FUNDEB
+       PRINT TEMPCALC.VALOR_5  TO JBD_DEDUCAO_OUTRAS
+       PRINT TEMPCALC.VALOR_6  TO JBD_INTRAORCAMENTARIA
+       PRINT TEMPCALC.VALOR_7  TO JBD_PROXIMO_EXERCICIO
+       
+       [ IMPRIME!] OUTPUT BODY
+       GOSUB LB_PULA_PAGINA
+      END
+ 
+ INDICATE ERR FALSE
+ ON ERROR GOSUB CHECA_GRAVACAO
+ REREAD TEMPCALC
+ DELETE TEMPCALC
+ UNLOCK
+ ON ERROR OFF
+ CONSTRAINED_FIND NEXT
+ END
+CONSTRAINT_SET 1 CLEAR
+
+APAGA_TEMPCALC JN_LENDO
+
+#INCLUDE QAPLIC.INC
+
+BUSCA_CAMINHO_MENU 'R02SIOP2' ''
+FORMFEED
+GRAVAPAG
+
+[~TITULO_QUADRO!] BEGIN
+                   ADVERTE 'VERIFIQUE, NO FIM DO RELATORIO, RELACAO DA(S) ENTIDADE(S) SEM ARQUIVO(S) XML REFERENTE AO PERIODO SELECIONADO.'
+                  END
+
+ABORT
+
+LB_ROTINA_PARADA:
+ CABEC 'GOSTARIA REALMENTE DE SAIR < S/N >?' CONFIRMA.1
+ PAGE CONFIRMA
+ INKEYCHECK ST_TECLA IN 'SsNn'
+ IF ST_TECLA IN 'Ss' BEGIN
+                      MOVE 0 TO RECCOUNT
+                      LIMPA_PRN
+                     END
+ 
+ MOVE 0 TO CURRENT_IMAGE
+ PAGE TELA
+ PAGE MSG
+RETURN
+
+KEYPROC KEY.UP
+ IF CURRENT_WINDOW EQ 6 BEGIN
+                         IF JN_DEPARA EQ '2' RETURN LB_PREVISAO_BRUTA
+                         ELSE                RETURN LB_SISTEMA
+                        END
+ IF CURRENT_WINDOW EQ 8 BEGIN
+                         IF JN_SEPARA_DEDUTORIAS EQ 'S' RETURN LB_CODIGO_RELACIONADO
+                         ELSE                           RETURN LB_SEPARA_DEDUTORIAS
+                        END
+ ELSE BACKFIELD
+RETURN
+
+KEYPROC KEY.FIELD
+IF CURRENT_WINDOW EQ 1 BEGIN
+                        MOVE 'CENTIDAD 1 ' TO ST_JUNTA
+                        APPEND ST_JUNTA ST@USUARIO ' ' ST@OPCAO ' ' ST@PROGRAMA ' ' ST@CODIGO@ENTIDADE ' ' ST@EXERCICIO@FINANCEIRO
+                        CHAIN WAIT ST_JUNTA EXPORT_FILES
+                        MOVE 0 TO CURRENT_IMAGE
+                        PAGE TELA
+                        IF ENTIDADE.CODIGO NE "" BEGIN
+                                                  TRIM ENTIDADE.CODIGO    TO JN_COD_ENTIDADE
+                                                  TRIM ENTIDADE.DESCRICAO TO JN_ENTIDADE
+                                                 END
+                        ELSE ENTAGAIN
+                        RETURN
+                       END
+ENTAGAIN
+RETURN
+
+LB_PULA_PAGINA:
+ IF LINECOUNT GE 54 BEGIN
+                     OUTPUT FOOTER
+                     FORMFEED
+                     PRINT PAGECOUNT TO JHD_PAGINA
+                     OUTPUT HEADER
+                    END
+RETURN
+
+#INCLUDE INTEGRID.INC
+
+
+
+

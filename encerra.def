@@ -1,0 +1,60 @@
+-----------------------------------------------------------------------------
+  DATE: 25/10/2023      TIME: 17:31                                  PAGE:  1
+  FILE DEFINITION FOR FILE: ENCERRA (# 14)
+-----------------------------------------------------------------------------
+  DRIVER NAME               : DATAFLEX
+  FILE ROOT NAME            : ENCERRA
+  USER DISPLAY NAME         : ENCERRA
+  DATAFLEX FILE NAME        : ENCERRA
+-----------------------------------------------------------------------------
+  RECORD LENGTH             : 256       ( USED: 179 )
+  MAX NUMBER OF RECORDS     : 16711679  ( USED: 0 )
+  FILE COMPRESSION          : NONE
+  RE-USE DELETED SPACE      : YES
+  LOCKING TYPE              : FILE
+  HEADER INTEGRITY CHECKING : YES
+  TRANSACTION TYPE          : CLIENT ATOMIC
+  RECORD IDENTITY INDEX     : 0 ( 0 , 0 )
+  FILE LOGIN PARAMETER      : 
+  SYSTEM FILE               : NO 
+-----------------------------------------------------------------------------
+
+NUM  FIELD NAME       TYPE SIZE  OFFST IX   RELATES TO FILE.FIELD
+---  ---------------  ---- ----- ----- --   ---------------------------------
+  1  COD_ENTIDADE     ASC      2     1  1   
+  2  ANO              ASC      4     3  1   
+  3  MES              ASC      2     7  1   
+  4  DATA_FECHAMENTO  DAT      3     9      
+  5  HORA_FECHAMENTO  ASC      8    12      
+  6  USUARIO          ASC      5    20      
+  7  STATUS           ASC      1    25      
+  8  OBRIGATORIO      ASC      1    26      
+  9  GEROU_CADASTRO   DAT      3    27      
+ 10  GEROU_BALANCO    DAT      3    30      
+ 11  GEROU_C_C        DAT      3    33      
+ 12  ENVIOU_CADASTRO  DAT      3    36      
+ 13  ENVIOU_CONTABIL  DAT      3    39      
+ 14  DIVIDA           DAT      3    42      
+ 15  DIVIDA_OK        ASC      1    45      
+ 16  ALMOXARIFADO     DAT      3    46      
+ 17  ALMOXARIFADO_OK  ASC      1    49      
+ 18  GEROU_APP        DAT      3    50      
+ 19  ENVIOU_APP       DAT      3    53      
+ 20  ENVIOU_MENSAL    DAT      3    56      
+ 21  GEROU_CONCILIA   DAT      3    59      
+ 22  ENVIOU_CONCILIA  DAT      3    62      
+ 23  ID_CADASTRO      NUM   10.0    65      
+ 24  ID_CONTABIL      NUM   10.0    70      
+ 25  ID_CONCILIACAO   NUM   10.0    75      
+ 26  DEFINITIVO       ASC     10    80      
+ 27  ID_MENSAL        ASC     30    90      
+ 28  ID_PLANEJAMENTO  ASC     30   120      
+ 29  ID_BALANCETE     ASC     30   150      
+
+
+INDEX# FIELDS          DES U/C    LENGTH LEVELS SEGMENTS MODE
+------ --------------- --- ---    ------ ------ -------- -------
+  1    COD_ENTIDADE    NO  NO       8      5       3     ON-LINE
+       ANO             NO  NO 
+       MES             NO  NO 
+

@@ -1,0 +1,41 @@
+-----------------------------------------------------------------------------
+  DATE: 27/05/2024      TIME: 15:53                                  PAGE:  1
+  FILE DEFINITION FOR FILE: INFOCAD (# 351)
+-----------------------------------------------------------------------------
+  DRIVER NAME               : DATAFLEX
+  FILE ROOT NAME            : INFOCAD
+  USER DISPLAY NAME         : INFOCAD
+  DATAFLEX FILE NAME        : INFOCAD
+-----------------------------------------------------------------------------
+  RECORD LENGTH             : 64        ( USED: 61 )
+  MAX NUMBER OF RECORDS     : 16711679  ( USED: 272 )
+  FILE COMPRESSION          : NONE
+  RE-USE DELETED SPACE      : YES
+  LOCKING TYPE              : FILE
+  HEADER INTEGRITY CHECKING : YES
+  TRANSACTION TYPE          : CLIENT ATOMIC
+  RECORD IDENTITY INDEX     : 0 ( 0 , 0 )
+  FILE LOGIN PARAMETER      : 
+  SYSTEM FILE               : NO 
+-----------------------------------------------------------------------------
+
+NUM  FIELD NAME       TYPE SIZE  OFFST IX   RELATES TO FILE.FIELD
+---  ---------------  ---- ----- ----- --   ---------------------------------
+  1  UF               ASC      2     1  1   
+  2  ANO              ASC      4     3  1   
+  3  CODIGO           NUM    4.0     7  1   
+  4  DESCRICAO        ASC     50     9  2   
+  5  TAMANHO_COD      NUM    4.0    59      
+  6  PREVIDENCIA      ASC      1    61      
+
+
+INDEX# FIELDS          DES U/C    LENGTH LEVELS SEGMENTS MODE
+------ --------------- --- ---    ------ ------ -------- -------
+  1    UF              NO  NO       8      5       3     ON-LINE
+       ANO             NO  NO 
+       CODIGO          NO  NO 
+
+  2    UF              NO  NO       56     8       3     ON-LINE
+       ANO             NO  NO 
+       DESCRICAO       NO  NO 
+

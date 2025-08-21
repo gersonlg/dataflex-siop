@@ -1,0 +1,74 @@
+-----------------------------------------------------------------------------
+  DATE: 27/05/2024      TIME: 15:53                                  PAGE:  1
+  FILE DEFINITION FOR FILE: FUNDOS (# 235)
+-----------------------------------------------------------------------------
+  DRIVER NAME               : DATAFLEX
+  FILE ROOT NAME            : FUNDOS
+  USER DISPLAY NAME         : FUNDOS
+  DATAFLEX FILE NAME        : FUNDOS
+-----------------------------------------------------------------------------
+  RECORD LENGTH             : 128       ( USED: 127 )
+  MAX NUMBER OF RECORDS     : 16711679  ( USED: 6558 )
+  FILE COMPRESSION          : NONE
+  RE-USE DELETED SPACE      : YES
+  LOCKING TYPE              : FILE
+  HEADER INTEGRITY CHECKING : YES
+  TRANSACTION TYPE          : CLIENT ATOMIC
+  RECORD IDENTITY INDEX     : 0 ( 0 , 0 )
+  FILE LOGIN PARAMETER      : 
+  SYSTEM FILE               : NO 
+-----------------------------------------------------------------------------
+
+NUM  FIELD NAME       TYPE SIZE  OFFST IX   RELATES TO FILE.FIELD
+---  ---------------  ---- ----- ----- --   ---------------------------------
+  1  COD_ENTIDADE     ASC      2     1  1   
+  2  EXERCICIO        ASC      4     3  1   
+  3  TIPO             ASC      1     7  1   
+  4  CODIGO           ASC      7     8  1   
+  5  DESCRICAO        ASC     50    15  2   
+  6  STATUS           ASC      1    65      
+  7  PREVIDENCIA      ASC      1    66      
+  8  SALDO_CAIXA      NUM   14.2    67      
+  9  FIXO             OVE      3     8  1   
+ 10  VARIAVEL         OVE      4    11  1   
+ 11  TIPO_VARIAVEL    ASC      1    75      
+ 12  RESTRITO         ASC      1    76      
+ 13  ALTERADO         ASC      1    77      
+ 14  DATA_CADASTRO    DAT      3    78      
+ 15  ASSIST_SAUDE     ASC      1    81      
+ 16  DOACOES_IR       ASC      1    82      
+ 17  CONVENIO         ASC      1    83      
+ 18  DESVINCULACAO    ASC      1    84      
+ 19  CNPJ             ASC     18    85  3   
+ 20  TIPO_PLANO       ASC      1   103      
+ 21  TIPO_COD_APLIC   ASC      1   104      
+ 22  DATA_EXTINCAO    DAT      3   105      
+ 23  INATIVO          ASC      1   108      
+ 24  PADRAO           ASC      1   109      
+ 25  CODIGO_SIOPE     ASC      2   110      
+ 26  CODIGO_SIOPS     ASC      2   112      
+ 27  INICIO_VIGENCIA  ASC      4   114      
+ 28  FIM_VIGENCIA     ASC      4   118      
+ 29  ANO_CADASTRO     ASC      4   122      
+ 30  TIPO_CONVENIO    ASC      2   126      
+
+
+INDEX# FIELDS          DES U/C    LENGTH LEVELS SEGMENTS MODE
+------ --------------- --- ---    ------ ------ -------- -------
+  1    COD_ENTIDADE    NO  NO       14     5       4     ON-LINE
+       EXERCICIO       NO  NO 
+       TIPO            NO  NO 
+       CODIGO          NO  NO 
+
+  2    COD_ENTIDADE    NO  NO       64     9       5     ON-LINE
+       EXERCICIO       NO  NO 
+       TIPO            NO  NO 
+       DESCRICAO       NO  NO 
+       CODIGO          NO  NO 
+
+  3    COD_ENTIDADE    NO  NO       28     6       5     ON-LINE
+       EXERCICIO       NO  NO 
+       TIPO            NO  NO 
+       CNPJ            NO  NO 
+       RECNUM          NO  NO 
+

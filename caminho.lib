@@ -1,0 +1,306 @@
+/OPCOES_CAMINHO RESIDENT
+ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+บ                Pasta para Gravacao ou Importacao dos dados.                บ
+บ                                                                            บ
+บ                                                                            บ
+บ                                                                            บ
+บ__                                                                          บ
+บ__                                                                          บ
+บ____________________________________________________________________________บ
+บ                                                                            บ
+บ                                                                            บ
+บ                                                                            บ
+ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+/ARQUIVO_CAMINHO RESIDENT
+ษออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป
+บ  ________________________________________________________________________  บ
+บ                                                                            บ
+บ ฺฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฟ บ
+บ ณ________________________________________________________________________ณ บ
+บ ณ________________________________________________________________________ณ บ
+บ ณ                                                                        ณ บ
+บ ภฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤู บ
+บ  ________________________________________________________________________  บ
+ศออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออผ
+/CONFIRMA_CAMINHO RESIDENT
+รฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤด
+ณ______________________________________________________________________________ณ
+ภฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤู
+/RODAPE_CAMINHO
+รฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤด
+ณ                               <ESC>  Retorna                                 ณ
+ภฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤู
+/*
+PAGE SET OPCOES_CAMINHO   AT 09 01 COLORS IT_COR_TARJA  IT_COR_TARJA
+PAGE SET ARQUIVO_CAMINHO  AT 09 01 COLORS IT_COR_TARJA  IT_COR_TARJA
+PAGE SET CONFIRMA_CAMINHO AT 21 00 COLORS IT_COR_TARJA  IT_COR_MOLDURA
+PAGE SET RODAPE_CAMINHO   AT 21 00 COLORS IT_COR_TARJA  IT_COR_MOLDURA
+
+AUTOPAGE OPCOES_CAMINHO
+NAME JN_OPCAO_1_CAMINHO
+NAME JN_OPCAO_2_CAMINHO
+NAME JN_OPCAO_3_CAMINHO
+
+AUTOPAGE ARQUIVO_CAMINHO
+NAME JN_ARQUIVO_1_CAMINHO
+NAME JN_ARQUIVO_2_CAMINHO
+NAME JN_ARQUIVO_3_CAMINHO
+NAME JN_ARQUIVO_4_CAMINHO
+
+#IFDEF    ST@CODIGO@ENTIDADE@CONFIG
+#ELSE
+   STRING ST@CODIGO@ENTIDADE@CONFIG
+#ENDIF
+#IFDEF    ST@EXERCICIO@CONFIG
+#ELSE
+   STRING ST@EXERCICIO@CONFIG
+#ENDIF
+#IFDEF    ST@PASTA@CONFIG
+#ELSE
+   STRING ST@PASTA@CONFIG
+#ENDIF
+#IFDEF    ST@CAMINHO
+#ELSE
+  STRING  ST@CAMINHO 255
+#ENDIF
+#IFDEF    ST@DIRETORIO
+#ELSE
+  STRING  ST@DIRETORIO 255
+#ENDIF
+
+//--
+//-- !1 - variavel destino da pasta
+//-- !2 - pasta origem do arquivo (TEXTOS ou outra definina pelo configs)
+//-- !3 - complemento do caminho
+//-- !4 - codigo da entidade
+//--
+#COMMAND PASTA_CAMINHO
+ IF ST@VERSAO@SIAFIC EQ 'VERSAO_01' BEGIN
+                                     MOVE PARGERAL.COD_ENTIDADE TO ST@CODIGO@ENTIDADE@CONFIG
+                                     MOVE PARGERAL.EXERCICIO    TO ST@EXERCICIO@CONFIG
+                                    END
+ ELSE BEGIN
+       MOVE ST@CODIGO@ENTIDADE      TO ST@CODIGO@ENTIDADE@CONFIG
+       MOVE ST@EXERCICIO@FINANCEIRO TO ST@EXERCICIO@CONFIG
+      END
+ 
+ MOVE !2                   TO ST@PASTA@CONFIG
+ UPPERCASE ST@PASTA@CONFIG TO ST@PASTA@CONFIG
+ 
+ CLEAR CONFIGS
+ MOVE ST@CODIGO@ENTIDADE@CONFIG TO CONFIGS.COD_ENTIDADE
+ MOVE ST@EXERCICIO@CONFIG       TO CONFIGS.EXERCICIO
+ MOVE ST@PASTA@CONFIG           TO CONFIGS.CAMPO
+ FIND EQ CONFIGS BY INDEX.2
+ [~FOUND] BEGIN
+           CLEAR CONFIGS
+           
+           IF IT@QTDE@ENTIDADES GT 1 BEGIN
+                                      ADVERTE 'CONFIGURACAO DA PASTA TEXTOS NAO ENCONTRADA'
+                                      ABORT
+                                     END
+          END
+ 
+ BLANKFORM JN_OPCAO_1_CAMINHO THRU JN_OPCAO_3_CAMINHO
+ MOVE 0 TO WINDOWINDEX
+ 
+ IF CONFIGS.CONTEUDO NE '' BEGIN
+                            MOVE (TRIM(CONFIGS.CONTEUDO)) TO ST@DIRETORIO
+                            IF (RIGHT(ST@DIRETORIO,1)) NE '/' APPEND ST@DIRETORIO '/'
+                           END
+ ELSE BEGIN //-- (teoricamente nao devera entrar neste else - devera estar no configs)
+       MOVE '' TO ST@DIRETORIO
+       GET_CURRENT_DIRECTORY TO ST@DIRETORIO
+ 
+       IF (LEFT(!3,6)) EQ '/sicom' BEGIN
+                                    MOVE (OBTER_CONFIGURACAO('COMUM',ST@CODIGO@ENTIDADE,ST@EXERCICIO@FINANCEIRO)) TO ST@DIRETORIO
+                                    APPEND ST@DIRETORIO !3
+                                   END
+       ELSE BEGIN
+             IF !3 EQ '' APPEND ST@DIRETORIO '/textos/'
+             ELSE        APPEND ST@DIRETORIO '/textos'
+            END
+      END
+ 
+ DISPLAY ''           TO JN_OPCAO_1_CAMINHO
+ DISPLAY ''           TO JN_OPCAO_2_CAMINHO
+ DISPLAY ST@DIRETORIO TO JN_OPCAO_3_CAMINHO
+
+ PAGE TELA
+ PAGE OPCOES_CAMINHO
+
+ KEYPROC OFF
+ MOVE JN_OPCAO_3_CAMINHO TO ST@CAMINHO
+ GOTOXY 30 0
+ PAUSE .
+ [ KEY.ESCAPE] BEGIN
+                CABEC 'CONFIRMA RETORNO ? <S/N>' CONFIRMA_CAMINHO.1
+                PAGE CONFIRMA_CAMINHO
+                INKEYCHECK ST_TECLA IN 'SsNn'
+                IF ST_TECLA IN 'sS' ABORT
+                ELSE GOTO INICIO
+               END
+ 
+ MOVE ST@CAMINHO TO !1
+#ENDCOMMAND
+
+//--
+//-- !1 - variavel destino da pasta
+//-- !2 - pasta origem do arquivo (TEXTOS ou outra definina pelo configs)
+//-- !3 - programa para buscar o arquivo
+//-- !4 - codigo da entidade
+//--
+#COMMAND ARQUIVO_CAMINHO
+#IFDEF    ST@ARQUIVO@SAIDA
+#ELSE
+  STRING  ST@ARQUIVO@SAIDA 255
+#ENDIF
+#IFDEF    ST@DESTINO
+#ELSE
+  STRING  ST@DESTINO 255
+#ENDIF
+ 
+ IF ST@VERSAO@SIAFIC EQ 'VERSAO_01' BEGIN
+                                     MOVE PARGERAL.COD_ENTIDADE TO ST@CODIGO@ENTIDADE@CONFIG
+                                     MOVE PARGERAL.EXERCICIO    TO ST@EXERCICIO@CONFIG
+                                    END
+ ELSE BEGIN
+       MOVE ST@CODIGO@ENTIDADE      TO ST@CODIGO@ENTIDADE@CONFIG
+       MOVE ST@EXERCICIO@FINANCEIRO TO ST@EXERCICIO@CONFIG
+      END
+ 
+ MOVE !2                   TO ST@PASTA@CONFIG
+ UPPERCASE ST@PASTA@CONFIG TO ST@PASTA@CONFIG
+ 
+ CLEAR CONFIGS
+ MOVE ST@CODIGO@ENTIDADE@CONFIG TO CONFIGS.COD_ENTIDADE
+ MOVE ST@EXERCICIO@CONFIG       TO CONFIGS.EXERCICIO
+ MOVE ST@PASTA@CONFIG           TO CONFIGS.CAMPO
+ FIND EQ CONFIGS BY INDEX.2
+ [~FOUND] BEGIN
+           CLEAR CONFIGS
+           IF IT@QTDE@ENTIDADES GT 1 BEGIN
+                                      ADVERTE 'CONFIGURACAO DA PASTA TEXTOS NAO ENCONTRADA'
+                                      ABORT
+                                     END
+          END
+ 
+ SCREENMODE IT_COR_TARJA ON
+ BLANKFORM JN_ARQUIVO_1_CAMINHO THRU JN_ARQUIVO_4_CAMINHO
+ MOVE 0 TO WINDOWINDEX
+
+ SCREENMODE IT_COR_TARJA ON
+ IF !3 NE '' BEGIN
+              CABEC '<F2> Procurar arquivo' JN_ARQUIVO_4_CAMINHO
+             END
+
+ CABEC "Informe o nome do arquivo " JN_ARQUIVO_1_CAMINHO
+ 
+ IF CONFIGS.CONTEUDO NE '' BEGIN
+                            MOVE (TRIM(CONFIGS.CONTEUDO)) TO ST@DIRETORIO
+                            IF (RIGHT(ST@DIRETORIO,1)) NE '/' APPEND ST@DIRETORIO '/'
+                           END
+ ELSE BEGIN //-- (teoricamente nao devera entrar neste else - devera estar no configs)
+       MOVE '' TO ST@DIRETORIO
+       GET_CURRENT_DIRECTORY TO ST@DIRETORIO
+       APPEND ST@DIRETORIO '/textos/'
+      END
+ 
+ MOVE ST@DIRETORIO TO JN_ARQUIVO_2_CAMINHO
+ 
+ KEYPROC OFF
+ REPEAT
+  ACCEPT JN_ARQUIVO_3_CAMINHO {AUTOCLEAR}
+  [ KEY.ESCAPE] BEGIN
+                 KEYPROC ON
+                 ABORT
+                END
+  [  KEY.FIELD] BEGIN
+                 IF !3 NE '' BEGIN
+                              IF CONFIGS.CONTEUDO NE '' BEGIN
+                                                         MOVE (TRIM(CONFIGS.CONTEUDO)) TO ST@DIRETORIO
+                                                         IF (RIGHT(ST@DIRETORIO,1)) NE '/' APPEND ST@DIRETORIO '/'
+                                                        END
+                              ELSE BEGIN //-- (teoricamente nao devera entrar neste else - devera estar no configs)
+                                    MOVE '' TO ST@DIRETORIO
+                                    GET_CURRENT_DIRECTORY TO ST@DIRETORIO
+                                    APPEND ST@DIRETORIO '/textos/'
+                                   END
+
+                              MOVE ST@DIRETORIO TO ST@ARQUIVO@SAIDA
+                              APPEND ST@ARQUIVO@SAIDA (LOWERCASE(TRIM(ST@USUARIO))) '.inf'
+                              TRIM  ST@ARQUIVO@SAIDA     TO ST@ARQUIVO@SAIDA
+                              LOWERCASE ST@ARQUIVO@SAIDA TO ST@ARQUIVO@SAIDA
+                              ERASEFILE ST@ARQUIVO@SAIDA
+                              
+                              MOVE !3 TO ST@DESTINO
+                              APPEND ST@DESTINO ' 1 ' ST@USUARIO ' ' ST@OPCAO ' ' ST@PROGRAMA ' ' ST@CODIGO@ENTIDADE ' ' ST@EXERCICIO@FINANCEIRO 
+                              CHAIN WAIT ST@DESTINO EXPORT_FILES
+
+                              DIRECT_INPUT ST@ARQUIVO@SAIDA
+
+                              READLN JN_ARQUIVO_3_CAMINHO
+                              CLOSE_INPUT
+                              ERASEFILE ST@ARQUIVO@SAIDA
+
+                              MOVE 0 TO CURRENT_IMAGE
+                              PAGE TELA
+                              PAGE ARQUIVO_CAMINHO
+                             END
+                END
+ UNTIL JN_ARQUIVO_3_CAMINHO NE ''
+ KEYPROC ON
+ 
+ TRIM ST@DIRETORIO TO ST@CAMINHO
+ APPEND ST@CAMINHO JN_ARQUIVO_3_CAMINHO
+ LOWERCASE ST@CAMINHO TO ST@CAMINHO
+ 
+ MOVE ST@CAMINHO TO !1
+#ENDCOMMAND
+
+//--
+//-- retorna o nome da pasta
+//--
+FUNCTION OBTER_PASTA_TEXTOS GLOBAL STRING ST@PASTA@ENTIDADE STRING ST@COMPLEMENTO@PASTA@ENTIDADE RETURNS STRING
+ LOCAL STRING ST@TEXTOS
+ 
+ IF ST@VERSAO@SIAFIC EQ 'VERSAO_01' BEGIN
+                                     MOVE PARGERAL.COD_ENTIDADE TO ST@CODIGO@ENTIDADE@CONFIG
+                                     MOVE PARGERAL.EXERCICIO    TO ST@EXERCICIO@CONFIG
+                                    END
+ ELSE BEGIN
+       MOVE ST@CODIGO@ENTIDADE      TO ST@CODIGO@ENTIDADE@CONFIG
+       MOVE ST@EXERCICIO@FINANCEIRO TO ST@EXERCICIO@CONFIG
+      END
+ 
+ UPPERCASE ST@PASTA@ENTIDADE TO ST@PASTA@ENTIDADE
+ 
+ CLEAR CONFIGS
+ MOVE ST@CODIGO@ENTIDADE@CONFIG TO CONFIGS.COD_ENTIDADE
+ MOVE ST@EXERCICIO@CONFIG       TO CONFIGS.EXERCICIO
+ MOVE ST@PASTA@ENTIDADE         TO CONFIGS.CAMPO
+ FIND EQ CONFIGS BY INDEX.2
+ [~FOUND] BEGIN
+           CLEAR CONFIGS
+           
+           IF IT@QTDE@ENTIDADES GT 1 BEGIN
+                                      ADVERTE 'CONFIGURACAO DA PASTA TEXTOS NAO ENCONTRADA'
+                                      ABORT
+                                     END
+          END
+ 
+ IF CONFIGS.CONTEUDO NE '' MOVE (TRIM(CONFIGS.CONTEUDO)) TO ST@TEXTOS
+ ELSE BEGIN //--ja tem mais de uma entidade no pargeral (teoricamente nao devera entrar neste else - devera estar no configs)
+       MOVE '' TO ST@TEXTOS
+       GET_CURRENT_DIRECTORY TO ST@TEXTOS
+       APPEND ST@TEXTOS '/textos/'
+      END
+ 
+ TRIM ST@TEXTOS TO ST@TEXTOS
+ 
+ IF (RIGHT(ST@TEXTOS,1)) NE '/' APPEND ST@TEXTOS '/'
+ 
+ IF ST@COMPLEMENTO@PASTA@ENTIDADE NE '' APPEND ST@TEXTOS ST@COMPLEMENTO@PASTA@ENTIDADE '/'
+ 
+ FUNCTION_RETURN ST@TEXTOS
+END_FUNCTION

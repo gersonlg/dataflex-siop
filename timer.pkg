@@ -1,0 +1,91 @@
+#CHKSUB 1 1 // Verify the UI subsystem.
+
+Use UI
+
+#REPLACE NEW_TIMER    |CI0  // timer id for new timer
+#REPLACE TIMER_OFF    |CI0  // turn timer off
+#REPLACE ONE_SHOT     |CI1  // timer will fire only once
+#REPLACE PERIODIC     |CI2  // timer will fire once each period
+#REPLACE IDLE         |CI3  // timer will fire on inactivity
+#REPLACE TIMER_DELETE |CI4  // delete timer - reuse space
+#REPLACE DELETE_TIMER |CI4  // delete timer - reuse space (for old code)
+
+#COMMAND SET_TIMER RCDLBO# RDLBO#
+  #IFDEF !1
+  #ELSE
+    INTEGER !1
+    MOVE NEW_TIMER TO !1
+  #ENDIF
+  #DATA
+  #DPUSH !2		// TYPE
+  #IF (!0>2)
+    #CHECK !3 RDLOB
+    #CHECK !4 RDLOB
+    #CHECK !5 RDLOB
+    #IFDEF !3
+      #DPUSH !3		// NOTIFY
+    #ELSE
+      #IFDEF !3.OBJ
+        #DPUSH !3.OBJ
+      #ELSE
+        #DPUSH |CI0
+        #FREF !3.OBJ !a,1
+      #ENDIF
+    #ENDIF
+    #IFDEF !4
+      #DPUSH !4		// MESSAGE
+    #ELSE
+      #IFDEF MSG_!4
+        #DPUSH MSG_!4
+      #ELSE
+        #DPUSH |CI0
+        #FREF MSG_!4 !a,2
+      #ENDIF
+    #ENDIF
+    #DPUSH !5		// ALARM TIME
+  #ELSE
+    SEND$HELP 0 0 0
+  #ENDIF
+  !A [] OBJ$TIMER !1 |VL
+#ENDCOMMAND
+
+#COMMAND TIME_DISPLAY "ON""OFF" .
+  #IFDEF HOJE
+  #ELSE
+   STRING HOJE 8
+  #ENDIF
+  #IFDEF MSG_SHOW_TIME
+  #ELSE
+    PROCEDURE SHOW_TIME
+      LOCAL DATE TODAY
+      STRING HOURS MINUTES SECONDS
+      SYSDATE TODAY HOURS MINUTES SECONDS
+      GOTOXY 23 71
+      SCREENMODE 111 ON
+      //SHOW ' ' (RIGHT('0'+HOURS,2)) ':' (RIGHT('0'+MINUTES,2)) ':' (RIGHT('0'+SECONDS,2))
+
+      MOVE '' TO HOJE
+      APPEND HOJE (RIGHT('0'+HOURS,2)) ':' (RIGHT('0'+MINUTES,2)) ':' (RIGHT('0'+SECONDS,2))
+      SCREENMODE 11 ON
+      SHOW HOJE
+      SCREENMODE 11 ON
+    END_PROCEDURE
+  #ENDIF
+  #IFSAME !1 ON
+    SCREENMODE 11 ON
+    SET_TIMER DISPLAY$TIMER$ID PERIODIC DESKTOP SHOW_TIME 100
+    SCREENMODE 11 ON 
+  #ELSE
+    SET_TIMER DISPLAY$TIMER$ID TIMER_OFF
+    SCREENMODE 11 ON
+    CLEARXY 23 71 // REMOVE THE DISPLAY
+    CLEARXY 23 0  // REMOVE THE DISPLAY
+    SCREENMODE 11 ON 
+  #ENDIF
+#ENDCOMMAND
+
+
+
+
+
+

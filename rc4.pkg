@@ -1,0 +1,118 @@
+// *****************************************************************************
+// * Copyright (c) 2006 Excellent Software Ltd                                 
+// * All rights reserved.                                                      
+// *                                                                           
+// * Name    : RC4.pkg                                                      
+// * Title   : RC4 Encryption Module
+// * Version : 570                                                     
+// *                                                                           
+// *****************************************************************************
+//TH-RevisionStart
+// ********************
+// MODIFICATION SUMMARY
+// ********************
+// #### DD/MM/YYYY  WHO COMMENT
+//      01/03/2006  RRS Created                                                 
+//TH-RevisionEnd
+// *****************************************************************************
+Use base64.pkg 
+
+// Global Variables
+String RC4SBXA 128 RC4SBXB 128 
+String RC4SBXA_TMP 128 RC4SBXB_TMP 128 
+
+Procedure Set rc4_array_value Integer iIndex Integer iVal
+    Move (iIndex+1)  To iIndex
+    If iIndex Le 128 ;
+         Move (Overstrike(Character(iVal),RC4SBXA,iIndex))     To RC4SBXA
+    Else Move (Overstrike(Character(iVal),RC4SBXB,iIndex-128)) To RC4SBXB
+End_Procedure
+
+Function rc4_array_value Integer iIndex Returns Integer
+    Local Integer iRet
+    Move (iIndex+1)  To iIndex
+    If iIndex Le 128 ;
+         Move (Ascii(Mid(RC4SBXA,1,iIndex)))     To iRet
+    Else Move (Ascii(Mid(RC4SBXB,1,iIndex-128))) To iRet
+    Function_Return iRet
+End_Function
+
+Procedure create_rc4_key String key
+    Local Integer a b keylen idx
+    Local Integer ikey atmp btmp
+
+    Move (Length(key)) To keylen
+    
+    // initialise key array
+    Move RC4SBXA To RC4SBXA_TMP
+    Move RC4SBXA To RC4SBXB_TMP
+    
+    Move "" To RC4SBXA
+    Move "" To RC4SBXB
+    
+    For idx From 0 To 255
+       Set rc4_array_value idx To idx
+    Loop                   
+    
+    // encode key array
+    For a From 0 To 255
+       Move (Ascii(Mid(key,1,mod(a,keylen)+1))) To ikey
+       Get rc4_array_value a To atmp
+       Move (mod((b+atmp+ikey),256)) To b
+
+       Get rc4_array_value b To btmp
+
+       Set rc4_array_value a To btmp
+       Set rc4_array_value b To atmp
+    Loop
+    
+End_Procedure
+
+Function RC4 Global String key String text Returns String
+    Local Integer ix iy temp offset origlen cipherlen
+    Local Integer ixtmp iytmp ixytmp ixc
+    Local String sRet
+
+    Send create_rc4_key key  
+    Move (Length(Text)) To Origlen
+    
+    Move "" To sRet
+    For offset From 1 To Origlen
+        Move (mod((offset-1),256)) To ix
+        Get rc4_array_value ix To ixtmp
+        Move (mod((iy+ixtmp),256)) To iy
+        //
+        Get rc4_array_value ix To ixtmp
+        Get rc4_array_value iy To iytmp
+        //
+        Set rc4_array_value ix To iytmp
+        Set rc4_array_value iy To ixtmp
+        //
+        Move (Ascii(Mid(text,1,offset))) To ixc
+        //
+        Get rc4_array_value ix To ixtmp
+        Get rc4_array_value iy To iytmp
+        Get rc4_array_value (mod((ixtmp+iytmp),256)) To ixytmp
+        Move ((ixc Ior ixytmp) - (ixc Iand ixytmp)) To ixc //XOR
+        //
+        Move (sRet+(Character(ixc))) To sRet
+    Loop
+    Function_Return sRet
+End_Function
+
+Function RC4Encode Global String key String text Returns String
+    Function_Return (RC4(key,text))
+End_Function
+
+Function RC4Decode Global String key String text Returns String
+    Function_Return (RC4(key,text))
+End_Function
+
+Function RC4EncodeBase64 Global String key String text Returns String
+    Function_Return (Encode64(RC4Encode(key,text)))
+End_Function
+
+Function RC4DecodeBase64 Global String key String text Returns String
+    Function_Return (RC4Decode(key,Decode64(text)))
+End_Function
+

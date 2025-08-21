@@ -1,0 +1,37 @@
+-----------------------------------------------------------------------------
+  DATE: 27/05/2024      TIME: 15:53                                  PAGE:  1
+  FILE DEFINITION FOR FILE: FUNCNEW (# 125)
+-----------------------------------------------------------------------------
+  DRIVER NAME               : DATAFLEX
+  FILE ROOT NAME            : FUNCNEW
+  USER DISPLAY NAME         : FUNCNEW
+  DATAFLEX FILE NAME        : FUNCNEW
+-----------------------------------------------------------------------------
+  RECORD LENGTH             : 64        ( USED: 46 )
+  MAX NUMBER OF RECORDS     : 16711679  ( USED: 348 )
+  FILE COMPRESSION          : NONE
+  RE-USE DELETED SPACE      : YES
+  LOCKING TYPE              : FILE
+  HEADER INTEGRITY CHECKING : YES
+  TRANSACTION TYPE          : CLIENT ATOMIC
+  RECORD IDENTITY INDEX     : 0 ( 0 , 0 )
+  FILE LOGIN PARAMETER      : 
+  SYSTEM FILE               : NO 
+-----------------------------------------------------------------------------
+
+NUM  FIELD NAME       TYPE SIZE  OFFST IX   RELATES TO FILE.FIELD
+---  ---------------  ---- ----- ----- --   ---------------------------------
+  1  EXERCICIO        ASC      4     1  1   
+  2  CODIGO           ASC      2     5  1   
+  3  DESCRICAO        ASC     40     7  2   
+
+
+INDEX# FIELDS          DES U/C    LENGTH LEVELS SEGMENTS MODE
+------ --------------- --- ---    ------ ------ -------- -------
+  1    EXERCICIO       NO  NO       6      4       2     ON-LINE
+       CODIGO          NO  NO 
+
+  2    EXERCICIO       NO  NO       47     8       3     ON-LINE
+       DESCRICAO       NO  NO 
+       RECNUM          NO  NO 
+

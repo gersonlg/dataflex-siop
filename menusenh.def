@@ -1,0 +1,46 @@
+-----------------------------------------------------------------------------
+  DATE: 25/10/2023      TIME: 17:31                                  PAGE:  1
+  FILE DEFINITION FOR FILE: MENUSENH (# 202)
+-----------------------------------------------------------------------------
+  DRIVER NAME               : DATAFLEX
+  FILE ROOT NAME            : MENUSENH
+  USER DISPLAY NAME         : MENUSENH
+  DATAFLEX FILE NAME        : MENUSENH
+-----------------------------------------------------------------------------
+  RECORD LENGTH             : 42        ( USED: 40 )
+  MAX NUMBER OF RECORDS     : 16711679  ( USED: 0 )
+  FILE COMPRESSION          : NONE
+  RE-USE DELETED SPACE      : YES
+  LOCKING TYPE              : FILE
+  HEADER INTEGRITY CHECKING : YES
+  TRANSACTION TYPE          : CLIENT ATOMIC
+  RECORD IDENTITY INDEX     : 0 ( 0 , 0 )
+  FILE LOGIN PARAMETER      : 
+  SYSTEM FILE               : NO 
+-----------------------------------------------------------------------------
+
+NUM  FIELD NAME       TYPE SIZE  OFFST IX   RELATES TO FILE.FIELD
+---  ---------------  ---- ----- ----- --   ---------------------------------
+  1  COD_ENTIDADE     ASC      2     1  1   
+  2  EXERCICIO        ASC      4     3  1   
+  3  NOME             ASC     12     7  1   
+  4  N_OPCAO          NUM    2.0    19  1   
+  5  GRUPO            ASC     20    20  1   
+  6  MARCADO          ASC      1    40      
+
+
+INDEX# FIELDS          DES U/C    LENGTH LEVELS SEGMENTS MODE
+------ --------------- --- ---    ------ ------ -------- -------
+  1    COD_ENTIDADE    NO  NO       39     7       5     ON-LINE
+       EXERCICIO       NO  NO 
+       NOME            NO  NO 
+       N_OPCAO         NO  NO 
+       GRUPO           NO  NO 
+
+  2    COD_ENTIDADE    NO  NO       42     7       6     ON-LINE
+       EXERCICIO       NO  NO 
+       GRUPO           NO  NO 
+       NOME            NO  NO 
+       N_OPCAO         NO  NO 
+       RECNUM          NO  NO 
+

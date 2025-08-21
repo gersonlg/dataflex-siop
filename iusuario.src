@@ -1,0 +1,385 @@
+/TELA RESIDENT
+зд SIOPE - SIOPS дддддддддддддддддддддддддддддддддддддддддддддддддддддддд ____ ©
+Ё______________________________________________________________________________Ё
+цдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд╢
+Ё __/__/____  ________________________________________________________         Ё
+фмммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммм╣
+Ё                                                                              Ё
+Ё                                                                              Ё
+Ё   C╒digo              _____                                                  Ё
+Ё                                                                              Ё
+Ё                                                                              Ё
+Ё   Nome                __________________________________________________     Ё
+Ё                                                                              Ё
+Ё                                                                              Ё
+Ё   C.P.F.              __________________      C.R.C.  __________________     Ё
+Ё                                                                              Ё
+Ё                                                                              Ё
+Ё   Senha               _____       Ramal   ____        Habilitado <S/N> _     Ё
+Ё                                                                              Ё
+Ё                                                                              Ё
+Ё  здддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд©    Ё
+Ё  Ё Cor Moldura __.             Cor Tarja __.           Cor T║tulo __.   Ё    Ё
+цддаддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддадддд╢
+Ё     <F1>ajuda   <F3> ёltimo cadastrado    <F9> limpa    <ESC>retorno         Ё
+юдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддды
+/CONFIRMA RESIDENT
+цдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд╢
+Ё______________________________________________________________________________Ё
+юдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддды
+/ULTIMO_CADASTRADO RESIDENT
+здддддддддддддддддддддддддддддддддддддддддддд©
+Ё O ёltimo USU═RIO cadastrado foi:           Ё
+Ё                                            Ё
+Ё C╒digo     _____                           Ё
+Ё Nome       ______________________________  Ё
+Ё Habilitado _                               Ё
+Ё                                            Ё
+Ё    Pressione qualquer tecla para continuar.Ё
+юдддддддддддддддддддддддддддддддддддддддддддды
+/RODAPE RESIDENT
+цдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд╢
+Ё     <F1>ajuda   <F3> ёltimo cadastrado    <F9> limpa    <ESC>retorno         Ё
+юдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддды
+/MSG RESIDENT
+зддддддддддддддддддддддддд A  T  E  N  ─  ▌  O   ! дддддддддддддддддддддддддд©
+Ё                                                                            Ё
+Ё           Este nёmero de C.P.F. informado, j═ foi cadastrado para:         Ё
+Ё                                                                            Ё
+цдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд╢
+Ё C╒digo Usu═rio  _____                                                      Ё
+Ё                                                                            Ё
+Ё Nome            _____________________________________________              Ё
+Ё                                                                            Ё
+Ё C.P.F           __________________                                         Ё
+Ё                                                                            Ё
+Ё Ramal           ____                                                       Ё
+цдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд╢
+Ё    Verifique qual deles ┌ o correto para manter o cadastro atualizado !    Ё
+цдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд╢
+Ё                    Pressione qualquer tecla para continuar                 Ё
+юдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддды
+/*
+#INCLUDE CONAM.LIB
+
+#COMMAND APAGA_TELA
+ CLEARFORM JN_CPF THRU JN_HABILITADO
+ SCREENMODE IT_COR_TITULO ON
+ BLANKFORM JN_COR_MOLDURA THRU JN_COR_TITULO
+ SCREENMODE IT_COR_TARJA ON
+#ENDCOMMAND
+
+STRING ST_JUNCAO      ST_SENHA      5 ST_SENHAINC      5 ST_BK_SENHA 5 ST_CGC 18    ST_LETRA
+STRING ST_DESTINO 255 ST_NOME_SENHA   ST_N_OPCAO_SENHA   ST_CABECALHO  ST_EXERCICIO
+
+INTEGER IT_CONTADOR IT_CONT IT_SIZE IT_REC
+
+DATE    DT_DATA
+
+AUTOPAGE TELA
+NAME JN_EXERCICIO
+NAME JN_TARJA
+NAME JN_TARJA_DATA  JN_TARJA_TITULO
+NAME JN_CODIGO
+NAME JN_NOME
+NAME JN_CPF         JN_CRC
+NAME JN_SENHA
+NAME JN_RAMAL
+NAME JN_HABILITADO
+NAME JN_COR_MOLDURA JN_COR_TARJA JN_COR_TITULO
+
+AUTOPAGE MSG
+NAME JN_MSG_CODIGO
+NAME JN_MSG_NOME
+NAME JN_MSG_CPF
+NAME JN_MSG_RAMAL
+
+OPEN MENUUSER
+OPEN MENUSENH
+OPEN SETOR
+
+PAGE SET TELA                 AT 00 00  COLORS IT_COR_TARJA  IT_COR_MOLDURA
+PAGE SET ULTIMO_CADASTRADO    AT 07 17  COLORS IT_COR_TITULO IT_COR_TITULO
+PAGE SET CONFIRMA             AT 21 00  COLORS IT_COR_TARJA  IT_COR_MOLDURA
+PAGE SET RODAPE               AT 21 00  COLORS IT_COR_TARJA  IT_COR_MOLDURA
+PAGE SET MSG                  AT 05 01  COLORS IT_COR_TITULO IT_COR_TITULO
+
+VERSAO
+
+MOVE ST@PREFEITURA TO ST_CABECALHO
+REPEAT
+ REPLACE '@' IN ST_CABECALHO WITH ' '
+UNTIL [~FOUND]
+IF ST_CABECALHO EQ '.' MOVE '' TO ST_CABECALHO
+
+SYSDATA DT_DATA
+MOVE (MID(DT_DATA,4,7)) TO ST_EXERCICIO
+
+SCREENMODE IT_COR_MOLDURA ON
+SYSDATA JN_TARJA_DATA
+IF PARGERAL.EXERCICIO EQ '' MOVE ST_EXERCICIO       TO JN_EXERCICIO
+ELSE                        MOVE PARGERAL.EXERCICIO TO JN_EXERCICIO
+SCREENMODE IT_COR_TITULO ON
+CABEC 'CADASTRAMENTO DE USU═RIOS' JN_TARJA_TITULO
+SCREENMODE IT_COR_TARJA ON
+CABEC ST_CABECALHO JN_TARJA
+
+INICIO:
+APAGA_TELA
+
+LB_CODIGO:
+REPEAT
+ ACCEPT     JN_CODIGO {CAPSLOCK,AUTORETURN}
+ COMBRANCOS JN_CODIGO 5
+ IF JN_CODIGO EQ '' MENSAGEM 1
+ CLEAR MENUUSER
+ MOVE JN_CODIGO TO MENUUSER.CODIGO
+ FIND EQ MENUUSER BY INDEX.1
+ [ FOUND] BEGIN
+           ENTDISPLAY MENUUSER
+           MOVE 'ЧЧЧЧЧ' TO JN_SENHA
+           SCREENMODE IT_COR_TITULO ON
+           MOVE MENUUSER.COR_TITULO  TO JN_COR_TITULO
+           MOVE MENUUSER.COR_TARJA   TO JN_COR_TARJA
+           MOVE MENUUSER.COR_MOLDURA TO JN_COR_MOLDURA
+           SCREENMODE IT_COR_TARJA ON
+           ADVERTE 'C╒DIGO J═ CADASTRADO (CN-SIFPM)'
+           APAGA_TELA
+           GOTO INICIO
+          END
+UNTIL JN_CODIGO NE ''
+
+LB_NOME:
+REPEAT
+ ACCEPT  JN_NOME   {CAPSLOCK}
+ IF JN_NOME EQ '' MENSAGEM 1
+UNTIL JN_NOME NE ''
+
+LB_CPF:
+ACCEPT  JN_CPF  {AUTOCLEAR,CAPSLOCK}
+
+IF JN_CPF NE '' BEGIN
+                 REPEAT
+                  INDICATE ERR FALSE
+                  MOVE '' TO ST_CGC
+                  MOVE 0  TO IT_CONT
+                  MOVE 0  TO IT_SIZE
+
+                  TRIM JN_CPF TO JN_CPF
+                  FOR IT_CONT FROM 1 TO 18
+                   MID JN_CPF TO ST_LETRA 1 IT_CONT
+                   INDICATE NUMERICO! AS ST_LETRA IN '0123456789'
+                   [NUMERICO!] APPEND ST_CGC ST_LETRA
+                  LOOP
+
+                  LENGTH ST_CGC TO IT_SIZE
+                  
+                  INDICATE CPF! AS IT_SIZE EQ 11
+
+                  [~CPF!] INDICATE ERR TRUE
+                  
+                  [ CPF!] BEGIN
+                           CHECA_CPF ST_CGC
+                           [~ ERR] BEGIN
+                                    INSERT '-' IN ST_CGC AT 10
+                                    INSERT '.' IN ST_CGC AT 7
+                                    INSERT '.' IN ST_CGC AT 4
+                                    GOSUB LB_INVALIDO
+                                   END
+                          END
+                          
+                  [  ERR] BEGIN
+                           ADVERTE 'C.P.F. INV═LIDO !'
+                           CLEARFORM JN_CPF
+                           GOTO LB_CPF
+                          END
+                          
+                  MOVE ST_CGC  TO JN_CPF
+                 UNTIL JN_CPF NE ''
+                 
+                 INDICATE DUPLICOU! FALSE
+                 GOSUB LB_BUSCA_CPF
+                 [ DUPLICOU!] BEGIN
+                               CLEARFORM JN_CPF
+                               GOTO LB_CPF
+                              END
+                END
+
+LB_CRC:
+ACCEPT  JN_CRC  {AUTOCLEAR,CAPSLOCK}
+
+PEGA_SENHA:
+
+INDICATE PRIMEIRO! TRUE
+MOVE 0 TO IT_CONTADOR
+REPEAT
+ PAGE TELA
+ MOVE '' TO ST_SENHA
+ MOVE '' TO ST_SENHAINC
+ MOVE '' TO JN_SENHA
+ FOR IT_CONTADOR FROM 1 TO 5
+  GOTOXY 16 (23 + IT_CONTADOR)
+  REPEAT
+   INKEY ST_TECLA
+   [KEY.ESCAPE] GOTO SAIDA
+   UPPERCASE ST_TECLA
+  UNTIL ST_TECLA IN '1234567890ABCDEFGHIJKLMNOPQRSTUVXYWZ'
+  APPEND ST_SENHA ST_TECLA
+  APPEND ST_SENHAINC 'Ч'
+  MOVE ST_SENHAINC TO JN_SENHA
+ LOOP
+ [~ PRIMEIRO!] IF ST_SENHA NE ST_BK_SENHA BEGIN
+                                           ADVERTE 'SENHA INV═LIDA !'
+                                           PAGE RODAPE
+                                           CLEARFORM JN_SENHA
+                                           GOTO PEGA_SENHA
+                                          END
+ [ PRIMEIRO!] IF ST_SENHA NE '' BEGIN
+                                 ADVERTE 'DIGITE NOVAMENTE PARA CONFERIR'
+                                 PAGE RODAPE
+                                 MOVE ST_SENHA TO ST_BK_SENHA
+                                 CLEARFORM JN_SENHA
+                                 INDICATE PRIMEIRO! FALSE
+                                END
+UNTIL JN_SENHA NE ''
+
+ACCEPT  JN_RAMAL   {CAPSLOCK}
+
+REPEAT
+ ACCEPT  JN_HABILITADO {CAPSLOCK}
+ IF JN_HABILITADO EQ '' MOVE 'S' TO JN_HABILITADO
+ IF NOT JN_HABILITADO IN 'SN' BEGIN
+                               ADVERTE 'DIGITE NESTA JANELA APENAS "S" OU "N"'
+                               CLEARFORM JN_HABILITADO
+                              END
+UNTIL JN_HABILITADO NE ''
+
+SCREENMODE IT_COR_TITULO ON
+MOVE ' 31'  TO JN_COR_MOLDURA
+MOVE ' 63'  TO JN_COR_TARJA
+MOVE '127'  TO JN_COR_TITULO
+SCREENMODE IT_COR_TARJA ON
+
+CONFIRMACAO 'INCLUSAO'
+
+INDICATE ERR FALSE
+ON ERROR GOSUB CHECA_GRAVACAO
+REREAD
+ CLEAR MENUUSER
+ MOVE JN_CODIGO TO MENUUSER.CODIGO
+ FIND EQ MENUUSER BY INDEX.1
+ [ FOUND] BEGIN
+           UNLOCK
+           ON ERROR OFF
+           DISPENSA 358
+          END 
+
+ MOVE ST@CODIGO@ENTIDADE     TO MENUUSER.COD_ENTIDADE
+ MOVE JN_CODIGO              TO MENUUSER.CODIGO
+ MOVE JN_NOME                TO MENUUSER.NOME
+ MOVE ( JN_TARJA_DATA + 30 ) TO MENUUSER.VALIDADE_SENHA
+ MOVE JN_COR_MOLDURA         TO MENUUSER.COR_MOLDURA
+ MOVE JN_COR_TARJA           TO MENUUSER.COR_TARJA
+ MOVE JN_COR_TITULO          TO MENUUSER.COR_TITULO
+ MOVE JN_HABILITADO          TO MENUUSER.HABILITADO
+ MOVE JN_RAMAL               TO MENUUSER.RAMAL
+ MOVE 'A'                    TO MENUUSER.TIPO_IMP
+
+ //--o campo cic-cpf ┌ utilizado em varios relatorios onde sai na assinatuar
+ //--o cpf ou o crc conforme cadastro antigo
+ IF JN_CRC NE '' MOVE JN_CRC TO MENUUSER.CIC_CPF
+ ELSE            MOVE JN_CPF TO MENUUSER.CIC_CPF
+ 
+ MOVE JN_CRC                 TO MENUUSER.C_R_C
+ MOVE JN_CPF                 TO MENUUSER.CPF
+
+ //--para nao duplicar no menuuser modulo seguranca
+ MOVE JN_CODIGO              TO MENUUSER.TIPO
+ 
+ ENCRIPTA_ANTIGO ST_SENHA       MENUUSER.SENHA
+ SAVERECORD MENUUSER
+ 
+ MOVE '' TO ST_JUNCAO
+ APPEND ST_JUNCAO 'CODIGO - ' JN_CODIGO '  NOME - ' JN_NOME 
+ GRAVAINCLUSAO 'MENUUSER' ST_JUNCAO 'I'
+
+UNLOCK
+ON ERROR OFF
+
+MOVE JN_CODIGO     TO ULTIMO_CADASTRADO.1
+MOVE JN_NOME       TO ULTIMO_CADASTRADO.2
+MOVE JN_HABILITADO TO ULTIMO_CADASTRADO.3
+
+IF ST@CODIGO@ENTIDADE EQ 'XX' ABORT
+
+GOTO INICIO
+DESATIVA
+
+KEYPROC KEY.ESCAPE
+ SAIDA:
+ CONFIRMACAO 'RETORNO'
+
+KEYPROC KEY.HELP
+ AJUDA
+ RETURN
+
+KEYPROC KEY.SFIND
+ ULT_CADASTRADO
+
+KEYPROC KEY.CLEAR
+ APAGA_TELA
+RETURN INICIO
+
+KEYPROC KEY.UP
+ IF CURRENT_WINDOW EQ 10 RETURN PEGA_SENHA
+ ELSE BACKFIELD
+RETURN
+
+LB_BUSCA_CPF:
+ INDICATE DUPLICOU! FALSE
+
+ CLEAR MENUUSER
+ CONSTRAINT_SET 1
+ CONSTRAIN MENUUSER.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+ CONSTRAIN MENUUSER.CPF          EQ ST_CGC
+ CONSTRAIN MENUUSER AS ((MENUUSER.CODIGO NE 'ADMIN') AND (MENUUSER.CODIGO NE 'NOSSA') AND (MENUUSER.CODIGO NE 'CONAM'))
+ CONSTRAINED_FIND FIRST MENUUSER BY INDEX.3
+ WHILE [FOUND]
+
+  INDICATE DUPLICOU! TRUE
+  KEYPROC OFF
+  MOVE MENUUSER.CODIGO       TO JN_MSG_CODIGO
+  MOVE MENUUSER.NOME         TO JN_MSG_NOME
+  MOVE MENUUSER.CPF          TO JN_MSG_CPF
+  MOVE MENUUSER.RAMAL        TO JN_MSG_RAMAL
+  PAGE MSG
+  BEEP
+  GOTOXY 25 0
+  INKEY ST_TECLA
+  KEYPROC ON
+  RETURN LB_CPF
+
+  CONSTRAINED_FIND NEXT
+  END
+ CONSTRAINT_SET 1 CLEAR
+RETURN
+
+LB_INVALIDO:
+      IF ST_CGC EQ '000.000.000-00' GOTO MSG_INVALIDA
+ ELSE IF ST_CGC EQ '111.111.111-11' GOTO MSG_INVALIDA
+ ELSE IF ST_CGC EQ '222.222.222-22' GOTO MSG_INVALIDA
+ ELSE IF ST_CGC EQ '333.333.333-33' GOTO MSG_INVALIDA
+ ELSE IF ST_CGC EQ '444.444.444-44' GOTO MSG_INVALIDA
+ ELSE IF ST_CGC EQ '555.555.555-55' GOTO MSG_INVALIDA
+ ELSE IF ST_CGC EQ '666.666.666-66' GOTO MSG_INVALIDA
+ ELSE IF ST_CGC EQ '777.777.777-77' GOTO MSG_INVALIDA
+ ELSE IF ST_CGC EQ '888.888.888-88' GOTO MSG_INVALIDA
+ ELSE IF ST_CGC EQ '999.999.999-99' GOTO MSG_INVALIDA
+RETURN
+
+MSG_INVALIDA:
+ ADVERTE 'NUMERO DE C.P.F. INVALIDO!!!'
+RETURN LB_CPF
+
+#INCLUDE INTEGRID.INC
+

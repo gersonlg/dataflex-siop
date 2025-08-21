@@ -1,0 +1,256 @@
+/TELA RESIDENT
+Ё __/__/____  ________________________________________________________         Ё
+фмммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммм╣
+Ё                                                                              Ё
+Ё                                                                              Ё
+Ё               Ч    ________________________________________    Ч             Ё
+Ё                                                                              Ё
+Ё                                                                              Ё
+Ё                                                                              Ё
+Ё C╒digo   ____ : __________                                                   Ё
+Ё                                                                              Ё
+Ё                                                                              Ё
+Ё                                                                              Ё
+Ё Descricao     : ____________________________________________________________ Ё
+Ё                                                                              Ё
+Ё                                                                              Ё
+Ё                                                                              Ё
+Ё                                                                              Ё
+Ё                                                                              Ё
+цдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд╢
+Ё     <F1> ajuda     <F3> ёltimo __________     <F9> limpa    <ESC> retorno    Ё
+юдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддды
+/CONFIRMA RESIDENT
+цдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд╢
+Ё______________________________________________________________________________Ё
+юдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддды
+/ULTIMO_CADASTRADO RESIDENT
+здддддддддддддддддддддддддддддддддддддддддддддд©
+Ё                                              Ё
+ЁA ёltima tabela auxiliar  __________ foi:     Ё
+Ё                                              Ё
+Ё Tipo   ___________________________________   Ё
+Ё C╒digo __________                            Ё
+Ё Nome   ___________________________________   Ё
+Ё                                              Ё
+Ё Pressione qualquer tecla para continuar.     Ё
+юдддддддддддддддддддддддддддддддддддддддддддддды
+/INCLUSAO RESIDENT
+здддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд©
+Ё ______________________________________________________________________ Ё
+цдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд╢
+Ё                             __________                                 Ё
+цдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд╢
+Ё                Pressione qualquer tecla para continuar                 Ё
+юдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддды
+/*
+#INCLUDE CONAM.LIB
+
+STRING ST_DESTINO ST_MSG
+
+INTEGER IT_TAMANHO_CODIGO
+
+AUTOPAGE INCLUSAO
+NAME JN_TIPO
+NAME JN_INCLUSAO
+
+AUTOPAGE TELA
+NAME JN_TARJA_DATA
+NAME JN_TARJA_TITULO
+NAME JN_TABELA
+NAME JN_F2
+NAME JN_CODIGO
+NAME JN_DESCRICAO
+NAME JN_F3
+
+OPEN AUDESP
+OPEN TBAUDESP
+
+PAGE SET CONFIRMA          AT 21 00 COLORS IT_COR_TARJA  IT_COR_MOLDURA
+PAGE SET TELA              AT 03 00 COLORS IT_COR_TARJA  IT_COR_MOLDURA
+PAGE SET ULTIMO_CADASTRADO AT 06 18 COLORS IT_COR_TITULO IT_COR_TITULO
+PAGE SET INCLUSAO          AT 16 03 COLORS IT_COR_TITULO IT_COR_TITULO
+
+SCREENMODE IT_COR_MOLDURA ON
+SYSDATA JN_TARJA_DATA 
+SCREENMODE IT_COR_TITULO ON
+IF ST@OPCAO EQ '1' BEGIN
+                    CABEC 'INCLUS▌O DE TABELAS AUXILIARES - AUDESP' JN_TARJA_TITULO
+                    MOVE 'Inclu║do' TO ULTIMO_CADASTRADO.1
+                   END
+IF ST@OPCAO EQ '2' BEGIN
+                    CABEC 'ALTERA─▌O DE TABELAS AUXILIARES - AUDESP' JN_TARJA_TITULO
+                    MOVE 'Alterado' TO ULTIMO_CADASTRADO.1
+                   END
+IF ST@OPCAO EQ '3' BEGIN
+                    CABEC 'EXCLUS▌O DE TABELAS AUXILIARES - AUDESP' JN_TARJA_TITULO
+                    MOVE 'Exclu║do' TO ULTIMO_CADASTRADO.1
+                   END
+SCREENMODE IT_COR_MOLDURA ON
+IF ST@OPCAO EQ '1' BEGIN
+                    MOVE 'cadastrado' TO JN_F3
+                    BLANKFORM JN_F2
+                   END
+IF ST@OPCAO EQ '2' BEGIN
+                    MOVE 'alterado  ' TO JN_F3
+                    MOVE '<F2>' TO JN_F2
+                   END
+IF ST@OPCAO EQ '3' BEGIN
+                    MOVE 'exclu║do  ' TO JN_F3
+                    MOVE '<F2>' TO JN_F2
+                   END
+SCREENMODE IT_COR_TARJA ON
+
+LB_INICIO:
+CLEARFORM JN_CODIGO THRU JN_DESCRICAO
+
+MOVE 'CAUDESP 1 ' TO ST_DESTINO
+APPEND ST_DESTINO ST@USUARIO ' ' ST@OPCAO ' ' ST@PROGRAMA ' ' ST@CODIGO@ENTIDADE ' ' ST@EXERCICIO@FINANCEIRO
+CHAIN WAIT ST_DESTINO EXPORT_FILES
+MOVE 0 TO CURRENT_IMAGE
+PAGE TELA
+
+MOVE AUDESP.TAMANHO_COD TO IT_TAMANHO_CODIGO
+
+//CLEAR AUDESP
+//MOVE '19' TO AUDESP.CODIGO
+//FIND EQ AUDESP BY INDEX.1
+//MOVE 2 TO IT_TAMANHO_CODIGO
+
+IF AUDESP.CODIGO NE '' BEGIN
+ SCREENMODE IT_COR_MOLDURA ON
+ CABEC AUDESP.DESCRICAO JN_TABELA
+ SCREENMODE IT_COR_TARJA ON
+ END
+ELSE BEGIN
+ CLEAR AUDESP
+ ABORT
+ END
+
+INICIO:
+CLEARFORM JN_CODIGO THRU JN_DESCRICAO
+
+REPEAT
+ ACCEPT JN_CODIGO {AUTOCLEAR}
+ IF JN_CODIGO EQ '' MENSAGEM 1
+ ELSE BEGIN
+       COMZEROS JN_CODIGO IT_TAMANHO_CODIGO
+
+       CLEAR TBAUDESP
+       MOVE AUDESP.CODIGO TO TBAUDESP.COD_AUDESP
+       MOVE JN_CODIGO     TO TBAUDESP.CODIGO
+       FIND EQ TBAUDESP BY INDEX.1
+       [~FOUND] IF ST@OPCAO NE '1' BEGIN
+                                    ADVERTE 'C╒DIGO N▌O CADASTRADA'
+                                    CLEARFORM JN_CODIGO THRU JN_DESCRICAO
+                                   END
+       [ FOUND] IF ST@OPCAO EQ '1' BEGIN
+                                    ADVERTE 'C╒DIGO J═ CADASTRADA'
+                                    CLEARFORM JN_CODIGO THRU JN_DESCRICAO
+                                   END
+      END
+UNTIL JN_CODIGO NE ''
+
+IF ST@OPCAO NE '1' BEGIN
+ MOVE TBAUDESP.DESCRICAO TO JN_DESCRICAO
+ END
+
+IF ST@OPCAO NE '3' BEGIN
+ ACCEPT JN_DESCRICAO
+ IF JN_DESCRICAO EQ '' BEGIN
+                        DISPENSA 1
+                       END
+ END
+
+IF ST@OPCAO EQ '1' CONFIRMACAO 'INCLUS▌O'
+IF ST@OPCAO EQ '2' CONFIRMACAO 'ALTERA─▌O'
+IF ST@OPCAO EQ '3' CONFIRMACAO 'EXCLUS▌O'
+
+INDICATE ERR FALSE
+ON ERROR GOSUB CHECA_GRAVACAO
+REREAD
+ CLEAR TBAUDESP
+ MOVE AUDESP.CODIGO TO TBAUDESP.COD_AUDESP
+ MOVE JN_CODIGO     TO TBAUDESP.CODIGO
+ FIND EQ TBAUDESP BY INDEX.1
+ [~FOUND] IF ST@OPCAO NE '1' BEGIN
+                              UNLOCK
+                              ON ERROR OFF
+                              DISPENSA 358
+                             END
+ [ FOUND] IF ST@OPCAO EQ '1' BEGIN
+                              UNLOCK
+                              ON ERROR OFF
+                              DISPENSA 358
+                             END
+ IF ST@OPCAO NE '3' BEGIN
+                     MOVE JN_CODIGO    TO TBAUDESP.CODIGO
+                     MOVE JN_DESCRICAO TO TBAUDESP.DESCRICAO
+                     SAVERECORD TBAUDESP
+                    END
+ ELSE BEGIN
+       DELETE TBAUDESP
+      END
+
+IF ST@OPCAO EQ '1' GRAVAINCLUSAO 'TBAUDESP' JN_CODIGO 'I'
+IF ST@OPCAO EQ '2' GRAVAINCLUSAO 'TBAUDESP' JN_CODIGO 'A'
+IF ST@OPCAO EQ '3' GRAVAINCLUSAO 'TBAUDESP' JN_CODIGO 'E'
+UNLOCK
+ON ERROR OFF
+
+MOVE AUDESP.DESCRICAO TO ULTIMO_CADASTRADO.2
+MOVE JN_CODIGO        TO ULTIMO_CADASTRADO.3
+MOVE JN_DESCRICAO     TO ULTIMO_CADASTRADO.4
+
+IF ST@OPCAO EQ '1' BEGIN
+                    BEEP
+                    MOVE 'ESTA ┌ A INCLUS▌O DE ' TO ST_MSG
+                    APPEND ST_MSG (TRIM(AUDESP.DESCRICAO)) ' N╖ :'
+                    SCREENMODE IT_COR_TITULO ON
+                    CABEC ST_MSG      JN_TIPO
+                    MOVE JN_CODIGO TO JN_INCLUSAO
+                    SCREENMODE IT_COR_TARJA ON
+                    PAGE INCLUSAO
+                    GOTOXY 30 00
+                    PAUSE
+                   END
+
+GOTO INICIO
+DESATIVA
+
+KEYPROC KEY.ESCAPE
+CONFIRMACAO 'RETORNO'
+
+KEYPROC KEY.SFIND            
+ULT_CADASTRADO 
+
+KEYPROC KEY.HELP
+AJUDA
+RETURN
+
+KEYPROC KEY.CLEAR
+RETURN INICIO
+
+KEYPROC KEY.UP
+BACKFIELD
+RETURN
+
+KEYPROC KEY.FIELD
+ IF CURRENT_WINDOW EQ 5 BEGIN
+                         MOVE 'CTBAUDES 1 ' TO ST_DESTINO
+                         APPEND ST_DESTINO ST@USUARIO ' ' ST@OPCAO ' ' ST@PROGRAMA ' ' ST@CODIGO@ENTIDADE ' ' ST@EXERCICIO@FINANCEIRO ' ' AUDESP.CODIGO
+                         CHAIN WAIT ST_DESTINO EXPORT_FILES
+                         MOVE 0 TO CURRENT_IMAGE
+                         PAGE TELA
+                         IF TBAUDESP.CODIGO NE '' BEGIN
+                                                   TRIM TBAUDESP.CODIGO    TO JN_CODIGO
+                                                   TRIM TBAUDESP.DESCRICAO TO JN_DESCRICAO
+                                                  END
+                         ELSE ENTAGAIN
+                        END
+ ELSE ENTAGAIN
+RETURN
+
+#INCLUDE INTEGRID.INC
+
+

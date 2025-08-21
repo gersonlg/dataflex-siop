@@ -1,0 +1,39 @@
+-----------------------------------------------------------------------------
+  DATE: 25/10/2023      TIME: 17:31                                  PAGE:  1
+  FILE DEFINITION FOR FILE: ASSINATU (# 223)
+-----------------------------------------------------------------------------
+  DRIVER NAME               : DATAFLEX
+  FILE ROOT NAME            : ASSINATU
+  USER DISPLAY NAME         : ASSINATU
+  DATAFLEX FILE NAME        : ASSINATU
+-----------------------------------------------------------------------------
+  RECORD LENGTH             : 39        ( USED: 39 )
+  MAX NUMBER OF RECORDS     : 16711679  ( USED: 0 )
+  FILE COMPRESSION          : NONE
+  RE-USE DELETED SPACE      : YES
+  LOCKING TYPE              : FILE
+  HEADER INTEGRITY CHECKING : YES
+  TRANSACTION TYPE          : CLIENT ATOMIC
+  RECORD IDENTITY INDEX     : 0 ( 0 , 0 )
+  FILE LOGIN PARAMETER      : 
+  SYSTEM FILE               : NO 
+-----------------------------------------------------------------------------
+
+NUM  FIELD NAME       TYPE SIZE  OFFST IX   RELATES TO FILE.FIELD
+---  ---------------  ---- ----- ----- --   ---------------------------------
+  1  COD_ENTIDADE     ASC      2     1  1   
+  2  EXERCICIO        ASC      4     3  1   
+  3  PROGRAMA         ASC      8     7  1   
+  4  ASSINATURA_1     ASC      5    15      
+  5  ASSINATURA_2     ASC      5    20      
+  6  ASSINATURA_3     ASC      5    25      
+  7  ASSINATURA_4     ASC      5    30      
+  8  ASSINATURA_5     ASC      5    35      
+
+
+INDEX# FIELDS          DES U/C    LENGTH LEVELS SEGMENTS MODE
+------ --------------- --- ---    ------ ------ -------- -------
+  1    COD_ENTIDADE    NO  NO       14     5       3     ON-LINE
+       EXERCICIO       NO  NO 
+       PROGRAMA        NO  NO 
+

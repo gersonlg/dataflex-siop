@@ -1,0 +1,329 @@
+/TELA RESIDENT
+здддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд©
+Ё______________________________________________________________________________Ё
+цдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд╢
+Ё __/__/____ ______________________________________________________            Ё
+фмммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммммм╣
+Ё Nome do Menu : ____________                                                  Ё
+Ё T║tulo       : ______________________________________________                Ё
+цдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд╢
+Ё Op┤└o        Descri┤└o              Chama <P/M>    Programa      Menu        Ё
+Ё                                                                              Ё
+Ё   _.    ____________________             _         ________   ____________   Ё
+Ё   _.    ____________________             _         ________   ____________   Ё
+Ё   _.    ____________________             _         ________   ____________   Ё
+Ё   _.    ____________________             _         ________   ____________   Ё
+Ё   _.    ____________________             _         ________   ____________   Ё
+Ё   _.    ____________________             _         ________   ____________   Ё
+Ё   _.    ____________________             _         ________   ____________   Ё
+Ё   _.    ____________________             _         ________   ____________   Ё
+Ё   _.    ____________________             _         ________   ____________   Ё
+Ё   _.    ____________________             _         ________   ____________   Ё
+Ё                                                                              Ё
+цдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд╢
+Ё<F2>Volta <F4>Gera Menu.txt <F6>Del <F7>Lista <F8>Padr└o <F9>limpa <F10>Grava Ё
+юдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддды
+/FANTASMA RESIDENT
+____________________ _ ____________
+____________________ _ ____________
+____________________ _ ____________
+____________________ _ ____________
+____________________ _ ____________
+____________________ _ ____________
+____________________ _ ____________
+____________________ _ ____________
+____________________ _ ____________
+____________________ _ ____________
+/*
+//--- IMENU.FRM - CADASTRA OPCOES DE MENU - 14:33 05/09/94
+
+#INCLUDE CONAM.LIB
+
+#COMMAND ENTRYX
+REPEAT
+ ENTRY !1  !2  {!7}
+ IF NOT !2 !3 !4 BEGIN
+                  MENSAGEM 1
+                  CLEARFORM !2
+                 END
+UNTIL !2 !3 !4
+#ENDCOMMAND
+
+INTEGER IT_OPCAO IT_DELETADO IT_WINDOW IT_CONTADOR
+
+MOVE   2 TO IT_COR_TARJA
+MOVE 113 TO IT_COR_TITULO
+MOVE  15 TO IT_COR_MOLDURA
+
+AUTOPAGE TELA
+NAME JN_TARJA
+NAME JN_TARJA_DATA JN_TARJA_TITULO
+NAME JN_NOME_MENU
+NAME JN_TITULO
+NAME JN_N_OPCAO1  JN_DESCRICAO1  JN_P_M1  JN_PROGRAMA1  JN_MENU1
+NAME JN_N_OPCAO2  JN_DESCRICAO2  JN_P_M2  JN_PROGRAMA2  JN_MENU2
+NAME JN_N_OPCAO3  JN_DESCRICAO3  JN_P_M3  JN_PROGRAMA3  JN_MENU3
+NAME JN_N_OPCAO4  JN_DESCRICAO4  JN_P_M4  JN_PROGRAMA4  JN_MENU4
+NAME JN_N_OPCAO5  JN_DESCRICAO5  JN_P_M5  JN_PROGRAMA5  JN_MENU5
+NAME JN_N_OPCAO6  JN_DESCRICAO6  JN_P_M6  JN_PROGRAMA6  JN_MENU6
+NAME JN_N_OPCAO7  JN_DESCRICAO7  JN_P_M7  JN_PROGRAMA7  JN_MENU7
+NAME JN_N_OPCAO8  JN_DESCRICAO8  JN_P_M8  JN_PROGRAMA8  JN_MENU8
+NAME JN_N_OPCAO9  JN_DESCRICAO9  JN_P_M9  JN_PROGRAMA9  JN_MENU9
+NAME JN_N_OPCAO10 JN_DESCRICAO10 JN_P_M10 JN_PROGRAMA10 JN_MENU10
+
+AUTOPAGE FANTASMA
+NAME JF_NOME_OP  JF_P_M  JF_PROG_MENU
+NAME JF_NOME_OP1 JF_P_M1 JF_PROG_MENU1
+NAME JF_NOME_OP2 JF_P_M2 JF_PROG_MENU2
+NAME JF_NOME_OP3 JF_P_M3 JF_PROG_MENU3
+NAME JF_NOME_OP4 JF_P_M4 JF_PROG_MENU4
+NAME JF_NOME_OP5 JF_P_M5 JF_PROG_MENU5
+NAME JF_NOME_OP6 JF_P_M6 JF_PROG_MENU6
+NAME JF_NOME_OP7 JF_P_M7 JF_PROG_MENU7
+NAME JF_NOME_OP8 JF_P_M8 JF_PROG_MENU8
+NAME JF_NOME_OP9 JF_P_M9 JF_PROG_MENU9
+
+PAGE SET TELA     AT  0  0  COLORS IT_COR_TARJA IT_COR_MOLDURA
+
+SCREENMODE IT_COR_MOLDURA ON
+SYSDATA JN_TARJA_DATA
+SCREENMODE IT_COR_TARJA ON
+CABEC 'CONAM - Consultoria em Adm. Municipal S/C. Ltda.' JN_TARJA
+SCREENMODE IT_COR_TITULO ON
+CABEC 'GERA─▌O DO MENU DO SISTEMA' JN_TARJA_TITULO
+SCREENMODE IT_COR_TARJA ON
+
+MULTI$ OPEN MENUTITU MENUCOMP
+
+INICIO:
+
+ENTERGROUP
+
+ ENTRYX MENUTITU.NOME  JN_NOME_MENU NE '' ERROR 1 {CAPSLOCK}
+
+ CLEAR MENUTITU
+ MOVE JN_NOME_MENU TO MENUTITU.NOME
+ FIND EQ MENUTITU BY INDEX.1
+ [FOUND] GOSUB ENCHE_TELA
+
+ ENTRYX MENUTITU.TITULO    JN_TITULO    NE '' ERROR 1
+
+ENDGROUP
+
+MOVE 1 TO IT_OPCAO
+MOVE 0 TO WINDOWINDEX
+MOVE 0 TO FIELDINDEX
+INICIO_OPCOES:
+ENTERGROUP
+
+ MOVE IT_OPCAO TO JN_N_OPCAO1&
+
+ ENTRYX MENUCOMP.NOME_OP&       JN_DESCRICAO1& NE ''   ERROR 1
+ ENTRYX MENUCOMP.P_M&           JN_P_M1&       IN 'PM' ERROR 2  {CAPSLOCK}
+
+ IF JN_P_M1& EQ 'P' BEGIN
+                     CLEARFORM JN_MENU1&
+                     ENTRYX MENUCOMP.PROG_MENU& JN_PROGRAMA1& NE '' ERROR 1 {CAPSLOCK}
+                    END
+
+ ELSE               BEGIN
+                     CLEARFORM JN_PROGRAMA1&
+                     ENTRYX MENUCOMP.PROG_MENU& JN_MENU1&     NE '' ERROR 1 {CAPSLOCK}
+                    END
+
+ CALC (WINDOWINDEX +5) TO WINDOWINDEX
+ CALC (IT_OPCAO +1) TO IT_OPCAO
+ CALC (FIELDINDEX +1) TO FIELDINDEX
+  IF FIELDINDEX GT 6 MOVE 1 TO FIELDINDEX
+
+ENDGROUP
+
+GOTO INICIO_OPCOES
+
+ENCHE_TELA:
+ MOVE MENUTITU.TITULO    TO JN_TITULO
+ MOVE 0 TO WINDOWINDEX
+ CLEARFORM JN_N_OPCAO1 THRU JN_MENU10
+
+  CLEAR MENUCOMP
+  MOVE JN_NOME_MENU TO MENUCOMP.NOME
+  FIND EQ MENUCOMP BY INDEX.1
+  [FOUND] BEGIN
+          FOR FIELDINDEX FROM 0 TO 6
+                MOVE MENUCOMP.NOME_OP&  TO JN_DESCRICAO1&
+                MOVE (FIELDINDEX + 1)   TO JN_N_OPCAO1&
+                MOVE MENUCOMP.P_M&      TO JN_P_M1&
+                MOVEALL "" TO JN_MENU1& JN_PROGRAMA1&
+                IF MENUCOMP.P_M& EQ "P" MOVE MENUCOMP.PROG_MENU& TO JN_PROGRAMA1&
+                IF MENUCOMP.P_M& EQ "M" MOVE MENUCOMP.PROG_MENU& TO JN_MENU1&
+                CALC ( WINDOWINDEX + 5 ) TO WINDOWINDEX
+        LOOP
+        END
+RETURN
+
+KEYPROC KEY.ESCAPE
+ CLEARSCREEN
+ ABORT
+RETURN
+
+KEYPROC  KEY.UP
+ IF CURRENT_WINDOW GE 4 BACKFIELD
+RETURN
+
+KEYPROC KEY.FIELD
+ IF CURRENT_WINDOW GT 9 BEGIN
+                         CALC (WINDOWINDEX - 5 ) TO WINDOWINDEX
+                         CALC (IT_OPCAO - 1 )    TO IT_OPCAO
+                         RETURN INICIO_OPCOES
+                        END
+ ENTAGAIN
+RETURN
+
+KEYPROC KEY.PRINT
+ CHAIN WAIT 'RELMENU'
+ PAGE TELA
+ MOVE 0 TO CURRENT_IMAGE
+ ENTAGAIN
+RETURN
+
+KEYPROC KEY.DELETE
+        IF JN_DESCRICAO1& NE '' BEGIN
+                INDICATE ERR FALSE
+                ON ERROR GOSUB CHECA_GRAVACAO
+                REREAD
+                 MOVE WINDOWINDEX TO IT_WINDOW
+
+                MOVE (IT_OPCAO-1) TO FIELDINDEX
+
+                CLEAR MENUCOMP
+                MOVE JN_NOME_MENU TO MENUCOMP.NOME
+                FIND EQ MENUCOMP BY INDEX.1
+                [ FOUND] BEGIN
+                          MOVE '' TO MENUCOMP.NOME_OP&
+                          MOVE '' TO MENUCOMP.P_M&
+                          MOVE '' TO MENUCOMP.PROG_MENU&
+                          SAVERECORD MENUCOMP
+                         END
+
+               MOVE 0 TO IT_CONTADOR
+               MOVE 0 TO FIELDINDEX
+               MOVE 0 TO WINDOWINDEX
+               CLEARFORM FANTASMA
+
+               FOR IT_CONTADOR FROM 1 TO 7
+                IF MENUCOMP.NOME_OP& NE '' BEGIN
+                                            MOVE MENUCOMP.NOME_OP&   TO JF_NOME_OP&
+                                            MOVE MENUCOMP.P_M&       TO JF_P_M&
+                                            MOVE MENUCOMP.PROG_MENU& TO JF_PROG_MENU&
+                                            CALC (WINDOWINDEX + 3) TO WINDOWINDEX
+                                           END
+                INCREMENT FIELDINDEX
+               LOOP
+
+               MOVE 0 TO IT_CONTADOR
+               MOVE 0 TO WINDOWINDEX
+               MOVE 0 TO FIELDINDEX
+
+               FOR IT_CONTADOR FROM 1 TO 7
+                IF JF_NOME_OP& NE '' BEGIN
+                                      MOVE JF_NOME_OP&   TO MENUCOMP.NOME_OP&
+                                      MOVE JF_P_M&       TO MENUCOMP.P_M&
+                                      MOVE JF_PROG_MENU& TO MENUCOMP.PROG_MENU&
+                                     END
+                ELSE                 BEGIN
+                                      MOVE '' TO MENUCOMP.NOME_OP&
+                                      MOVE '' TO MENUCOMP.P_M&
+                                      MOVE '' TO MENUCOMP.PROG_MENU&
+                                     END
+                SAVERECORD MENUCOMP
+                CALC (WINDOWINDEX + 3) TO WINDOWINDEX
+                INCREMENT FIELDINDEX
+               LOOP
+  UNLOCK
+  ON ERROR OFF
+        END
+ GOSUB ENCHE_TELA
+ MOVE 1 TO IT_OPCAO
+ MOVE 0 TO WINDOWINDEX
+RETURN INICIO_OPCOES
+
+KEYPROC KEY.USER
+ GOTOXY 30 0
+ RUNPROGRAM WAIT 'mcview MENU.TXT'
+ PAGE TELA
+ MOVE 0 TO CURRENT_IMAGE
+ ENTAGAIN
+RETURN
+
+KEYPROC KEY.USER2            //GERA MENU PADRAO
+ IF CURRENT_WINDOW GT 5 BEGIN
+                         MOVE 0 TO WINDOWINDEX
+                         FOR IT_OPCAO FROM 1 TO 5
+                          IF IT_OPCAO EQ 1 MOVE 'INCLUS▌O          ' TO JN_DESCRICAO1&
+                          IF IT_OPCAO EQ 2 MOVE 'ALTERA─▌O         ' TO JN_DESCRICAO1&
+                          IF IT_OPCAO EQ 3 MOVE 'EXCLUS▌O          ' TO JN_DESCRICAO1&
+                          IF IT_OPCAO EQ 4 MOVE 'PESQUISAS         ' TO JN_DESCRICAO1&
+                          IF IT_OPCAO EQ 5 MOVE 'RELAT╒RIOS        ' TO JN_DESCRICAO1&
+
+                          MOVE IT_OPCAO            TO JN_N_OPCAO1&
+
+                          IF IT_OPCAO LT 4 BEGIN
+                                            MOVE 'P' TO JN_P_M1&
+                                            REPEAT
+                                             ACCEPT JN_PROGRAMA1&
+                                             [KEY.ESCAPE] RETURN INICIO
+                                            UNTIL JN_PROGRAMA1& NE ''
+                                            END
+                          ELSE             BEGIN
+                                            MOVE 'M' TO JN_P_M1&
+                                            REPEAT
+                                             ACCEPT JN_MENU1&
+                                             [KEY.ESCAPE] RETURN INICIO
+                                            UNTIL JN_MENU1& NE ''
+                                           END
+                         CALC (WINDOWINDEX +5) TO WINDOWINDEX
+                        LOOP
+                       END
+RETURN
+
+KEYPROC KEY.CLEAR
+ CLEARFORM JN_NOME_MENU THRU JN_MENU10
+RETURN INICIO
+
+KEYPROC KEY.SAVE
+ MOVE 0 TO WINDOWINDEX
+ MOVE 0 TO IT_OPCAO
+
+IF JN_DESCRICAO1& NE '' BEGIN
+        INDICATE ERR FALSE
+        ON ERROR GOSUB CHECA_GRAVACAO
+        REREAD
+        CLEAR MENUCOMP
+        MOVE JN_NOME_MENU TO MENUCOMP.NOME
+        FIND EQ MENUCOMP BY INDEX.1
+        FOR FIELDINDEX FROM 0 TO 6
+                MOVE JN_DESCRICAO1& TO MENUCOMP.NOME_OP&
+                MOVE JN_P_M1&       TO MENUCOMP.P_M&
+                IF JN_MENU1& EQ ""      MOVE JN_PROGRAMA1& TO MENUCOMP.PROG_MENU&
+                IF JN_PROGRAMA1& EQ ""  MOVE JN_MENU1& TO MENUCOMP.PROG_MENU&
+                CALC (WINDOWINDEX +5) TO WINDOWINDEX
+                INCREMENT IT_OPCAO
+        LOOP
+        SAVERECORD MENUCOMP
+        UNLOCK
+        ON ERROR OFF
+        REREAD
+        CLEAR MENUTITU
+        MOVE JN_NOME_MENU TO MENUTITU.NOME
+        FIND EQ MENUTITU BY INDEX.1
+        MOVE JN_TITULO    TO MENUTITU.TITULO
+        MOVE IT_OPCAO     TO MENUTITU.QTDE_OPCOES
+        SAVERECORD MENUTITU
+        UNLOCK
+        ON ERROR OFF
+        END
+
+        CLEARFORM JN_NOME_MENU THRU JN_MENU10
+RETURN INICIO
+
+#INCLUDE INTEGRID.INC

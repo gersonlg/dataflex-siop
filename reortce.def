@@ -1,0 +1,54 @@
+-----------------------------------------------------------------------------
+  DATE: 25/10/2023      TIME: 17:31                                  PAGE:  1
+  FILE DEFINITION FOR FILE: REORTCE (# 174)
+-----------------------------------------------------------------------------
+  DRIVER NAME               : DATAFLEX
+  FILE ROOT NAME            : REORTCE
+  USER DISPLAY NAME         : REORTCE
+  DATAFLEX FILE NAME        : REORTCE
+-----------------------------------------------------------------------------
+  RECORD LENGTH             : 102       ( USED: 92 )
+  MAX NUMBER OF RECORDS     : 16711679  ( USED: 0 )
+  FILE COMPRESSION          : NONE
+  RE-USE DELETED SPACE      : YES
+  LOCKING TYPE              : FILE
+  HEADER INTEGRITY CHECKING : YES
+  TRANSACTION TYPE          : CLIENT ATOMIC
+  RECORD IDENTITY INDEX     : 0 ( 0 , 0 )
+  FILE LOGIN PARAMETER      : 
+  SYSTEM FILE               : NO 
+-----------------------------------------------------------------------------
+
+NUM  FIELD NAME       TYPE SIZE  OFFST IX   RELATES TO FILE.FIELD
+---  ---------------  ---- ----- ----- --   ---------------------------------
+  1  ANO              ASC      4     1  1   
+  2  CODIGO_CONAM     ASC      8     5  1   
+  3  ORGAO            NUM    4.0    13  3   
+  4  U_O              NUM    4.0    15  4   
+  5  U_E              NUM    4.0    17  4   
+  6  COD_ENTIDADE     ASC      2    19  1   
+  7  DESCRICAO        ASC     50    21      
+  8  CPF_GESTOR       ASC     20    71      
+  9  IDENTIFICA_FDO   NUM    4.0    91      
+
+
+INDEX# FIELDS          DES U/C    LENGTH LEVELS SEGMENTS MODE
+------ --------------- --- ---    ------ ------ -------- -------
+  1    ANO             NO  NO       14     5       3     ON-LINE
+       CODIGO_CONAM    NO  NO 
+       COD_ENTIDADE    NO  NO 
+
+  2    ANO             NO  NO       14     5       3     ON-LINE
+       COD_ENTIDADE    NO  NO 
+       CODIGO_CONAM    NO  NO 
+
+  3    ANO             NO  NO       9      5       3     ON-LINE
+       ORGAO           NO  NO 
+       RECNUM          NO  NO 
+
+  4    ANO             NO  NO       13     5       5     ON-LINE
+       ORGAO           NO  NO 
+       U_O             NO  NO 
+       U_E             NO  NO 
+       RECNUM          NO  NO 
+

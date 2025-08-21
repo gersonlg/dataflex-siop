@@ -1,0 +1,199 @@
+-----------------------------------------------------------------------------
+  DATE: 27/11/2023      TIME: 15:26                                  PAGE:  1
+  FILE DEFINITION FOR FILE: EMPENHO (# 211)
+-----------------------------------------------------------------------------
+  DRIVER NAME               : DATAFLEX
+  FILE ROOT NAME            : EMPENHO
+  USER DISPLAY NAME         : EMPENHO
+  DATAFLEX FILE NAME        : EMPENHO
+-----------------------------------------------------------------------------
+  RECORD LENGTH             : 768       ( USED: 766 )
+  MAX NUMBER OF RECORDS     : 16711679  ( USED: 0 )
+  FILE COMPRESSION          : NONE
+  RE-USE DELETED SPACE      : YES
+  LOCKING TYPE              : FILE
+  HEADER INTEGRITY CHECKING : YES
+  TRANSACTION TYPE          : CLIENT ATOMIC
+  RECORD IDENTITY INDEX     : 0 ( 0 , 0 )
+  FILE LOGIN PARAMETER      : 
+  SYSTEM FILE               : NO 
+-----------------------------------------------------------------------------
+
+NUM  FIELD NAME       TYPE SIZE  OFFST IX   RELATES TO FILE.FIELD
+---  ---------------  ---- ----- ----- --   ---------------------------------
+  1  COD_ENTIDADE     ASC      2     1  1   
+  2  EXERCICIO        ASC      4     3  1   
+  3  DATA             DAT      3     7  2   
+  4  N_EMPENHO        ASC      5    10  1   
+  5  N_PROCESSO       ASC      6    15  6   
+  6  ANO_PROCESSO     ASC      4    21  6   
+  7  N_FORNECEDOR     ASC      5    25  2   
+  8  SEQ_FORNECEDOR   ASC      2    30      
+  9  N_DESPESA        ASC      5    32  9   
+ 10  TIPO             ASC      2    37  4   
+ 11  DESCRICAO        ASC     40    39      
+ 12  DESCRICAO2       ASC     40    79      
+ 13  DOTACAO          NUM   14.2   119      
+ 14  S_ANTERIOR       NUM   14.2   127      
+ 15  V_EMPENHO        NUM   14.2   135      
+ 16  S_ATUAL          NUM   14.2   143      
+ 17  VALOR_PROCESS    NUM   14.2   151      
+ 18  VALOR_NPROCESS   NUM   14.2   159      
+ 19  VALOR_ESTORNADO  NUM   14.2   167      
+ 20  QTD_ESTORNOS     NUM    2.0   175      
+ 21  SEQUENCIA        ASC      2   176  1   
+ 22  FLAG_EMISSAO     ASC      1   178  3   
+ 23  REFERENCIA       ASC      5   179      
+ 24  ENSINO           ASC      1   184      
+ 25  FLAG_LIMITE      ASC      1   185      
+ 26  N_FONTE          ASC      5   186  5   
+ 27  N_FUNDO          ASC      7   191 12   
+ 28  COD_ASS          ASC      5   198      
+ 29  PESSOAL          ASC      1   203      
+ 30  ECONOMICA        ASC     12   204 11   
+ 31  GRUPO_DESPESA    OVE      3   204 11   
+ 32  ELEMENTO         OVE      2   211 11   
+ 33  ITEM_DESPESA     OVE      5   211 11   
+ 34  REEMPENHO        ASC      5   216      
+ 35  N_DIVIDA         ASC      5   221      
+ 36  PROC_COMPRAS     ASC      1   226      
+ 37  ACAO             ASC      4   227 14   
+ 38  NAO_INSCRITOS    ASC      1   231      
+ 39  MES_13           ASC      1   232      
+ 40  AUXILIAR         ASC     10   233      
+ 41  N_CONTRATO       ASC     10   243      
+ 42  ANO_CONTRATO     ASC      4   253      
+ 43  TP_REGIME        ASC      1   257      
+ 44  TP_MODALIDADE    ASC      2   258      
+ 45  N_LICITACAO      ASC     25   260      
+ 46  ANO_LICITACAO    ASC      4   285      
+ 47  N_PROC_CONTABIL  ASC     15   289 15   
+ 48  N_RESERVA        ASC     10   304  7   
+ 49  SETOR            ASC      5   314  3   
+ 50  N_CONVENIO       ASC     10   319      
+ 51  ANO_CONVENIO     ASC      4   329      
+ 52  CREDOR_AUX       ASC     30   333      
+ 53  COD_APLIC_AUX    ASC      7   363      
+ 54  ECONOMICA_AUX    ASC     12   370      
+ 55  N_ADITAMENTO     ASC      5   382      
+ 56  ANO_ADITAMENTO   ASC      4   387      
+ 57  N_FONTE_AUX      ASC      5   391      
+ 58  PRECAT_REG_ESP   ASC      5   396      
+ 59  CONTRAPARTIDA    ASC      1   401      
+ 60  DT_CAD_CONVENIO  DAT      3   402      
+ 61  N_ORDENADOR      ASC      5   405      
+ 62  N_FOLHA          ASC     15   410      
+ 63  VALOR_FOLHA      NUM   14.2   425      
+ 64  VALOR_EMLIQUIDA  NUM   14.2   433      
+ 65  N_FINENSIN       ASC      5   441      
+ 66  SEQ_SICOM        NUM    8.0   446      
+ 67  N_EMPENHO_AUX    ASC     20   450      
+ 68  ORGAO_AUX        ASC      8   470      
+ 69  TP_DESP_RPPS     ASC      1   478      
+ 70  HORA             ASC      8   479      
+ 71  TERCEIRO_SETOR   ASC      1   487      
+ 72  SIAM_AUX         ASC      1   488      
+ 73  TIPO_CONTRATO    ASC      2   489      
+ 74  DESCRICAO3       ASC    250   491      
+ 75  ORGAO_AUDESP     ASC     20   741      
+ 76  ID_PNCP          NUM   10.0   761      
+ 77  ENVIADO_PNCP     ASC      1   766      
+
+
+INDEX# FIELDS          DES U/C    LENGTH LEVELS SEGMENTS MODE
+------ --------------- --- ---    ------ ------ -------- -------
+  1    COD_ENTIDADE    NO  NO       13     5       4     ON-LINE
+       EXERCICIO       NO  NO 
+       N_EMPENHO       NO  NO 
+       SEQUENCIA       NO  NO 
+
+  2    COD_ENTIDADE    NO  NO       17     5       5     ON-LINE
+       EXERCICIO       NO  NO 
+       N_FORNECEDOR    NO  NO 
+       DATA            NO  NO 
+       RECNUM          NO  NO 
+
+  3    COD_ENTIDADE    NO  NO       20     6       6     ON-LINE
+       EXERCICIO       NO  NO 
+       FLAG_EMISSAO    NO  NO 
+       SETOR           NO  NO 
+       N_EMPENHO       NO  NO 
+       RECNUM          NO  NO 
+
+  4    COD_ENTIDADE    NO  NO       18     5       6     ON-LINE
+       EXERCICIO       NO  NO 
+       TIPO            NO  NO 
+       DATA            NO  NO 
+       N_EMPENHO       NO  NO 
+       SEQUENCIA       NO  NO 
+
+  5    COD_ENTIDADE    NO  NO       17     5       5     ON-LINE
+       EXERCICIO       NO  NO 
+       N_FONTE         NO  NO 
+       DATA            NO  NO 
+       RECNUM          NO  NO 
+
+  6    COD_ENTIDADE    NO  NO       27     6       7     ON-LINE
+       EXERCICIO       NO  NO 
+       N_PROCESSO      NO  NO 
+       ANO_PROCESSO    NO  NO 
+       DATA            NO  NO 
+       N_EMPENHO       NO  NO 
+       RECNUM          NO  NO 
+
+  7    COD_ENTIDADE    NO  NO       24     6       5     ON-LINE
+       EXERCICIO       NO  NO 
+       N_RESERVA       NO  NO 
+       N_EMPENHO       NO  NO 
+       RECNUM          NO  NO 
+
+  8    COD_ENTIDADE    NO  NO       19     6       5     ON-LINE
+       EXERCICIO       NO  NO 
+       N_FORNECEDOR    NO  NO 
+       N_EMPENHO       NO  NO 
+       RECNUM          NO  NO 
+
+  9    COD_ENTIDADE    NO  NO       21     6       6     ON-LINE
+       EXERCICIO       NO  NO 
+       N_DESPESA       NO  NO 
+       DATA            NO  NO 
+       N_EMPENHO       NO  NO 
+       SEQUENCIA       NO  NO 
+
+  10   COD_ENTIDADE    NO  NO       16     5       5     ON-LINE
+       EXERCICIO       NO  NO 
+       DATA            NO  NO 
+       N_EMPENHO       NO  NO 
+       SEQUENCIA       NO  NO 
+
+  11   COD_ENTIDADE    NO  NO       29     6       6     ON-LINE
+       EXERCICIO       NO  NO 
+       N_DESPESA       NO  NO 
+       ECONOMICA       NO  NO 
+       DATA            NO  NO 
+       RECNUM          NO  NO 
+
+  12   COD_ENTIDADE    NO  NO       21     6       5     ON-LINE
+       EXERCICIO       NO  NO 
+       N_FUNDO         NO  NO 
+       N_FONTE         NO  NO 
+       RECNUM          NO  NO 
+
+  13   COD_ENTIDADE    NO  NO       24     6       5     ON-LINE
+       EXERCICIO       NO  NO 
+       ECONOMICA       NO  NO 
+       DATA            NO  NO 
+       RECNUM          NO  NO 
+
+  14   COD_ENTIDADE    NO  NO       16     5       5     ON-LINE
+       EXERCICIO       NO  NO 
+       ACAO            NO  NO 
+       DATA            NO  NO 
+       RECNUM          NO  NO 
+
+  15   COD_ENTIDADE    NO  NO       27     6       5     ON-LINE
+       EXERCICIO       NO  NO 
+       N_PROC_CONTABIL NO  NO 
+       DATA            NO  NO 
+       RECNUM          NO  NO 
+

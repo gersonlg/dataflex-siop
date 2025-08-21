@@ -1,0 +1,44 @@
+-----------------------------------------------------------------------------
+  DATE: 27/05/2024      TIME: 15:53                                  PAGE:  1
+  FILE DEFINITION FOR FILE: TBINFCAD (# 352)
+-----------------------------------------------------------------------------
+  DRIVER NAME               : DATAFLEX
+  FILE ROOT NAME            : TBINFCAD
+  USER DISPLAY NAME         : TBINFCAD
+  DATAFLEX FILE NAME        : TBINFCAD
+-----------------------------------------------------------------------------
+  RECORD LENGTH             : 102       ( USED: 90 )
+  MAX NUMBER OF RECORDS     : 16711679  ( USED: 3151 )
+  FILE COMPRESSION          : NONE
+  RE-USE DELETED SPACE      : YES
+  LOCKING TYPE              : FILE
+  HEADER INTEGRITY CHECKING : YES
+  TRANSACTION TYPE          : CLIENT ATOMIC
+  RECORD IDENTITY INDEX     : 0 ( 0 , 0 )
+  FILE LOGIN PARAMETER      : 
+  SYSTEM FILE               : NO 
+-----------------------------------------------------------------------------
+
+NUM  FIELD NAME       TYPE SIZE  OFFST IX   RELATES TO FILE.FIELD
+---  ---------------  ---- ----- ----- --   ---------------------------------
+  1  UF               ASC      2     1  1   
+  2  ANO              ASC      4     3  1   
+  3  COD_INFOCAD      NUM    4.0     7  1   
+  4  CODIGO           ASC     20     9  1   
+  5  DESCRICAO        ASC     60    29  2   
+  6  CADASTRO_ATIVO   ASC      1    89      
+  7  PREVIDENCIA      ASC      1    90      
+
+
+INDEX# FIELDS          DES U/C    LENGTH LEVELS SEGMENTS MODE
+------ --------------- --- ---    ------ ------ -------- -------
+  1    UF              NO  NO       28     6       4     ON-LINE
+       ANO             NO  NO 
+       COD_INFOCAD     NO  NO 
+       CODIGO          NO  NO 
+
+  2    UF              NO  NO       86     11      4     ON-LINE
+       ANO             NO  NO 
+       DESCRICAO       NO  NO 
+       CODIGO          NO  NO 
+

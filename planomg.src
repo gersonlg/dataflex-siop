@@ -1,0 +1,297 @@
+/TELA RESIDENT
+ｳ __/__/____  ________________________________________________________  CONAM  ｳ
+ﾆﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍﾍｵ
+ｳ                                                                              ｳ
+ｳ                                                                              ｳ
+ｳ Contas do Exerc｡cio de ____                                                  ｳ
+ｳ                                                                              ｳ
+ｳ Natureza               __________                                            ｳ
+ｳ                                                                              ｳ
+ｳ                                                                              ｳ
+ｳ                                                                              ｳ
+ｳ C｢digo                 ____________________                                  ｳ
+ｳ                                                                              ｳ
+ｳ Descri℡o              __________________________________________________    ｳ
+ｳ                        __________________________________________________    ｳ
+ｳ                        __________________________________________________    ｳ
+ｳ                                                                              ｳ
+ｳ Tipo                   _               Grau _                                ｳ
+ｳ                                                                              ｳ
+ﾃﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄｴ
+ｳ  <F1> Ajuda                 <F9> Limpa Janelas                 <ESC> Retorna ｳ
+ﾀﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾙ
+/CONFIRMA RESIDENT
+ﾃﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄｴ
+ｳ______________________________________________________________________________ｳ
+ﾀﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾙ
+/ULTIMO_CADASTRADO RESIDENT
+ﾚﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄｿ
+ｳ                                                               ｳ
+ｳ A ultima conta __________ foi:                                ｳ
+ｳ                                                               ｳ
+ｳ C｢digo     __________________                                 ｳ
+ｳ Nome       __________________________________________________ ｳ
+ｳ                                                               ｳ
+ｳ           Pressione qualquer tecla para continuar.            ｳ
+ﾀﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾄﾙ
+/*
+#INCLUDE CONAM.LIB
+
+STRING ST_DESCRICAO 255
+
+INTEGER IT_GRAU
+
+AUTOPAGE TELA
+NAME JN_TARJA_DATA
+NAME JN_TARJA_TITULO
+NAME JN_EXERCICIO      JN_NATUREZA
+NAME JN_CODIGO         JN_DESCRICAO1  JN_DESCRICAO2  JN_DESCRICAO3
+NAME JN_TIPO           JN_GRAU
+
+OPEN PLANOMG
+
+PAGE SET TELA              AT 03 00  COLORS IT_COR_TARJA  IT_COR_MOLDURA
+PAGE SET ULTIMO_CADASTRADO AT 08 09  COLORS IT_COR_TITULO IT_COR_TITULO
+PAGE SET CONFIRMA          AT 21 00  COLORS IT_COR_TARJA  IT_COR_MOLDURA
+
+SCREENMODE IT_COR_MOLDURA ON
+SYSDATA JN_TARJA_DATA 
+SCREENMODE IT_COR_TITULO ON
+IF ST@OPCAO EQ '1' BEGIN
+                    CABEC 'CADASTRO DE CONTAS SICOM - INCLUS三' JN_TARJA_TITULO
+                    MOVE 'inclu｡da' TO ULTIMO_CADASTRADO.1
+                   END
+IF ST@OPCAO EQ '2' BEGIN
+                    CABEC 'CADASTRO DE CONTAS SICOM - ALTERA三' JN_TARJA_TITULO
+                    MOVE 'alterada' TO ULTIMO_CADASTRADO.1
+                   END
+IF ST@OPCAO EQ '3' BEGIN
+                    CABEC 'CADASTRO DE CONTAS SICOM - EXCLUS三' JN_TARJA_TITULO
+                    MOVE 'exclu｡da' TO ULTIMO_CADASTRADO.1
+                   END
+
+SCREENMODE IT_COR_TARJA ON
+
+PAGE TELA
+
+MOVE PARGERAL.EXERCICIO TO JN_EXERCICIO
+
+INICIO:
+SCREENMODE IT_COR_TARJA ON
+CLEARFORM JN_CODIGO THRU JN_GRAU
+
+CMDLINE JN_EXERCICIO
+CMDLINE JN_NATUREZA
+CMDLINE JN_CODIGO
+
+INDICATE PESQUISA! AS JN_EXERCICIO NE ''
+[ PESQUISA!] MOVE '2' TO ST@OPCAO
+
+LB_ANO:
+ [~PESQUISA!] ANO_2000 JN_EXERCICIO
+
+LB_NATUREZA:
+ [~PESQUISA!] ACCEPT JN_NATUREZA {AUTOCLEAR,CAPSLOCK}
+        INDICATE OK! AS JN_NATUREZA EQ 'RECEITA'
+ [~OK!] INDICATE OK! AS JN_NATUREZA EQ 'DESPESA'
+ [~OK!] INDICATE OK! AS JN_NATUREZA EQ 'FONTES'
+ [~OK!] BEGIN
+         ADVERTE 'NATUREZA INVALIDA'
+         [~PESQUISA!] GOTO LB_NATUREZA
+         [ PESQUISA!] ABORT
+        END
+ 
+LB_CONTA:
+ [~PESQUISA!] ACCEPT JN_CODIGO {AUTOCLEAR}
+ IF JN_CODIGO EQ '' BEGIN
+                     MENSAGEM 1
+                     [~PESQUISA!] GOTO LB_CONTA
+                     [ PESQUISA!] ABORT
+                    END
+ 
+ [~PESQUISA!] BEGIN
+               REPEAT
+                REMOVE '.' FROM JN_CODIGO
+               UNTIL [~FOUND]
+               TRIM JN_CODIGO TO JN_CODIGO
+
+               IF JN_NATUREZA EQ 'RECEITA' BEGIN
+                                            PONTUA_RECEITA JN_CODIGO JN_EXERCICIO
+                                           END
+               IF  JN_NATUREZA EQ 'DESPESA' BEGIN
+                                             PONTUA_ECONOMICA JN_CODIGO
+                                            END
+              END
+  
+ CLEAR PLANOMG
+ MOVE JN_EXERCICIO TO PLANOMG.ANO
+ MOVE JN_NATUREZA  TO PLANOMG.NATUREZA
+ MOVE JN_CODIGO    TO PLANOMG.CODIGO
+ FIND EQ PLANOMG BY INDEX.1
+ [ FOUND] BEGIN
+           IF ST@OPCAO EQ '1' BEGIN
+                     [~PESQUISA!] GOTO LB_CONTA
+                     [ PESQUISA!] ABORT
+           
+                               ADVERTE 'CONTA J CADASTRADA'
+                               GOTO LB_CONTA
+                              END
+          END
+ [~FOUND] BEGIN
+           IF ST@OPCAO NE '1' BEGIN
+                               ADVERTE 'CONTA N三 CADASTRADA'
+                               GOTO LB_CONTA
+                              END
+          END
+
+ IF ST@OPCAO NE '1' BEGIN
+                     MOVE (MID(PLANOMG.DESCRICAO,50,1))   TO JN_DESCRICAO1
+                     MOVE (MID(PLANOMG.DESCRICAO,50,51))  TO JN_DESCRICAO2
+                     MOVE (MID(PLANOMG.DESCRICAO,50,101)) TO JN_DESCRICAO3
+                     
+                     MOVE PLANOMG.TIPO           TO JN_TIPO
+                     MOVE PLANOMG.GRAU           TO JN_GRAU
+                    END
+ ELSE BEGIN
+       GOSUB LB_CALCULA_GRAU
+
+       CLEARFORM JN_DESCRICAO1 THRU JN_DESCRICAO3
+      END
+
+IF ST@OPCAO NE '3' BEGIN
+                    GOSUB LB_CALCULA_GRAU
+                    
+                    LB_DESCRICAO:
+                     REPEAT
+                      ACCEPT JN_DESCRICAO1 {AUTOCLEAR,CAPSLOCK}
+                      IF JN_DESCRICAO1 EQ '' MENSAGEM 1
+                     UNTIL JN_DESCRICAO1 NE ''
+                     
+                    ACCEPT JN_DESCRICAO2 {AUTOCLEAR,CAPSLOCK}
+                    ACCEPT JN_DESCRICAO3 {AUTOCLEAR,CAPSLOCK}
+
+                    IF JN_NATUREZA NE 'FONTES' BEGIN
+                                                LB_TIPO:
+                                                 REPEAT
+                                                  ACCEPT JN_TIPO {AUTOCLEAR,CAPSLOCK}
+                                                  IF JN_TIPO EQ '' MENSAGEM 1
+                                                 UNTIL JN_TIPO IN 'AS'
+                                                END
+                   END
+
+
+SCREENMODE IT_COR_TITULO ON
+IF ST@OPCAO EQ '1' CABEC 'CONFIRMA INCLUS三 <S/N>'  CONFIRMA.1
+IF ST@OPCAO EQ '2' CABEC 'CONFIRMA ALTERA三 <S/N>' CONFIRMA.1
+IF ST@OPCAO EQ '3' CABEC 'CONFIRMA EXCLUS三 <S/N>'  CONFIRMA.1
+SCREENMODE IT_COR_TARJA ON
+
+PAGE CONFIRMA
+INKEYCHECK ST_TECLA IN 'sSnN'
+IF ST_TECLA IN 'nN' BEGIN
+                     SCREENMODE IT_COR_TARJA ON
+                     CLEARFORM JN_CODIGO THRU JN_GRAU
+                     [~PESQUISA!] GOTO LB_CONTA
+                     [ PESQUISA!] ABORT
+                    END
+
+INDICATE ERR FALSE
+ON ERROR GOSUB CHECA_GRAVACAO
+REREAD
+ CLEAR PLANOMG
+ MOVE JN_EXERCICIO TO PLANOMG.ANO
+ MOVE JN_NATUREZA  TO PLANOMG.NATUREZA
+ MOVE JN_CODIGO    TO PLANOMG.CODIGO
+ FIND EQ PLANOMG BY INDEX.1
+ [ FOUND] BEGIN
+           IF ST@OPCAO EQ '1' BEGIN
+                               UNLOCK
+                               ON ERROR OFF
+                               ADVERTE 'CONTA J CADASTRADA'
+                               GOTO INICIO
+                              END
+          END
+ [~FOUND] BEGIN
+           IF ST@OPCAO NE '1' BEGIN
+                               UNLOCK
+                               ON ERROR OFF
+                               ADVERTE 'CONTA N三 CADASTRADA'
+                               GOTO INICIO
+                              END
+          END
+ 
+ MOVE (PAD(JN_DESCRICAO1,50)) TO ST_DESCRICAO
+ APPEND ST_DESCRICAO (PAD(JN_DESCRICAO2,50)) (PAD(JN_DESCRICAO3,50))
+
+ IF ST@OPCAO EQ '1' BEGIN
+                     CLEAR PLANOMG
+                     MOVE JN_EXERCICIO       TO PLANOMG.ANO
+                     MOVE JN_NATUREZA        TO PLANOMG.NATUREZA
+                     MOVE JN_CODIGO          TO PLANOMG.CODIGO
+                     MOVE ST_DESCRICAO       TO PLANOMG.DESCRICAO
+                     MOVE JN_TIPO            TO PLANOMG.TIPO
+                     MOVE JN_GRAU            TO PLANOMG.GRAU
+                     SAVERECORD PLANOMG
+                    END
+ IF ST@OPCAO EQ '2' BEGIN
+                     MOVE ST_DESCRICAO       TO PLANOMG.DESCRICAO
+                     MOVE JN_TIPO            TO PLANOMG.TIPO
+                     MOVE JN_GRAU            TO PLANOMG.GRAU
+                     SAVERECORD PLANOMG
+                    END
+
+ IF ST@OPCAO EQ '3' BEGIN
+                     DELETE PLANOMG
+                     CLEAR PLANOMG
+                    END
+
+ IF ST@OPCAO EQ '1' GRAVAINCLUSAO 'PLANOMG' JN_CODIGO 'I'
+ IF ST@OPCAO EQ '2' GRAVAINCLUSAO 'PLANOMG' JN_CODIGO 'A'
+ IF ST@OPCAO EQ '3' GRAVAINCLUSAO 'PLANOMG' JN_CODIGO 'E'
+UNLOCK
+ON ERROR OFF
+
+MOVE JN_CODIGO     TO ULTIMO_CADASTRADO.2 
+MOVE JN_DESCRICAO1 TO ULTIMO_CADASTRADO.3 
+
+SCREENMODE IT_COR_TARJA ON
+CLEARFORM JN_CODIGO THRU JN_GRAU
+
+[~PESQUISA!] GOTO LB_CONTA
+[ PESQUISA!] ABORT
+
+DESATIVA
+
+KEYPROC KEY.ESCAPE
+CONFIRMACAO 'RETORNO'
+
+KEYPROC KEY.SFIND 
+ULT_CADASTRADO    
+
+KEYPROC KEY.HELP
+AJUDA
+RETURN
+
+KEYPROC KEY.CLEAR
+RETURN INICIO
+
+KEYPROC KEY.UP
+BACKFIELD
+RETURN
+
+LB_CALCULA_GRAU:
+ MOVE 0 TO IT_GRAU
+ 
+ IF JN_NATUREZA EQ 'RECEITA' MOVE (CALCULA_GRAU_RECEITA(JN_CODIGO,JN_EXERCICIO)) TO IT_GRAU
+ 
+ IF JN_NATUREZA EQ 'DESPESA' MOVE (CALCULA_GRAU_DESPESA(JN_CODIGO,JN_EXERCICIO)) TO IT_GRAU
+
+ MOVE IT_GRAU             TO JN_GRAU
+ IF IT_GRAU EQ 8 MOVE 'A' TO JN_TIPO
+ IF IT_GRAU EQ 1 MOVE 'S' TO JN_TIPO
+ PAGE TELA
+RETURN
+
+#INCLUDE INTEGRID.INC
+
+

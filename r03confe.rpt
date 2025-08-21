@@ -1,0 +1,701 @@
+/TELA RESIDENT
+ÆÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍµ
+³                                                                              ³
+³                                                                              ³
+ÃÄÄÄÄÄÄ RELATORIO DE CONFERENCIA (XML) DESPESA EMP/LIQ/PAGA ORCAMENTARIA ÄÄÄÄÄÄ´
+³                                                                              ³
+³Entidade       <F2>: __ _____________________________________________________ ³
+³                                                                              ³
+³Mes Inicial                     : __   Mes Final    : __ <01...13>            ³
+³                                                                              ³
+³Acumula dados da Camara         : _   <S/N>                                   ³
+³                                                                              ³
+³Sintetico ou Analitico          : _   <S/A>                                   ³
+³                                                                              ³
+³Lista Fonte e Cod. de Aplicacao : _   <S/N>                                   ³
+³                                                                              ³
+³Fonte Inicial <F2>: ___    Codigo de Aplicacao Inicial <F2>: _______          ³
+³Fonte Final   <F2>: ___    Codigo de Aplicacao Final   <F2>: _______          ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                               <ESC>  Retorna                                 ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/CONFIRMA RESIDENT
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³______________________________________________________________________________³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/MSG RESIDENT
+ÚÄÄÄÄÄ RELATORIO DE CONFERENCIA (XML) DESPESA EMP/LIQ/PAGA ORCAMENTARIA ÄÄÄÄÄ¿
+³                                                                            ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ SOLICITADO ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                                                                            ³
+³                                                                            ³
+³           ____________________________________________________             ³
+³                                                                            ³
+³                                                                            ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ PROCESSANDO ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                                                                            ³
+³                                                                            ³
+³       Dados      : ___________________________________________________     ³
+³                                                                            ³
+³                                                                            ³
+³       Lendo      :   ________.   Imprimindo : _____.    P gs.: ___.        ³
+³                                                                            ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/HEADER RESIDENT
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+|                                                                               ____________________________________________________________                                                                               |
+|                                                                                                                                                                                                                          |
+|                                                                               ____________________________________________________________                                                                               |
+|                                                                                                                                                                                                                          |
+|                                                                                         Despesa Orcamentaria - Balancete _________                                                                                       |
+|                                                                                                                                                                                                                          |
+|                                                                               ____________________________________________________________                                                                               |
+| DATA  __/__/____                                                              ____________________________________________________________                                                                 Pagina _____. |
+|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|            |                                                                   |              Empenhado            |             Liquidado          |               Pago             |             Saldos                |
+|            |                                                                   |-----------------------------------|--------------------------------|--------------------------------------------------------------------|
+|   DESPESA  |                   Especificacao                                   |      no Periodo|             Atual|      no Periodo|          Atual|      no Periodo|          Atual|      A Liquidar|           a Pagar|
+|--------------------------------------------------------------------------------|-------------------------------------------------------------------------------------|--------------------------------|------------------|
+/BODY RESIDENT
+|____________|_______________________________________________________ ___ _______|_________,___.__|___________,___.__|_________,___.__|________,___.__|_________,___.__|________,___.__|_________,___.__|___________,___.__|
+/LINHA RESIDENT
+|            |                                                                   |                |                  |                |               |                |               |                |                  |
+/LINHA2 RESIDENT
+|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+/SUBTOTAL RESIDENT
+|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|            |_______________________________________________________            |_________,___.__|___________,___.__|_________,___.__|________,___.__|_________,___.__|________,___.__|_________,___.__|___________,___.__|
+|            |                                                                   |                |                  |                |               |                |               |                |                  |
+/TOTAL RESIDENT
+|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|            |_______________________________________________________            |_________,___.__|___________,___.__|_________,___.__|________,___.__|_________,___.__|________,___.__|_________,___.__|___________,___.__|
+|            |                                                                   |                |                  |                |               |                |               |                |                  |
+ --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/FOOTER_COMPLETE RESIDENT
+|            |                                                                   |                |                  |                |               |                |               |                |                  |
+/FOOTER RESIDENT
+ --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/*
+#INCLUDE CONAM.LIB
+#INCLUDE ZERAARQ.LIB
+//--
+//-- !1 = string st_dados (preenchida pelo monta_dados)
+//-- !2 = conta contabil
+//-- !3 = mes
+//-- !4 = valor_1 (debito)
+//-- !5 = valor_2 (credito)
+//-- !6 = tipo (Analitica ou Sintetica)
+//--
+#COMMAND GRAVA_TEMPCALC
+ INDICATE GRAVA! AS !2 IN '6.2.2.1.3.01.00.00-6.2.2.1.3.02.00.00-6.2.2.1.3.03.00.00-6.2.2.1.3.04.00.00'
+ [ GRAVA!] BEGIN
+            CLEAR TEMPCALC
+            MOVE ST@CODIGO@ENTIDADE      TO TEMPCALC.COD_ENTIDADE
+            MOVE ST@EXERCICIO@FINANCEIRO TO TEMPCALC.EXERCICIO
+            MOVE ST@USUARIO              TO TEMPCALC.USUARIO
+            MOVE !1                      TO TEMPCALC.CODIGO
+            FIND EQ TEMPCALC BY INDEX.1
+            INDICATE ERR FALSE
+            ON ERROR GOSUB CHECA_GRAVACAO
+            [ FOUND] REREAD
+            //--empenhado
+            IF (LEFT(!2,9)) EQ '6.2.2.1.3' BEGIN
+                                            IF !3 GE JN_MES_INICIAL CALC (TEMPCALC.VALOR_1 + (!5 - !4)) TO TEMPCALC.VALOR_1
+                                                                    CALC (TEMPCALC.VALOR_2 + (!5 - !4)) TO TEMPCALC.VALOR_2
+                                           END
+            //--liquidado
+            IF !2 IN '6.2.2.1.3.03.00.00-6.2.2.1.3.04.00.00' BEGIN
+                                                              IF !3 GE JN_MES_INICIAL CALC (TEMPCALC.VALOR_3 + (!5 - !4)) TO TEMPCALC.VALOR_3
+                                                                                      CALC (TEMPCALC.VALOR_4 + (!5 - !4)) TO TEMPCALC.VALOR_4
+                                                             END
+            //--pago
+            IF !2 EQ '6.2.2.1.3.04.00.00' BEGIN
+                                           IF !3 GE JN_MES_INICIAL CALC (TEMPCALC.VALOR_5 + (!5 - !4)) TO TEMPCALC.VALOR_5
+                                                                   CALC (TEMPCALC.VALOR_6 + (!5 - !4)) TO TEMPCALC.VALOR_6
+                                          END
+             
+            MOVE !6 TO TEMPCALC.AUXILIAR
+            SAVERECORD TEMPCALC
+            UNLOCK
+            ON ERROR OFF
+           END
+#ENDCOMMAND
+
+STRING ST_EXERCICIO 4 ST_MES_INICIAL ST_MES_FINAL     ST_PERIODO ST_JUNTA      ST_DADOS 255 ST_COD_DESPESA 16 ST_CODIGO_SINTETICO 16 ST_CONTA ST_DESCRICAO ST_QUEBRA
+STRING ST_MES_BUSCA 2 ST_N_FONTE     ST_COD_APLICACAO ST_AUX     ST_JUNCAO 255 ST_CC_SICOM
+
+INTEGER IT_AUX IT_GRAU RECCOUNT IT_MES_FINAL IT_MES
+
+AUTOPAGE BODY
+NAME JBD_CODIGO               JBD_DESCRICAO
+NAME JBD_N_FONTE              JBD_COD_APLICACAO
+NAME JBD_EMPENHADO_NO_PERIODO JBD_EMPENHADO_ATUAL 
+NAME JBD_LIQUIDADO_NO_PERIODO JBD_LIQUIDADO_ATUAL
+NAME JBD_PAGO_NO_PERIODO      JBD_PAGO_ATUAL
+NAME JBD_SALDO_LIQUIDAR       JBD_SALDO_PAGAR
+
+AUTOPAGE TOTAL 
+NAME JT_TITULO 
+
+AUTOPAGE MSG
+NAME JN_PERIODO
+NAME JN_DADOS 
+NAME JN_LENDO JN_IMPRIMINDO JN_PAGINA
+
+AUTOPAGE TELA
+NAME JN_COD_ENTIDADE  JN_ENTIDADE
+NAME JN_MES_INICIAL   JN_MES_FINAL
+NAME JN_SEPARA_CAMARA
+NAME JN_SINTETICO
+NAME JN_LISTA_FONTE
+NAME JN_FONTE_INI JN_APLICA_INI
+NAME JN_FONTE_FIN JN_APLICA_FIN
+
+OPEN ENTIDADE
+OPEN TEMPCALC
+OPEN ECONORCA
+OPEN FONTES
+OPEN FUNDOS
+ABRE_CONTACOR ST@EXERCICIO@FINANCEIRO CONTACOR
+
+PAGE SET MSG      AT 05 01 COLORS IT_COR_TITULO IT_COR_TITULO
+PAGE SET TELA     AT  4  0 COLORS IT_COR_TARJA  IT_COR_MOLDURA
+PAGE SET CONFIRMA AT 21 00 COLORS IT_COR_TARJA  IT_COR_MOLDURA
+
+MOVE PARGERAL.EXERCICIO TO ST_EXERCICIO
+
+DEFINE_FONTE_RECURSO PARGERAL.EXERCICIO
+
+INICIO:
+SCREENMODE IT_COR_TARJA ON
+PAGE TELA
+
+MOVE 'N' TO JN_SEPARA_CAMARA
+MOVE 'A' TO JN_SINTETICO
+
+IF PARGERAL.COD_ENTIDADE EQ '01' BEGIN
+                                  ACCEPT JN_COD_ENTIDADE {AUTOCLEAR}
+                                  [KEY.ESCAPE] ABORT
+                                  IF JN_COD_ENTIDADE NE '' BEGIN
+                                                            COMZEROS JN_COD_ENTIDADE 2
+                                                            CLEAR ENTIDADE
+                                                            MOVE ST@EXERCICIO@FINANCEIRO TO ENTIDADE.EXERCICIO 
+                                                            MOVE JN_COD_ENTIDADE         TO ENTIDADE.CODIGO
+                                                            FIND EQ ENTIDADE BY INDEX.1
+                                                            [~FOUND] BEGIN
+                                                                      ADVERTE 'ENTIDADE NŽO CADASTRADA'
+                                                                      CLEARFORM JN_COD_ENTIDADE THRU JN_ENTIDADE
+                                                                      GOTO INICIO
+                                                                     END
+                                                            MOVE ENTIDADE.DESCRICAO TO JN_ENTIDADE
+                                                           END
+                                  ELSE MOVE 'TODAS' TO JN_ENTIDADE
+                                 END
+ELSE BEGIN
+      MOVE PARGERAL.COD_ENTIDADE   TO JN_COD_ENTIDADE
+      CLEAR ENTIDADE
+      MOVE ST@EXERCICIO@FINANCEIRO TO ENTIDADE.EXERCICIO 
+      MOVE JN_COD_ENTIDADE         TO ENTIDADE.CODIGO
+      FIND EQ ENTIDADE BY INDEX.1
+      [~FOUND] BEGIN
+                ADVERTE 'ENTIDADE NŽO CADASTRADA'
+                CLEARFORM JN_COD_ENTIDADE THRU JN_ENTIDADE
+               END
+      MOVE ENTIDADE.DESCRICAO TO JN_ENTIDADE
+     END
+
+INDICATE TODAS! AS JN_COD_ENTIDADE EQ ''
+
+REPEAT
+ ACCEPT JN_MES_INICIAL      {CAPSLOCK}
+ [KEY.ESCAPE] ABORT
+ COMZEROS JN_MES_INICIAL 2
+ IF ((JN_MES_INICIAL LT '01') OR (JN_MES_INICIAL GT '13')) BEGIN
+                                                            MENSAGEM 353
+                                                            CLEARFORM JN_MES_INICIAL
+                                                           END
+UNTIL JN_MES_INICIAL NE ''
+
+REPEAT
+ ACCEPT JN_MES_FINAL      {CAPSLOCK}
+ [KEY.ESCAPE] ABORT
+ COMZEROS JN_MES_FINAL 2
+ IF ((JN_MES_FINAL LT '01') OR (JN_MES_FINAL GT '13')) BEGIN
+                                                        MENSAGEM 353
+                                                        CLEARFORM JN_MES_FINAL
+                                                       END
+UNTIL JN_MES_FINAL NE ''
+
+REPEAT
+ [ TODAS!] ACCEPT JN_SEPARA_CAMARA {AUTOCLEAR,CAPSLOCK}
+ [~TODAS!] BEGIN
+            IF JN_COD_ENTIDADE NE '02' MOVE 'N' TO JN_SEPARA_CAMARA
+            ELSE                       MOVE 'S' TO JN_SEPARA_CAMARA
+           END
+ [KEY.ESCAPE] ABORT
+ IF NOT JN_SEPARA_CAMARA IN 'SsNn' MOVE '' TO JN_SEPARA_CAMARA
+UNTIL JN_SEPARA_CAMARA NE '' 
+INDICATE SEPARA_CAMARA! AS JN_SEPARA_CAMARA IN 'Nn'
+
+REPEAT
+ ACCEPT JN_SINTETICO {AUTOCLEAR,CAPSLOCK}
+ [KEY.ESCAPE] ABORT
+ IF NOT JN_SINTETICO IN 'SsAa' MOVE '' TO JN_SINTETICO
+UNTIL JN_SINTETICO NE '' 
+INDICATE SINTETICO! AS JN_SINTETICO IN 'Ss'
+
+[~SINTETICO!] BEGIN
+               REPEAT
+                ACCEPT JN_LISTA_FONTE {AUTOCLEAR,CAPSLOCK}
+                [KEY.ESCAPE] ABORT
+                IF NOT JN_LISTA_FONTE IN 'SsNn' MOVE '' TO JN_LISTA_FONTE
+               UNTIL JN_LISTA_FONTE NE '' 
+              END
+[ SINTETICO!] MOVE 'N' TO JN_LISTA_FONTE
+
+INDICATE LISTA_FONTE! AS JN_LISTA_FONTE IN 'Ss'
+
+[~LISTA_FONTE!] CLEARFORM JN_FONTE_INI THRU JN_APLICA_FIN
+
+[ LISTA_FONTE!] BEGIN
+                 [~@SICOM!] MOVE 2 TO IT_AUX
+                 [ @SICOM!] MOVE 3 TO IT_AUX
+                 REPEAT
+                  ACCEPT JN_FONTE_INI {AUTOCLEAR}
+                  [KEY.ESCAPE] ABORT
+                  IF JN_FONTE_INI EQ '' BEGIN
+                                         CLEAR FONTES
+                                         MOVE ST@EXERCICIO@FINANCEIRO TO FONTES.EXERCICIO
+                                         MOVE ST@TIPO@FONTE           TO FONTES.TIPO
+                                         MOVE JN_FONTE_INI            TO FONTES.CODIGO
+                                         FIND GT FONTES BY INDEX.1
+                                         [ FOUND] INDICATE FOUND AS FONTES.EXERCICIO EQ ST@EXERCICIO@FINANCEIRO
+                                         [ FOUND] INDICATE FOUND AS FONTES.TIPO      EQ ST@TIPO@FONTE
+                                         [ FOUND] MOVE FONTES.CODIGO TO JN_FONTE_INI
+                                        END 
+                  ELSE BEGIN
+                        COMZEROS_FONTE JN_FONTE_INI IT_AUX
+                        
+                        CLEAR FONTES
+                        MOVE ST@EXERCICIO@FINANCEIRO TO FONTES.EXERCICIO
+                        MOVE ST@TIPO@FONTE           TO FONTES.TIPO
+                        MOVE JN_FONTE_INI            TO FONTES.CODIGO
+                        FIND EQ FONTES BY INDEX.1
+                        [~FOUND] BEGIN
+                                  ADVERTE 'FONTE DE RECURSO NAO CADASTRADA'
+                                  MOVE '' TO JN_FONTE_INI
+                                 END
+                       END
+                 UNTIL JN_FONTE_INI NE ''
+
+                 [~@SICOM!] BEGIN
+                   REPEAT
+                    ACCEPT JN_APLICA_INI {AUTOCLEAR}
+                    [KEY.ESCAPE] ABORT
+                    COMZEROS JN_APLICA_INI 7
+                    IF JN_APLICA_INI NE '0000000' BEGIN
+                                                   CLEAR FUNDOS
+                                                   MOVE ST@CODIGO@ENTIDADE      TO FUNDOS.COD_ENTIDADE
+                                                   MOVE ST@EXERCICIO@FINANCEIRO TO FUNDOS.EXERCICIO
+                                                   MOVE ST@TIPO@FONTE           TO FUNDOS.TIPO
+                                                   MOVE JN_APLICA_INI           TO FUNDOS.CODIGO
+                                                   FIND EQ FUNDOS BY INDEX.1
+                                                   [~FOUND] BEGIN
+                                                             ADVERTE 'CODIGO DE APLICACAO NAO CADASTRADO'
+                                                             MOVE '' TO JN_APLICA_INI
+                                                            END
+                                                  END
+                   UNTIL JN_APLICA_INI NE ''
+                 END  
+
+                 REPEAT
+                  ACCEPT JN_FONTE_FIN {AUTOCLEAR}
+                  [KEY.ESCAPE] ABORT
+                  IF JN_FONTE_FIN EQ '' BEGIN
+                                         CLEAR FONTES
+                                         MOVE ST@EXERCICIO@FINANCEIRO TO FONTES.EXERCICIO
+                                         MOVE ST@TIPO@FONTE           TO FONTES.TIPO
+                                         MOVE '999'                   TO FONTES.CODIGO
+                                         FIND LT FONTES BY INDEX.1
+                                         [ FOUND] INDICATE FOUND AS FONTES.EXERCICIO EQ ST@EXERCICIO@FINANCEIRO
+                                         [ FOUND] INDICATE FOUND AS FONTES.TIPO      EQ ST@TIPO@FONTE
+                                         [ FOUND] MOVE FONTES.CODIGO TO JN_FONTE_FIN
+                                        END
+                  ELSE BEGIN
+                        COMZEROS_FONTE JN_FONTE_FIN IT_AUX
+                        
+                        CLEAR FONTES
+                        MOVE ST@EXERCICIO@FINANCEIRO TO FONTES.EXERCICIO
+                        MOVE ST@TIPO@FONTE           TO FONTES.TIPO
+                        MOVE JN_FONTE_FIN            TO FONTES.CODIGO
+                        FIND EQ FONTES BY INDEX.1
+                        [~FOUND] BEGIN
+                                  ADVERTE 'FONTE DE RECURSO NAO CADASTRADA'
+                                  MOVE '' TO JN_FONTE_FIN
+                                 END
+                       END
+                 UNTIL JN_FONTE_FIN NE ''
+
+                 [~@SICOM!] BEGIN
+                   REPEAT
+                    ACCEPT JN_APLICA_FIN {AUTOCLEAR}
+                    [KEY.ESCAPE] ABORT
+                    IF JN_APLICA_FIN EQ '' MOVE '9999999' TO JN_APLICA_FIN
+                    COMZEROS JN_APLICA_FIN 7
+                    IF JN_APLICA_FIN NE '9999999' BEGIN
+                                                   CLEAR FUNDOS
+                                                   MOVE ST@CODIGO@ENTIDADE      TO FUNDOS.COD_ENTIDADE
+                                                   MOVE ST@EXERCICIO@FINANCEIRO TO FUNDOS.EXERCICIO
+                                                   MOVE ST@TIPO@FONTE           TO FUNDOS.TIPO
+                                                   MOVE JN_APLICA_FIN           TO FUNDOS.CODIGO
+                                                   FIND EQ FUNDOS BY INDEX.1
+                                                   [~FOUND] BEGIN
+                                                             ADVERTE 'CODIGO DE APLICACAO NAO CADASTRADO'
+                                                             MOVE '' TO JN_APLICA_FIN
+                                                            END
+                                                  END
+                   UNTIL JN_APLICA_FIN NE ''
+                 END  
+                END
+
+MONTH JN_MES_INICIAL ST_MES_INICIAL
+APPEND ST_MES_INICIAL ST_EXERCICIO
+
+MONTH JN_MES_FINAL ST_MES_FINAL
+APPEND ST_MES_FINAL ST_EXERCICIO
+
+MOVE 'Periodo: ' TO ST_PERIODO
+APPEND ST_PERIODO ST_MES_INICIAL ' A ' ST_MES_FINAL
+
+MOVE 'CONFERENCIA(XML) DES.EMP/LIQ/PAGA ORCAMETARIA MES ' TO ST_JUNTA
+APPEND ST_JUNTA  JN_MES_INICIAL ' A ' JN_MES_FINAL
+ABREREL ST_JUNTA '132C+'
+
+CABEC ST_PERIODO JN_PERIODO
+
+PAGE TELA
+PAGE MSG
+GOTOXY 25 0
+
+APAGA_TEMPCALC
+
+IF PARGERAL.EXERCICIO LE '2020' MOVE '11' TO ST_CC_SICOM
+ELSE                            MOVE '30' TO ST_CC_SICOM
+
+//--monta temporario
+//--movimento de despesa pegar at‚ mes 13, no mes 14 ‚ efetuado o encerramento
+MOVE JN_MES_FINAL TO IT_MES_FINAL
+
+FOR IT_MES FROM 1 TO IT_MES_FINAL
+ MOVE IT_MES TO ST_MES_BUSCA
+ COMZEROS ST_MES_BUSCA 2
+
+ CLEAR CONTACOR
+ MOVE ST_EXERCICIO TO CONTACOR.ANO
+ MOVE ST_MES_BUSCA TO CONTACOR.MES
+ [~@SICOM!] MOVE '27'            TO CONTACOR.XML
+ [ @SICOM!] MOVE ST_CC_SICOM     TO CONTACOR.XML
+ [~TODAS!]  MOVE JN_COD_ENTIDADE TO CONTACOR.COD_ENTIDADE
+ REPEAT
+  FIND GT CONTACOR BY INDEX.4
+  [ FOUND] INDICATE FOUND AS CONTACOR.ANO EQ ST_EXERCICIO
+  [ FOUND] INDICATE FOUND AS CONTACOR.MES EQ ST_MES_BUSCA
+  [ FOUND] [~@SICOM!] INDICATE FOUND AS CONTACOR.XML EQ '27'
+  [ FOUND] [ @SICOM!] INDICATE FOUND AS CONTACOR.XML EQ ST_CC_SICOM
+  [ FOUND] [~TODAS!]  INDICATE FOUND AS CONTACOR.COD_ENTIDADE EQ JN_COD_ENTIDADE
+  [ FOUND] BEGIN
+            CALC (JN_LENDO + 1) TO JN_LENDO
+
+            INDICATE OK! TRUE
+            [ SEPARA_CAMARA!] INDICATE OK! AS CONTACOR.COD_ENTIDADE NE '02' 
+            [ OK!] BEGIN
+                    MOVEALL '' TO ST_COD_DESPESA ST_N_FONTE ST_COD_APLICACAO
+                    [~@SICOM!] MOVE (MID(CONTACOR.DADOS,12,55)) TO ST_COD_DESPESA
+                    [ @SICOM!] MOVE (MID(CONTACOR.DADOS,12,54)) TO ST_COD_DESPESA
+                    MOVE ST_COD_DESPESA                         TO JN_DADOS
+                    
+                    INDICATE SELECAO! TRUE
+                    
+                    [ LISTA_FONTE!] BEGIN
+                                     [~@SICOM!] BEGIN
+                                       MOVE (MID(CONTACOR.DADOS,5,68))  TO ST_N_FONTE
+                                       MOVE (MID(CONTACOR.DADOS,7,74))  TO ST_COD_APLICACAO
+                                       
+                                                   INDICATE SELECAO! AS ((ST_N_FONTE       GE JN_FONTE_INI)  AND (ST_N_FONTE       LE JN_FONTE_FIN))
+                                       [ SELECAO!] INDICATE SELECAO! AS ((ST_COD_APLICACAO GE JN_APLICA_INI) AND (ST_COD_APLICACAO LE JN_APLICA_FIN))
+                                     END  
+                                     [ @SICOM!] BEGIN
+                                       MOVE (MID(CONTACOR.DADOS,5,67))  TO ST_N_FONTE
+                                       
+                                       INDICATE SELECAO! AS ((ST_N_FONTE GE JN_FONTE_INI) AND (ST_N_FONTE LE JN_FONTE_FIN))
+                                     END  
+                                    END
+                    
+                    [ SELECAO!] BEGIN
+                                 CLEAR ECONORCA
+                                 MOVE PARGERAL.ESTADO    TO ECONORCA.UF
+                                 MOVE PARGERAL.EXERCICIO TO ECONORCA.ANO
+                                 MOVE ST_COD_DESPESA     TO ECONORCA.CODIGO
+                                 FIND EQ ECONORCA BY INDEX.1
+                                 
+                                 MOVE ECONORCA.GRAU TO IT_GRAU
+                                 
+                                 [~SINTETICO!] BEGIN
+                                                //--grava linha analitica
+                                                MOVE 'A' TO ST_DADOS
+                                                APPEND ST_DADOS ' ' ST_COD_DESPESA ' ' ST_N_FONTE ' ' ST_COD_APLICACAO
+                                                GRAVA_TEMPCALC ST_DADOS CONTACOR.CONTA CONTACOR.MES CONTACOR.VALOR_1 CONTACOR.VALOR_2 'A'
+                                               END
+                                  
+                                 //--grava linha total geral
+                                 MOVE 'X TOTAL GERAL' TO ST_DADOS
+                                 GRAVA_TEMPCALC ST_DADOS CONTACOR.CONTA CONTACOR.MES CONTACOR.VALOR_1 CONTACOR.VALOR_2 'S'
+
+                                 //--grava linha valores nas sinteticas
+                                 FOR IT_AUX FROM 1 TO (IT_GRAU - 1)
+                                  [~SINTETICO!] BEGIN
+                                                 IF IT_AUX EQ 4 BEGIN
+                                                                 MOVE (LEFT(ST_COD_DESPESA,10)) TO ST_CODIGO_SINTETICO
+                                                                 APPEND ST_CODIGO_SINTETICO '00'
+
+                                                                 MOVE 'A' TO ST_DADOS
+                                                                 APPEND ST_DADOS ' ' ST_CODIGO_SINTETICO
+                                                                 GRAVA_TEMPCALC ST_DADOS CONTACOR.CONTA CONTACOR.MES CONTACOR.VALOR_1 CONTACOR.VALOR_2 'S'
+                                                                END
+                                                 END
+                                  IF IT_AUX EQ 3 BEGIN
+                                                  MOVE (LEFT(ST_COD_DESPESA,7)) TO ST_CODIGO_SINTETICO
+                                                  APPEND ST_CODIGO_SINTETICO '00.00'
+                                                  
+                                                  MOVE 'A' TO ST_DADOS
+                                                  APPEND ST_DADOS ' ' ST_CODIGO_SINTETICO
+                                                  GRAVA_TEMPCALC ST_DADOS CONTACOR.CONTA CONTACOR.MES CONTACOR.VALOR_1 CONTACOR.VALOR_2 'S'
+                                                 END
+                                  IF IT_AUX EQ 2 BEGIN
+                                                  MOVE (LEFT(ST_COD_DESPESA,4)) TO ST_CODIGO_SINTETICO
+                                                  APPEND ST_CODIGO_SINTETICO '00.00.00'
+                                                  
+                                                  MOVE 'A' TO ST_DADOS
+                                                  APPEND ST_DADOS ' ' ST_CODIGO_SINTETICO
+                                                  GRAVA_TEMPCALC ST_DADOS CONTACOR.CONTA CONTACOR.MES CONTACOR.VALOR_1 CONTACOR.VALOR_2 'S'
+                                                 END
+                                  IF IT_AUX EQ 1 BEGIN
+                                                  MOVE (LEFT(ST_COD_DESPESA,2)) TO ST_CODIGO_SINTETICO
+                                                  APPEND ST_CODIGO_SINTETICO '0.00.00.00'
+                                                  
+                                                  MOVE 'A' TO ST_DADOS
+                                                  APPEND ST_DADOS ' ' ST_CODIGO_SINTETICO
+                                                  GRAVA_TEMPCALC ST_DADOS CONTACOR.CONTA CONTACOR.MES CONTACOR.VALOR_1 CONTACOR.VALOR_2 'S'
+                                                 END
+                                 LOOP
+                                END
+                   END
+           
+            INDICATE FOUND TRUE
+           END
+ UNTIL [~FOUND]          
+LOOP
+
+MOVE 1 TO PAGECOUNT
+MOVE 0 TO RECCOUNT
+
+//--ipressao do relatorio
+CABEC ST@PREFEITURA                HEADER.1
+[~TODAS!] CABEC ENTIDADE.DESCRICAO HEADER.2
+[ TODAS!] BEGIN
+           [~SEPARA_CAMARA!] CABEC 'CONSOLIDADO - COM CAMARA' HEADER.2
+           [ SEPARA_CAMARA!] CABEC 'CONSOLIDADO - SEM CAMARA' HEADER.2
+          END
+[ SINTETICO!] PRINT 'Sintetico' TO HEADER.3
+[~SINTETICO!] PRINT 'Analitico' TO HEADER.3
+CABEC ST_PERIODO                   HEADER.4
+SYSDATA                            HEADER.5
+PRINT PAGECOUNT                 TO HEADER.7
+[ LISTA_FONTE!] BEGIN
+                 MOVE 'Fonte ' TO ST_AUX
+                 APPEND ST_AUX JN_FONTE_INI ' a ' JN_FONTE_FIN
+                 [~@SICOM!] APPEND ST_AUX ' COD. DE APLICACAO ' JN_APLICA_INI ' a ' JN_APLICA_FIN
+                 CABEC ST_AUX HEADER.6
+                END
+[~LISTA_FONTE!] BLANKFORM HEADER.6
+OUTPUT HEADER
+
+INDICATE RESERVA! TRUE
+
+CLEAR TEMPCALC
+CONSTRAINT_SET 1
+CONSTRAIN TEMPCALC.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+CONSTRAIN TEMPCALC.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+CONSTRAIN TEMPCALC.USUARIO      EQ ST@USUARIO
+CONSTRAINED_FIND FIRST TEMPCALC BY INDEX.1
+WHILE [FOUND]
+ KEYCHECK GOSUB LB_ROTINA_PARADA
+ INCREMENT RECCOUNT
+ CALC (JN_LENDO + 1)     TO JN_LENDO
+ MOVE RECCOUNT           TO JN_IMPRIMINDO
+ MOVE PAGECOUNT          TO JN_PAGINA
+
+ GOSUB LB_PULA_PAGINA
+ MOVE (LEFT(TEMPCALC.CODIGO,1)) TO ST_QUEBRA
+ 
+ IF ST_QUEBRA EQ 'X' BEGIN
+                      CABEC 'TOTAL GERAL '       TOTAL.1
+                      PRINT TEMPCALC.VALOR_1  TO TOTAL.2
+                      PRINT TEMPCALC.VALOR_2  TO TOTAL.3
+                      PRINT TEMPCALC.VALOR_3  TO TOTAL.4
+                      PRINT TEMPCALC.VALOR_4  TO TOTAL.5
+                      PRINT TEMPCALC.VALOR_5  TO TOTAL.6
+                      PRINT TEMPCALC.VALOR_6  TO TOTAL.7
+
+                      PRINT (TEMPCALC.VALOR_2 - TEMPCALC.VALOR_4) TO TOTAL.8
+                      PRINT (TEMPCALC.VALOR_2 - TEMPCALC.VALOR_6) TO TOTAL.9
+                      OUTPUT TOTAL
+                     END
+ ELSE BEGIN
+       BLANKFORM BODY
+
+       MOVEALL '' TO ST_CONTA ST_COD_DESPESA ST_N_FONTE ST_COD_APLICACAO
+       MOVE (MID(TEMPCALC.CODIGO,12,3)) TO ST_COD_DESPESA
+       MOVE (MID(TEMPCALC.CODIGO,5,16)) TO ST_N_FONTE
+       MOVE (MID(TEMPCALC.CODIGO,7,22)) TO ST_COD_APLICACAO
+
+       CLEAR ECONORCA
+       MOVE PARGERAL.ESTADO    TO ECONORCA.UF
+       MOVE PARGERAL.EXERCICIO TO ECONORCA.ANO
+       MOVE ST_COD_DESPESA     TO ECONORCA.CODIGO
+       FIND EQ ECONORCA BY INDEX.1
+
+       IF ECONORCA.GRAU EQ '1' OUTPUT BODY
+       
+       [ RESERVA!] IF (LEFT(ECONORCA.CODIGO,1)) EQ '9' BEGIN
+                                                        OUTPUT BODY
+                                                        INDICATE RESEVA! FALSE
+                                                       END
+
+       MOVE '' TO ST_DESCRICAO
+       IF ECONORCA.GRAU EQ '1' MOVE ECONORCA.DESCRICAO TO ST_DESCRICAO
+       IF ECONORCA.GRAU EQ '2' APPEND ST_DESCRICAO ' ' ECONORCA.DESCRICAO
+       IF ECONORCA.GRAU EQ '3' APPEND ST_DESCRICAO '  ' ECONORCA.DESCRICAO
+       IF ECONORCA.GRAU EQ '4' APPEND ST_DESCRICAO '   ' ECONORCA.DESCRICAO
+       IF ECONORCA.GRAU EQ '5' APPEND ST_DESCRICAO '    ' ECONORCA.DESCRICAO
+       IF ECONORCA.GRAU EQ '6' APPEND ST_DESCRICAO '     ' ECONORCA.DESCRICAO
+       IF ECONORCA.GRAU EQ '7' APPEND ST_DESCRICAO '      ' ECONORCA.DESCRICAO
+
+       [~SINTETICO!] IF TEMPCALC.AUXILIAR EQ 'A' LOWERCASE ST_DESCRICAO TO ST_DESCRICAO
+       [ SINTETICO!] IF ECONORCA.GRAU EQ '3'     LOWERCASE ST_DESCRICAO TO ST_DESCRICAO
+
+       PRINT ST_COD_DESPESA    TO JBD_CODIGO
+       PRINT ST_N_FONTE        TO JBD_N_FONTE
+       PRINT ST_COD_APLICACAO  TO JBD_COD_APLICACAO
+       PRINT ST_DESCRICAO      TO JBD_DESCRICAO
+
+       PRINT TEMPCALC.VALOR_1  TO JBD_EMPENHADO_NO_PERIODO
+       PRINT TEMPCALC.VALOR_2  TO JBD_EMPENHADO_ATUAL
+       PRINT TEMPCALC.VALOR_3  TO JBD_LIQUIDADO_NO_PERIODO
+       PRINT TEMPCALC.VALOR_4  TO JBD_LIQUIDADO_ATUAL
+       PRINT TEMPCALC.VALOR_5  TO JBD_PAGO_NO_PERIODO
+       PRINT TEMPCALC.VALOR_6  TO JBD_PAGO_ATUAL
+       
+       PRINT (TEMPCALC.VALOR_2 - TEMPCALC.VALOR_4) TO JBD_SALDO_LIQUIDAR
+       PRINT (TEMPCALC.VALOR_2 - TEMPCALC.VALOR_6) TO JBD_SALDO_PAGAR
+       OUTPUT BODY
+       GOSUB LB_PULA_PAGINA
+      END
+ 
+ INDICATE ERR FALSE
+ ON ERROR GOSUB CHECA_GRAVACAO
+ REREAD TEMPCALC
+ DELETE TEMPCALC
+ UNLOCK
+ ON ERROR OFF
+ CONSTRAINED_FIND NEXT
+ END
+CONSTRAINT_SET 1 CLEAR
+
+#INCLUDE R00CONFE.INC
+
+BUSCA_CAMINHO_MENU 'R03CONFE' ''
+FORMFEED
+GRAVAPAG
+
+[~TITULO_R00CONF!] BEGIN
+                    ADVERTE 'VERIFIQUE, NO FIM DO RELATORIO, RELACAO DA(S) ENTIDADE(S) SEM ARQUIVO(S) XML REFERENTE AO PERIODO SELECIONADO.'
+                   END
+
+ABORT
+
+LB_ROTINA_PARADA:
+ CABEC 'GOSTARIA REALMENTE DE SAIR < S/N >?' CONFIRMA.1
+ PAGE CONFIRMA
+ INKEYCHECK ST_TECLA IN 'SsNn'
+ IF ST_TECLA IN 'Ss' BEGIN
+                      MOVE 0 TO RECCOUNT
+                      LIMPA_PRN
+                     END
+ 
+ MOVE 0 TO CURRENT_IMAGE
+ PAGE TELA
+ PAGE MSG
+RETURN
+
+KEYPROC KEY.UP
+ BACKFIELD
+RETURN
+
+KEYPROC KEY.FIELD
+ IF CURRENT_WINDOW EQ 1 BEGIN
+                         MOVE 'CENTIDAD 1 ' TO ST_JUNTA
+                         APPEND ST_JUNTA ST@USUARIO ' ' ST@OPCAO ' ' ST@PROGRAMA ' ' ST@CODIGO@ENTIDADE ' ' ST@EXERCICIO@FINANCEIRO
+                         CHAIN WAIT ST_JUNTA EXPORT_FILES
+                         MOVE 0 TO CURRENT_IMAGE
+                         PAGE TELA
+                         IF ENTIDADE.CODIGO NE "" BEGIN
+                                                   TRIM ENTIDADE.CODIGO    TO JN_COD_ENTIDADE
+                                                   TRIM ENTIDADE.DESCRICAO TO JN_ENTIDADE
+                                                  END
+                         ELSE ENTAGAIN
+                         RETURN
+                        END
+ IF ((CURRENT_WINDOW EQ 8) OR (CURRENT_WINDOW EQ 10)) BEGIN
+                                                       MOVE 'CFONTES 1 ' TO ST_JUNCAO
+                                                       APPEND ST_JUNCAO ST@USUARIO ' ' ST@OPCAO ' ' ST@PROGRAMA ' ' ST@CODIGO@ENTIDADE ' ' ST@EXERCICIO@FINANCEIRO
+                                                       CHAIN WAIT ST_JUNCAO EXPORT_FILES
+                                                       MOVE 0 TO CURRENT_IMAGE
+                                                       PAGE TELA
+                                                       IF CURRENT_WINDOW EQ  8 IF FONTES.CODIGO NE '' MOVE FONTES.CODIGO    TO JN_FONTE_INI
+                                                       IF CURRENT_WINDOW EQ 10 IF FONTES.CODIGO NE '' MOVE FONTES.CODIGO    TO JN_FONTE_FIN
+                                                       ELSE ENTAGAIN
+                                                       RETURN
+                                                      END
+ IF ((CURRENT_WINDOW EQ 9) OR (CURRENT_WINDOW EQ 11)) BEGIN
+                                                       [~@SICOM!] BEGIN
+                                                         MOVE 'CFUNDOS 1 ' TO ST_JUNCAO
+                                                         APPEND ST_JUNCAO ST@USUARIO ' ' ST@OPCAO ' ' ST@PROGRAMA ' ' ST@CODIGO@ENTIDADE ' ' ST@EXERCICIO@FINANCEIRO
+                                                         CHAIN WAIT ST_JUNCAO EXPORT_FILES
+                                                         MOVE 0 TO CURRENT_IMAGE
+                                                         PAGE TELA
+                                                         IF CURRENT_WINDOW EQ  9 IF FUNDOS.CODIGO NE '' MOVE FUNDOS.CODIGO    TO JN_APLICA_INI
+                                                         IF CURRENT_WINDOW EQ 11 IF FUNDOS.CODIGO NE '' MOVE FUNDOS.CODIGO    TO JN_APLICA_FIN
+                                                         ELSE ENTAGAIN
+                                                         RETURN
+                                                       END
+                                                      END
+ ENTAGAIN
+RETURN
+
+LB_PULA_PAGINA:
+ IF LINECOUNT GE 54 BEGIN
+                     OUTPUT FOOTER
+                     FORMFEED
+                     PRINT PAGECOUNT TO HEADER.7
+                     OUTPUT HEADER
+                    END
+RETURN
+
+
+
+#INCLUDE INTEGRID.INC
+
+
+
+

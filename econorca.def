@@ -1,0 +1,69 @@
+-----------------------------------------------------------------------------
+  DATE: 24/04/2025      TIME: 09:37                                  PAGE:  1
+  FILE DEFINITION FOR FILE: ECONORCA (# 242)
+-----------------------------------------------------------------------------
+  DRIVER NAME               : DATAFLEX
+  FILE ROOT NAME            : ECONORCA
+  USER DISPLAY NAME         : ECONORCA
+  DATAFLEX FILE NAME        : ECONORCA
+-----------------------------------------------------------------------------
+  RECORD LENGTH             : 170       ( USED: 128 )
+  MAX NUMBER OF RECORDS     : 16711679  ( USED: 55120 )
+  FILE COMPRESSION          : NONE
+  RE-USE DELETED SPACE      : YES
+  LOCKING TYPE              : FILE
+  HEADER INTEGRITY CHECKING : YES
+  TRANSACTION TYPE          : CLIENT ATOMIC
+  RECORD IDENTITY INDEX     : 0 ( 0 , 0 )
+  FILE LOGIN PARAMETER      : 
+  SYSTEM FILE               : NO 
+-----------------------------------------------------------------------------
+
+NUM  FIELD NAME       TYPE SIZE  OFFST IX   RELATES TO FILE.FIELD
+---  ---------------  ---- ----- ----- --   ---------------------------------
+  1  UF               ASC      2     1  1   
+  2  ANO              ASC      4     3  1   
+  3  CODIGO           ASC     12     7  1   
+  4  DESCRICAO        ASC     50    19  2   
+  5  TIPO             ASC      1    69      
+  6  GRAU             ASC      1    70      
+  7  GRAU1            OVE      1     7  1   
+  8  GRAU2            OVE      1     9  1   
+  9  GRAU3            OVE      2    11  1   
+ 10  CATEGORIA        OVE      6     7  1   
+ 11  ELEMENTO         OVE      2    14  1   
+ 12  GRUPO            OVE      3     7  1   
+ 13  ITEM_DESPESA     OVE      5    14  1   
+ 14  ECONOMICA        OVE      9     7  1   
+ 15  AUXILIAR         ASC      1    71      
+ 16  MODALIDADE_ELE   OVE      5    11  1   
+ 17  PREVIDENCIA      ASC      1    72      
+ 18  GRUPO_ITLANCTO   NUM    4.0    73      
+ 19  LANC_AUTOMATICO  ASC      1    75      
+ 20  ORDEM_OCP        NUM    2.0    76      
+ 21  CATEGORIA_OCP    ASC     50    77      
+ 22  FOLHA_PAGTO      ASC      1   127      
+ 23  COMPRAS          ASC      1   128      
+
+
+INDEX# FIELDS          DES U/C    LENGTH LEVELS SEGMENTS MODE
+------ --------------- --- ---    ------ ------ -------- -------
+  1    UF              NO  NO       18     5       3     ON-LINE
+       ANO             NO  NO 
+       CODIGO          NO  NO 
+
+  2    UF              NO  NO       59     8       4     ON-LINE
+       ANO             NO  NO 
+       DESCRICAO       NO  NO 
+       RECNUM          NO  NO 
+
+  3    UF              NO  NO       11     5       4     ON-LINE
+       ANO             NO  NO 
+       ELEMENTO        NO  NO 
+       RECNUM          NO  NO 
+
+  4    UF              NO  NO       14     5       4     ON-LINE
+       ANO             NO  NO 
+       MODALIDADE_ELE  NO  NO 
+       RECNUM          NO  NO 
+

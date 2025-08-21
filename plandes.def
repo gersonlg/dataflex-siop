@@ -1,0 +1,136 @@
+-----------------------------------------------------------------------------
+  DATE: 25/10/2023      TIME: 17:31                                  PAGE:  1
+  FILE DEFINITION FOR FILE: PLANDES (# 101)
+-----------------------------------------------------------------------------
+  DRIVER NAME               : DATAFLEX
+  FILE ROOT NAME            : PLANDES
+  USER DISPLAY NAME         : PLANDES
+  DATAFLEX FILE NAME        : PLANDES
+-----------------------------------------------------------------------------
+  RECORD LENGTH             : 102       ( USED: 87 )
+  MAX NUMBER OF RECORDS     : 16711679  ( USED: 0 )
+  FILE COMPRESSION          : NONE
+  RE-USE DELETED SPACE      : YES
+  LOCKING TYPE              : FILE
+  HEADER INTEGRITY CHECKING : YES
+  TRANSACTION TYPE          : CLIENT ATOMIC
+  RECORD IDENTITY INDEX     : 0 ( 0 , 0 )
+  FILE LOGIN PARAMETER      : 
+  SYSTEM FILE               : NO 
+-----------------------------------------------------------------------------
+
+NUM  FIELD NAME       TYPE SIZE  OFFST IX   RELATES TO FILE.FIELD
+---  ---------------  ---- ----- ----- --   ---------------------------------
+  1  ID_VERSAO        NUM   12.0     1  1   
+  2  COD_ENTIDADE     ASC      2     7  1   
+  3  ORGAO            ASC      8     9  2   
+  4  ECONOMICA        ASC     12    17  2   
+  5  FUNCAO           ASC      2    29  2   
+  6  SUBFUNCAO        ASC      3    31  2   
+  7  PROGRAMA         ASC      4    34  2   
+  8  CODIGO_ACAO      ASC      4    38  2   
+  9  FONTE            ASC      5    42  2   
+ 10  COD_APLICACAO    ASC      7    47  2   
+ 11  NUMERO           ASC      5    54  1   
+ 12  FIXADO           NUM   14.2    59      
+ 13  VINCULADO        NUM   14.2    67      
+ 14  ORDINARIO        NUM   14.2    75      
+ 15  SUBVENCAO        ASC      1    83  3   
+ 16  ENSINO           ASC      2    84  8   
+ 17  SEGURIDADE       ASC      1    86      
+ 18  TP_EMPRESTIMO    ASC      1    87      
+ 19  COD_ORGAO        OVE      2     9  2   
+ 20  COD_UNIDADE      OVE      2    12  2   
+ 21  COD_SUB_UNIDADE  OVE      2    15  2   
+ 22  FUNCIONAL        OVE      9    29  2   
+ 23  TIPO_ACAO        OVE      1    38  2   
+ 24  COD_ACAO         OVE      3    39  2   
+
+
+INDEX# FIELDS          DES U/C    LENGTH LEVELS SEGMENTS MODE
+------ --------------- --- ---    ------ ------ -------- -------
+  1    ID_VERSAO       NO  NO       13     5       3     ON-LINE
+       COD_ENTIDADE    NO  NO 
+       NUMERO          NO  NO 
+
+  2    ID_VERSAO       NO  NO       53     8       10    ON-LINE
+       COD_ENTIDADE    NO  NO 
+       ORGAO           NO  NO 
+       ECONOMICA       NO  NO 
+       FUNCAO          NO  NO 
+       SUBFUNCAO       NO  NO 
+       PROGRAMA        NO  NO 
+       CODIGO_ACAO     NO  NO 
+       FONTE           NO  NO 
+       COD_APLICACAO   NO  NO 
+
+  3    ID_VERSAO       NO  NO       17     5       5     ON-LINE
+       COD_ENTIDADE    NO  NO 
+       SUBVENCAO       NO  NO 
+       NUMERO          NO  NO 
+       RECNUM          NO  NO 
+
+  4    ID_VERSAO       NO  NO       18     5       4     ON-LINE
+       COD_ENTIDADE    NO  NO 
+       COD_APLICACAO   NO  NO 
+       RECNUM          NO  NO 
+
+  5    ID_VERSAO       NO  NO       28     6       5     ON-LINE
+       COD_ENTIDADE    NO  NO 
+       ECONOMICA       NO  NO 
+       NUMERO          NO  NO 
+       RECNUM          NO  NO 
+
+  6    ID_VERSAO       NO  NO       27     6       7     ON-LINE
+       FUNCAO          NO  NO 
+       SUBFUNCAO       NO  NO 
+       PROGRAMA        NO  NO 
+       CODIGO_ACAO     NO  NO 
+       NUMERO          NO  NO 
+       RECNUM          NO  NO 
+
+  7    ID_VERSAO       NO  NO       15     5       4     ON-LINE
+       COD_ENTIDADE    NO  NO 
+       CODIGO_ACAO     NO  NO 
+       RECNUM          NO  NO 
+
+  8    ID_VERSAO       NO  NO       36     7       6     ON-LINE
+       COD_ENTIDADE    NO  NO 
+       FUNCIONAL       NO  NO 
+       ECONOMICA       NO  NO 
+       ENSINO          NO  NO 
+       NUMERO          NO  NO 
+
+  9    ID_VERSAO       NO  NO       17     5       4     ON-LINE
+       COD_ENTIDADE    NO  NO 
+       PROGRAMA        NO  NO 
+       NUMERO          NO  NO 
+
+  10   ID_VERSAO       NO  NO       15     5       4     ON-LINE
+       PROGRAMA        NO  NO 
+       COD_ENTIDADE    NO  NO 
+       RECNUM          NO  NO 
+
+  11   ID_VERSAO       NO  NO       15     5       4     ON-LINE
+       CODIGO_ACAO     NO  NO 
+       COD_ENTIDADE    NO  NO 
+       RECNUM          NO  NO 
+
+  12   ID_VERSAO       NO  NO       28     6       7     ON-LINE
+       COD_ENTIDADE    NO  NO 
+       ORGAO           NO  NO 
+       PROGRAMA        NO  NO 
+       FUNCAO          NO  NO 
+       SUBFUNCAO       NO  NO 
+       RECNUM          NO  NO 
+
+  13   ID_VERSAO       NO  NO       15     5       4     ON-LINE
+       COD_ENTIDADE    NO  NO 
+       CODIGO_ACAO     NO  NO 
+       RECNUM          NO  NO 
+
+  14   ID_VERSAO       NO  NO       18     5       4     ON-LINE
+       COD_ENTIDADE    NO  NO 
+       COD_APLICACAO   NO  NO 
+       RECNUM          NO  NO 
+

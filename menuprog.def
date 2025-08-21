@@ -1,0 +1,35 @@
+-----------------------------------------------------------------------------
+  DATE: 25/10/2023      TIME: 17:31                                  PAGE:  1
+  FILE DEFINITION FOR FILE: MENUPROG (# 200)
+-----------------------------------------------------------------------------
+  DRIVER NAME               : DATAFLEX
+  FILE ROOT NAME            : MENUPROG
+  USER DISPLAY NAME         : MENUPROG
+  DATAFLEX FILE NAME        : MENUPROG
+-----------------------------------------------------------------------------
+  RECORD LENGTH             : 64        ( USED: 64 )
+  MAX NUMBER OF RECORDS     : 16711679  ( USED: 231 )
+  FILE COMPRESSION          : NONE
+  RE-USE DELETED SPACE      : YES
+  LOCKING TYPE              : FILE
+  HEADER INTEGRITY CHECKING : YES
+  TRANSACTION TYPE          : CLIENT ATOMIC
+  RECORD IDENTITY INDEX     : 0 ( 0 , 0 )
+  FILE LOGIN PARAMETER      : 
+  SYSTEM FILE               : NO 
+-----------------------------------------------------------------------------
+
+NUM  FIELD NAME       TYPE SIZE  OFFST IX   RELATES TO FILE.FIELD
+---  ---------------  ---- ----- ----- --   ---------------------------------
+  1  NOME_PROGRAMA    ASC      8     1  1   
+  2  TITULO           ASC     55     9  2   
+  3  QTD_ASSINATURAS  ASC      1    64      
+
+
+INDEX# FIELDS          DES U/C    LENGTH LEVELS SEGMENTS MODE
+------ --------------- --- ---    ------ ------ -------- -------
+  1    NOME_PROGRAMA   NO  NO       8      5       1     ON-LINE
+
+  2    TITULO          NO  NO       58     8       2     ON-LINE
+       RECNUM          NO  NO 
+

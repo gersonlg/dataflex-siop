@@ -1,0 +1,411 @@
+/TELA RESIDENT
+³ __/__/____  ________________________________________________________         ³
+ÆÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍµ
+³                                                                              ³
+³Exercicio          ____                                                       ³
+³                                                                              ³
+³Entidade      <F2> __ _______________________________________________________ ³
+³Identifica‡„o <F2> __ _______________________________________________________ ³
+³                                                                              ³
+³C.N.P.J.           __________________                    Telefone __ ________ ³
+³Endere‡o           ______________________________ N§_____ Comp. _____________ ³
+³Cidade             ______________________________   Estado __   Cep  ________ ³
+³Bairro             ______________________________                             ³
+³N£mero m ximo de dias para presta‡„o de contas de adiantamento             _. ³
+³Gestor Previdˆncia <S/N> _                                      Sa£de <S/N> _ ³
+³Limite para dispensa de licita‡„o para efeito da cronologia de pagamentos.    ³
+³(Conf. Art. 5o. Paragrafo 3o. da Lei 8.666/93)             ___________,___,__ ³
+³C¢digo do Munic¡pio no TCE       : _____  (siafi)                             ³
+³C¢digo da Entidade  no TCE       : _____  (orgao)                             ³
+³C¢digo da Munic¡pio no IBGE      : _____                                      ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ <ESC>Retornar ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/CONFIRMA RESIDENT
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+À______________________________________________________________________________Ù
+/IDENTIFICA RESIDENT
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³ þ ADMINISTRA€ŽO DIRETA:                           ³
+³                                                   ³
+³  01 -  Prefeitura Municipal                       ³
+³  02 -  Cƒmara Municipal                           ³
+³  03 -  Fundo Especial                             ³
+³                                                   ³
+³ þ ADMINISTRA€ŽO INDIRETA:                         ³
+³                                                   ³
+³  04 -  Autarquia                                  ³
+³  05 -  Funda‡„o P£blica                           ³
+³  06 -  Empresa P£blica n„o Dependente             ³
+³  07 -  Sociedade de Econ“mia Mista n„o Dependente ³
+³  08 -  Empresa P£blica Dependente                 ³
+³  09 -  Sociedade de Econ“mia Mista Dependente     ³
+³  10 -  Consorcios                                 ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/*
+#INCLUDE CONAM.LIB
+
+STRING  ST_ESTADOS 255 ST_CGC ST_LETRA ST_TELEFONE ST_DESTINO 255
+
+INTEGER IT_CONT IT_SIZE
+
+AUTOPAGE TELA
+NAME JN_TARJA_DATA
+NAME JN_TARJA_TITULO
+NAME JN_EXERCICIO
+NAME JN_COD_ENTIDADE     JN_NOME_ENTIDADE
+NAME JN_N_IDENTIFICA     JN_NOME_IDENTIFICA
+NAME JN_CGC              JN_DDD             JN_TELEFONE
+NAME JN_ENDERECO         JN_NUMERO          JN_COMPLEMENTO
+NAME JN_CIDADE           JN_ESTADO          JN_CEP
+NAME JN_BAIRRO
+NAME JN_ADIANTAMENTO
+NAME JN_GESTOR           JN_FMS
+NAME JN_LIMITE_DISPENSA
+NAME JN_COD_SIAFI        JN_COD_TCE         JN_COD_IBGE
+
+OPEN ENTIDADE
+OPEN PARGERAL
+
+PAGE SET TELA            AT 03 00 COLORS IT_COR_TARJA  IT_COR_MOLDURA
+PAGE SET CONFIRMA        AT 22 00 COLORS IT_COR_TARJA  IT_COR_MOLDURA
+PAGE SET IDENTIFICA      AT 06 19 COLORS IT_COR_TITULO IT_COR_TITULO
+
+SCREENMODE IT_COR_MOLDURA ON
+SYSDATA JN_TARJA_DATA
+SCREENMODE IT_COR_TITULO ON
+     IF ST@OPCAO EQ '1' CABEC 'Inclusao Entidade e Parametros Gerais'  JN_TARJA_TITULO
+ELSE IF ST@OPCAO EQ '2' CABEC 'Alteracao Entidade e Parametros Gerais' JN_TARJA_TITULO
+ELSE IF ST@OPCAO EQ '3' CABEC 'Exclusao Entidade e Parametros Gerais'  JN_TARJA_TITULO
+SCREENMODE IT_COR_TARJA ON
+
+MOVE 'PESPRSCEaAMACaMTOaMSEaBALaRJaMGOaRRNaROaPIaAPAaDFNaPB' TO ST_ESTADOS
+
+PAGE TELA
+
+INICIO:
+SCREENMODE IT_COR_TARJA ON
+CLEARFORM JN_EXERCICIO THRU JN_COD_IBGE
+
+ANO_2000 JN_EXERCICIO  {AUTOCLEAR}
+
+LB_ENTIDADE:
+ACCEPT JN_COD_ENTIDADE {AUTOCLEAR}
+COMZEROS JN_COD_ENTIDADE 2
+
+CLEAR PARGERAL
+MOVE JN_EXERCICIO    TO PARGERAL.EXERCICIO
+MOVE JN_COD_ENTIDADE TO PARGERAL.COD_ENTIDADE
+FIND EQ PARGERAL BY INDEX.1
+[~FOUND] BEGIN
+          IF ST@OPCAO NE '1' BEGIN
+                              ADVERTE 'ENTIDADE NAO CADASTRADA'
+                              GOTO INICIO
+                             END
+         END
+[ FOUND] BEGIN
+          IF ST@OPCAO EQ '1' BEGIN
+                              ADVERTE 'ENTIDADE NAO CADASTRADA'
+                              GOTO INICIO
+                             END
+         END
+
+IF ST@OPCAO EQ '2' BEGIN
+                    MOVE PARGERAL.COD_ENTIDADE            TO JN_COD_ENTIDADE
+                    MOVE PARGERAL.NOME_ENTIDADE           TO JN_NOME_ENTIDADE
+                    MOVE PARGERAL.IDENTIFICACAO           TO JN_N_IDENTIFICA
+                    
+                    IF PARGERAL.IDENTIFICACAO EQ '01' MOVE 'Prefeitura Municipal       '            TO JN_NOME_IDENTIFICA
+                    IF PARGERAL.IDENTIFICACAO EQ '02' MOVE 'Cƒmara Municipal           '            TO JN_NOME_IDENTIFICA
+                    IF PARGERAL.IDENTIFICACAO EQ '03' MOVE 'Fundo Especial             '            TO JN_NOME_IDENTIFICA
+                    IF PARGERAL.IDENTIFICACAO EQ '04' MOVE 'Autarquia                  '            TO JN_NOME_IDENTIFICA
+                    IF PARGERAL.IDENTIFICACAO EQ '05' MOVE 'Funda‡„o P£blica           '            TO JN_NOME_IDENTIFICA
+                    IF PARGERAL.IDENTIFICACAO EQ '06' MOVE 'Empresa P£blica            '            TO JN_NOME_IDENTIFICA
+                    IF PARGERAL.IDENTIFICACAO EQ '07' MOVE 'Sociedade de Econ“mia Mista'            TO JN_NOME_IDENTIFICA
+                    IF PARGERAL.IDENTIFICACAO EQ '08' MOVE 'Empresa P£blica Dependente '            TO JN_NOME_IDENTIFICA
+                    IF PARGERAL.IDENTIFICACAO EQ '09' MOVE 'Sociedade de Econ“mia Mista Dependente' TO JN_NOME_IDENTIFICA
+                    IF PARGERAL.IDENTIFICACAO EQ '10' MOVE 'Consorcios'                             TO JN_NOME_IDENTIFICA
+                    
+                    MOVE  PARGERAL.C_G_C                   TO JN_CGC
+                    MOVE  (MID(PARGERAL.TELEFONE,2,1))     TO JN_DDD
+                    MOVE  (MID(PARGERAL.TELEFONE,8,4))     TO JN_TELEFONE
+                    MOVE  (MID(PARGERAL.ENDERECO,30,1))    TO JN_ENDERECO
+                    MOVE  (MID(PARGERAL.ENDERECO,5,31))    TO JN_NUMERO
+                    MOVE  (MID(PARGERAL.ENDERECO,15,36))   TO JN_COMPLEMENTO
+                    MOVE  PARGERAL.CIDADE                  TO JN_CIDADE
+                    MOVE  PARGERAL.ESTADO                  TO JN_ESTADO
+                    MOVE  PARGERAL.CEP                     TO JN_CEP
+                    MOVE  PARGERAL.BAIRRO                  TO JN_BAIRRO
+                    MOVE  PARGERAL.LIMITE_ADIANT           TO JN_ADIANTAMENTO
+                    PRINT PARGERAL.LIMITE_DISPENSA         TO JN_LIMITE_DISPENSA
+                    MOVE  PARGERAL.COD_SIAFI               TO JN_COD_SIAFI
+                    MOVE  PARGERAL.COD_ENT_TCE             TO JN_COD_TCE
+                    MOVE  PARGERAL.COD_IBGE                TO JN_COD_IBGE
+                    
+                    CLEAR ENTIDADE
+                    MOVE JN_COD_ENTIDADE TO ENTIDADE.EXERCICIO
+                    MOVE JN_EXERCICIO    TO ENTIDADE.CODIGO
+                    FIND EQ ENTIDADE BY INDEX.1
+                    [~FOUND] CLEAR ENTIDADE
+                    
+                    IF ENTIDADE.TP_ENTIDADE EQ '1' MOVE 'S' TO JN_GESTOR
+                    ELSE                           MOVE 'N' TO JN_GESTOR
+                    IF ENTIDADE.TP_ENTIDADE EQ '2' MOVE 'S' TO JN_FMS
+                    ELSE                           MOVE 'N' TO JN_FMS
+                   END
+
+LB_NOME_ENTIDADE:
+REPEAT
+ ACCEPT JN_NOME_ENTIDADE {AUTOCLEAR}
+ IF JN_NOME_ENTIDADE EQ '' MENSAGEM 1
+UNTIL JN_NOME_ENTIDADE NE ''
+
+LB_ROTINA_IDENTIFICACAO:
+ACCEPT JN_N_IDENTIFICA {AUTOCLEAR}
+COMZEROS JN_N_IDENTIFICA 2
+IF NOT JN_N_IDENTIFICA IN '01#02#03#04#05#06#07#08#09#10' BEGIN
+                                                           ADVERTE 'C¢DIGOS POSS¡VEIS -> 01-02-03-04-05-06-07-08-09-10'
+                                                           GOTO  LB_ROTINA_IDENTIFICACAO
+                                                          END
+
+IF JN_N_IDENTIFICA EQ '01' MOVE 'Prefeitura Municipal       '            TO JN_NOME_IDENTIFICA
+IF JN_N_IDENTIFICA EQ '02' MOVE 'Cƒmara Municipal           '            TO JN_NOME_IDENTIFICA
+IF JN_N_IDENTIFICA EQ '03' MOVE 'Fundo Especial             '            TO JN_NOME_IDENTIFICA
+IF JN_N_IDENTIFICA EQ '04' MOVE 'Autarquia                  '            TO JN_NOME_IDENTIFICA
+IF JN_N_IDENTIFICA EQ '05' MOVE 'Funda‡„o P£blica           '            TO JN_NOME_IDENTIFICA
+IF JN_N_IDENTIFICA EQ '06' MOVE 'Empresa P£blica            '            TO JN_NOME_IDENTIFICA
+IF JN_N_IDENTIFICA EQ '07' MOVE 'Sociedade de Econ“mia Mista'            TO JN_NOME_IDENTIFICA
+IF JN_N_IDENTIFICA EQ '08' MOVE 'Empresa P£blica Dependente '            TO JN_NOME_IDENTIFICA
+IF JN_N_IDENTIFICA EQ '09' MOVE 'Sociedade de Econ“mia Mista Dependente' TO JN_NOME_IDENTIFICA
+IF JN_N_IDENTIFICA EQ '10' MOVE 'Consorcios'                             TO JN_NOME_IDENTIFICA
+
+            INDICATE NAOVALE! AS (JN_N_IDENTIFICA EQ '01' AND JN_COD_ENTIDADE NE '01')
+[~NAOVALE!] INDICATE NAOVALE! AS (JN_N_IDENTIFICA NE '01' AND JN_COD_ENTIDADE EQ '01')
+[~NAOVALE!] INDICATE NAOVALE! AS (JN_N_IDENTIFICA EQ '02' AND JN_COD_ENTIDADE NE '02')
+[~NAOVALE!] INDICATE NAOVALE! AS (JN_N_IDENTIFICA NE '02' AND JN_COD_ENTIDADE EQ '02')
+[ NAOVALE!] BEGIN
+             ADVERTE 'C¢DIGO DA ENTIDADE NŽO CONFERE COM N§ DE IDENTIFICA€ŽO'
+             CLEARFORM JN_COD_ENTIDADE THRU JN_NOME_ENTIDADE
+             GOTO LB_ENTIDADE
+            END
+
+LB_CGC:
+REPEAT
+ INDICATE ERR FALSE
+ MOVE '' TO ST_CGC
+ MOVE 0  TO IT_CONT
+ MOVE 0  TO IT_SIZE
+ ACCEPT JN_CGC  {AUTOCLEAR}
+ IF JN_CGC EQ '' BEGIN
+                  MENSAGEM 1
+                  GOTO LB_CGC
+                 END
+
+ TRIM JN_CGC TO JN_CGC
+ FOR IT_CONT FROM 1 TO 18
+  MID JN_CGC TO ST_LETRA 1 IT_CONT
+  INDICATE NUMERICO! AS ST_LETRA IN '0123456789'
+  [NUMERICO!] APPEND ST_CGC ST_LETRA
+ LOOP
+
+ LENGTH ST_CGC TO IT_SIZE
+ INDICATE CGC! AS IT_SIZE EQ 14
+
+ [~ CGC!] INDICATE ERR TRUE
+ [CGC!] BEGIN
+         CHECA_CGC ST_CGC
+         TRIM ST_CGC TO ST_CGC
+         [~ ERR] BEGIN
+                  INSERT '-' IN ST_CGC AT 13
+                  INSERT '/' IN ST_CGC AT 9
+                  INSERT '.' IN ST_CGC AT 6
+                  INSERT '.' IN ST_CGC AT 3
+                 END
+        END
+ [  ERR] BEGIN
+          ADVERTE 'C.G.C. INV LIDO !'
+          CLEARFORM JN_CGC
+          GOTO LB_CGC
+         END
+ MOVE ST_CGC  TO JN_CGC
+UNTIL JN_CGC NE ''
+
+REPEAT
+ ACCEPT JN_DDD               {AUTOCLEAR,CAPSLOCK}
+ IF JN_DDD EQ '' MENSAGEM 1
+ COMZEROS JN_DDD 2
+ NUMERICO JN_DDD 2
+ IF JN_DDD EQ '00' CLEARFORM JN_DDD
+ [~ @NUMERICO!]    CLEARFORM JN_DDD
+UNTIL JN_DDD NE ''
+
+REPEAT
+ ACCEPT JN_TELEFONE               {AUTOCLEAR,CAPSLOCK}
+ IF JN_TELEFONE EQ '' MENSAGEM 1
+ NUMERICO JN_TELEFONE 8
+ IF JN_TELEFONE EQ '00000000' CLEARFORM JN_TELEFONE
+ [~ @NUMERICO!]               CLEARFORM JN_TELEFONE
+UNTIL JN_TELEFONE NE ''
+
+REPEAT
+ ACCEPT JN_ENDERECO              {AUTOCLEAR}
+ IF JN_ENDERECO EQ '' MENSAGEM 1
+UNTIL JN_ENDERECO NE ''
+
+LB_NUMERO:
+ ACCEPT JN_NUMERO {AUTOCLEAR}
+ NUMERICO JN_NUMERO 5
+ [~ @NUMERICO!] BEGIN
+                 CLEARFORM JN_NUMERO
+                 GOTO LB_NUMERO
+                END
+ COMBRANCOS JN_NUMERO 5
+
+ ACCEPT JN_COMPLEMENTO {AUTOCLEAR}
+
+REPEAT
+ ACCEPT JN_CIDADE                {AUTOCLEAR}
+ IF JN_CIDADE EQ '' MENSAGEM 1
+UNTIL JN_CIDADE NE ''
+
+REPEAT
+ ACCEPT JN_ESTADO                  {AUTOCLEAR}
+ COMBRANCOS JN_ESTADO 2
+ IF JN_ESTADO EQ '' MENSAGEM 1
+UNTIL JN_ESTADO IN ST_ESTADOS
+
+REPEAT
+ ACCEPT JN_CEP  {AUTOCLEAR}
+ IF JN_CEP EQ '' MENSAGEM 1
+ COMZEROS JN_CEP 8
+ NUMERICO JN_CEP 8
+ IF JN_CEP EQ '00000000' CLEARFORM JN_CEP
+ [~ @NUMERICO!]          CLEARFORM JN_CEP
+UNTIL JN_CEP NE ''
+
+LB_BAIRRO:
+REPEAT
+ ACCEPT JN_BAIRRO                {AUTOCLEAR}
+ IF JN_BAIRRO EQ '' MENSAGEM 1
+UNTIL JN_BAIRRO NE ''
+
+LB_ADIANTAMENTO:
+ACCEPT JN_ADIANTAMENTO  {AUTOCLEAR}
+
+LB_PREVIDENCIA:
+ACCEPT JN_GESTOR {CAPSLOCK,AUTOCLEAR}
+IF NOT JN_GESTOR IN 'SsNn' GOTO LB_PREVIDENCIA
+
+LB_SAUDE:
+ACCEPT JN_FMS {CAPSLOCK,AUTOCLEAR}
+IF NOT JN_FMS IN 'SsNn' GOTO LB_SAUDE
+
+LB_VALOR:
+REPEAT
+ ACCEPT JN_LIMITE_DISPENSA {AUTOCLEAR}
+ PRINT JN_LIMITE_DISPENSA TO JN_LIMITE_DISPENSA
+UNTIL JN_LIMITE_DISPENSA NE 0
+
+ACCEPT JN_COD_SIAFI {AUTOCLEAR}
+
+ACCEPT JN_COD_TCE   {AUTOCLEAR}
+
+ACCEPT JN_COD_IBGE  {AUTOCLEAR}
+
+
+CONFIRMACAO 'CADASTRO DA NOVA ENTIDADE'
+
+INDICATE ERR FALSE
+ON ERROR GOSUB CHECA_GRAVACAO
+REREAD
+
+ CLEAR PARGERAL
+ MOVE ST@EXERCICIO@FINANCEIRO TO PARGERAL.EXERCICIO
+ MOVE ST@CODIGO@ENTIDADE      TO PARGERAL.COD_ENTIDADE
+ FIND EQ PARGERAL BY INDEX.1
+
+ MOVE JN_NOME_ENTIDADE    TO PARGERAL.NOME_ENTIDADE
+ MOVE JN_CGC              TO PARGERAL.C_G_C
+
+ MOVE JN_DDD TO ST_TELEFONE
+ APPEND ST_TELEFONE ' ' JN_TELEFONE
+ MOVE ST_TELEFONE      TO PARGERAL.TELEFONE
+
+ MOVE '' TO PARGERAL.ENDERECO
+ MOVE (OVERSTRIKE(JN_ENDERECO,PARGERAL.ENDERECO,1))     TO PARGERAL.ENDERECO
+ MOVE (OVERSTRIKE(JN_NUMERO,PARGERAL.ENDERECO,31))      TO PARGERAL.ENDERECO
+ MOVE (OVERSTRIKE(JN_COMPLEMENTO,PARGERAL.ENDERECO,36)) TO PARGERAL.ENDERECO
+
+ MOVE JN_CIDADE           TO PARGERAL.CIDADE
+ MOVE JN_ESTADO           TO PARGERAL.ESTADO
+ MOVE JN_CEP              TO PARGERAL.CEP
+ MOVE JN_BAIRRO           TO PARGERAL.BAIRRO
+ MOVE JN_ADIANTAMENTO     TO PARGERAL.LIMITE_ADIANT
+ MOVE JN_LIMITE_DISPENSA  TO PARGERAL.LIMITE_DISPENSA
+ MOVE JN_N_IDENTIFICA     TO PARGERAL.IDENTIFICACAO
+ MOVE JN_COD_ENTIDADE     TO PARGERAL.COD_ENTIDADE
+ MOVE JN_COD_SIAFI        TO PARGERAL.COD_SIAFI
+ MOVE JN_COD_TCE          TO PARGERAL.COD_ENT_TCE
+ MOVE JN_COD_IBGE         TO PARGERAL.COD_IBGE
+ SAVERECORD PARGERAL
+
+ CLEAR ENTIDADE
+ MOVE ST@EXERCICIO@FINANCEIRO TO ENTIDADE.EXERCICIO
+ MOVE JN_COD_ENTIDADE         TO ENTIDADE.CODIGO
+ FIND EQ ENTIDADE BY INDEX.1
+ MOVE JN_NOME_ENTIDADE                            TO ENTIDADE.DESCRICAO
+ IF JN_GESTOR  EQ 'S'                    MOVE '1' TO ENTIDADE.TP_ENTIDADE
+ IF JN_FMS     EQ 'S'                    MOVE '2' TO ENTIDADE.TP_ENTIDADE
+ IF (JN_GESTOR EQ 'N' AND JN_FMS EQ 'N') MOVE ''  TO ENTIDADE.TP_ENTIDADE
+ SAVERECORD ENTIDADE
+
+ GRAVAINCLUSAO 'ENTIDADE' JN_COD_ENTIDADE 'M'
+ GRAVAINCLUSAO 'PARGERAL' JN_COD_ENTIDADE 'M'
+
+UNLOCK
+ON ERROR OFF
+
+GOTO INICIO
+
+KEYPROC KEY.ESCAPE
+CONFIRMACAO 'RETORNO'
+
+KEYPROC KEY.HELP
+AJUDA
+RETURN
+
+KEYPROC KEY.UP
+BACKFIELD
+RETURN
+
+KEYPROC KEY.CLEAR
+RETURN INICIO
+
+KEYPROC KEY.FIELD
+ IF CURRENT_WINDOW EQ 4 BEGIN
+                         MOVE 'CENTIDAD 1 ' TO ST_DESTINO
+                         APPEND ST_DESTINO ST@USUARIO ' ' ST@OPCAO ' ' ST@PROGRAMA ' ' ST@CODIGO@ENTIDADE ' ' ST@EXERCICIO@FINANCEIRO
+                         CHAIN WAIT ST_DESTINO EXPORT_FILES
+                         MOVE 0 TO CURRENT_IMAGE
+                         PAGE TELA
+                         IF ENTIDADE.CODIGO NE '' BEGIN
+                                                   TRIM ENTIDADE.CODIGO    TO JN_COD_ENTIDADE
+                                                   TRIM ENTIDADE.DESCRICAO TO JN_NOME_ENTIDADE
+                                                  END
+                         ELSE RETURN LB_ENTIDADE
+                        END
+ ELSE IF CURRENT_WINDOW EQ 6 BEGIN
+                              BEEP
+                              PAGE IDENTIFICA
+                              GOTOXY 25 0
+                              PAUSE
+                              MOVE 0 TO CURRENT_IMAGE
+                              PAGE TELA
+                              RETURN LB_ROTINA_IDENTIFICACAO
+                             END
+ ELSE ENTAGAIN
+RETURN
+
+
+#INCLUDE INTEGRID.INC
+
+

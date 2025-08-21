@@ -1,0 +1,134 @@
+-----------------------------------------------------------------------------
+  DATE: 25/10/2023      TIME: 17:31                                  PAGE:  1
+  FILE DEFINITION FOR FILE: ESTLIQUI (# 28)
+-----------------------------------------------------------------------------
+  DRIVER NAME               : DATAFLEX
+  FILE ROOT NAME            : ESTLIQUI
+  USER DISPLAY NAME         : ESTLIQUI
+  DATAFLEX FILE NAME        : ESTLIQUI
+-----------------------------------------------------------------------------
+  RECORD LENGTH             : 384       ( USED: 273 )
+  MAX NUMBER OF RECORDS     : 16711679  ( USED: 0 )
+  FILE COMPRESSION          : NONE
+  RE-USE DELETED SPACE      : YES
+  LOCKING TYPE              : FILE
+  HEADER INTEGRITY CHECKING : YES
+  TRANSACTION TYPE          : CLIENT ATOMIC
+  RECORD IDENTITY INDEX     : 0 ( 0 , 0 )
+  FILE LOGIN PARAMETER      : 
+  SYSTEM FILE               : NO 
+-----------------------------------------------------------------------------
+
+NUM  FIELD NAME       TYPE SIZE  OFFST IX   RELATES TO FILE.FIELD
+---  ---------------  ---- ----- ----- --   ---------------------------------
+  1  COD_ENTIDADE     ASC      2     1  1   
+  2  EXERCICIO        ASC      4     3  1   
+  3  N_EMPENHO        ASC      5     7  1   
+  4  TIPO_DOCFISCAL   ASC      2    12  1   
+  5  N_DOCFISCAL      ASC     10    14  1   
+  6  DATA             DAT      3    24  2   
+  7  DATA_VENCIMENTO  DAT      3    27  1   
+  8  VALOR            NUM   14.2    30      
+  9  INCORPORA_SN     ASC      1    38      
+ 10  N_HISTORICO      ASC      5    39      
+ 11  N_DESPESA        ASC      5    44  2   
+ 12  N_FORNECEDOR     ASC      5    49  3   
+ 13  SEQ_FORNECEDOR   ASC      2    54      
+ 14  PESSOAL          ASC      1    56      
+ 15  ECONOMICA        ASC     12    57  5   
+ 16  GRUPO_DESPESA    OVE      3    57  5   
+ 17  ELEMENTO         OVE      2    64  5   
+ 18  ITEM_DESPESA     OVE      5    64  5   
+ 19  ACAO             ASC      4    69  7   
+ 20  APL_RECURSOS     ASC      1    73      
+ 21  MES_13           ASC      1    74      
+ 22  SETOR            ASC      5    75  9   
+ 23  FLAG_EMISSAO     ASC      1    80  9   
+ 24  SALDO_ANTERIOR   NUM   14.2    81      
+ 25  SALDO_ATUAL      NUM   14.2    89      
+ 26  SEQUENCIA        NUM    8.0    97  1   
+ 27  HISTORICO_1      ASC     50   101      
+ 28  HISTORICO_2      ASC     50   151      
+ 29  N_FOLHA          ASC     15   201      
+ 30  N_DIVERSOS       ASC      5   216      
+ 31  N_PROCESSO       ASC      6   221      
+ 32  ANO_PROCESSO     ASC      4   227      
+ 33  ANO_DOCFISCAL    ASC      4   231      
+ 34  UF_DOCFISCAL     ASC      2   235      
+ 35  N_SERIE_NF       ASC     15   237      
+ 36  N_CONTRATO       ASC     10   252      
+ 37  ANO_CONTRATO     ASC      4   262      
+ 38  ID_ESTLIQUI      NUM    8.0   266 10   
+ 39  SEQ_SICOM        NUM    8.0   270      
+
+
+INDEX# FIELDS          DES U/C    LENGTH LEVELS SEGMENTS MODE
+------ --------------- --- ---    ------ ------ -------- -------
+  1    COD_ENTIDADE    NO  NO       33     7       8     ON-LINE
+       EXERCICIO       NO  NO 
+       N_EMPENHO       NO  NO 
+       TIPO_DOCFISCAL  NO  NO 
+       N_DOCFISCAL     NO  NO 
+       DATA_VENCIMENTO NO  NO 
+       SEQUENCIA       NO  NO 
+       RECNUM          NO  NO 
+
+  2    COD_ENTIDADE    NO  NO       22     6       6     ON-LINE
+       EXERCICIO       NO  NO 
+       N_DESPESA       NO  NO 
+       DATA            NO  NO 
+       N_EMPENHO       NO  NO 
+       RECNUM          NO  NO 
+
+  3    COD_ENTIDADE    NO  NO       22     6       6     ON-LINE
+       EXERCICIO       NO  NO 
+       N_FORNECEDOR    NO  NO 
+       DATA            NO  NO 
+       N_EMPENHO       NO  NO 
+       RECNUM          NO  NO 
+
+  4    COD_ENTIDADE    NO  NO       17     5       5     ON-LINE
+       EXERCICIO       NO  NO 
+       DATA            NO  NO 
+       N_EMPENHO       NO  NO 
+       RECNUM          NO  NO 
+
+  5    COD_ENTIDADE    NO  NO       24     6       5     ON-LINE
+       EXERCICIO       NO  NO 
+       ECONOMICA       NO  NO 
+       DATA            NO  NO 
+       RECNUM          NO  NO 
+
+  6    COD_ENTIDADE    NO  NO       29     6       6     ON-LINE
+       EXERCICIO       NO  NO 
+       N_DESPESA       NO  NO 
+       ECONOMICA       NO  NO 
+       DATA            NO  NO 
+       RECNUM          NO  NO 
+
+  7    COD_ENTIDADE    NO  NO       16     5       5     ON-LINE
+       EXERCICIO       NO  NO 
+       ACAO            NO  NO 
+       DATA            NO  NO 
+       RECNUM          NO  NO 
+
+  8    COD_ENTIDADE    NO  NO       17     5       5     ON-LINE
+       EXERCICIO       NO  NO 
+       N_EMPENHO       NO  NO 
+       DATA            NO  NO 
+       RECNUM          NO  NO 
+
+  9    COD_ENTIDADE    NO  NO       35     7       9     ON-LINE
+       EXERCICIO       NO  NO 
+       FLAG_EMISSAO    NO  NO 
+       SETOR           NO  NO 
+       N_EMPENHO       NO  NO 
+       TIPO_DOCFISCAL  NO  NO 
+       N_DOCFISCAL     NO  NO 
+       DATA_VENCIMENTO NO  NO 
+       RECNUM          NO  NO 
+
+  10   COD_ENTIDADE    NO  NO       10     5       3     ON-LINE
+       EXERCICIO       NO  NO 
+       ID_ESTLIQUI     NO  NO 
+

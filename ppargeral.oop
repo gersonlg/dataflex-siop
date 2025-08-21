@@ -1,0 +1,197 @@
+USE   ALLENTRY
+USE   NSELLIST
+OPEN  PARGERAL
+OPEN  CONFIGS
+CLEAR PARGERAL
+CLEAR CONFIGS
+
+/TELA RESIDENT
+ÚÄ CN-SIFPM ÄÄÄÄÄ Sistema Integrado de Finan‡as P£blicas Municipais ÄÄÄÄÄÄÄÄÄÄÄ¿
+³                                                                              ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ __/__/____  ________________________________________________________  CONAM  ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+/*
+INTEGER IT_COR_TARJA IT_COR_TITULO  IT_COR_MOLDURA IT_RECNUM
+STRING  ST_TECLA ST_DESTINO 255
+
+MOVE 15  TO IT_COR_MOLDURA
+MOVE 31  TO IT_COR_TARJA
+MOVE 63  TO IT_COR_TITULO
+
+AUTOPAGE TELA
+NAME JN_TARJA_DATA JN_TARJA_TITULO
+
+PAGE SET TELA AT 00 00 COLORS IT_COR_TARJA IT_COR_MOLDURA
+
+SCREENMODE IT_COR_MOLDURA ON
+SYSDATE4   JN_TARJA_DATA
+SCREENMODE IT_COR_TITULO  ON
+MOVE (CENTER('CONSULTA ENTIDADES NO PARGERAL',56)) TO JN_TARJA_TITULO
+SCREENMODE IT_COR_TARJA   ON
+PAGE TELA
+SCREENMODE IT_COR_TARJA   OFF
+
+/TELA_PESQUISA RESIDENT
+³Entidade                                              Cli  Sigla              ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³____ __ _____________________________________________ ____ ___________________³
+³____ __ _____________________________________________ ____ ___________________³
+³____ __ _____________________________________________ ____ ___________________³
+³____ __ _____________________________________________ ____ ___________________³
+³____ __ _____________________________________________ ____ ___________________³
+³____ __ _____________________________________________ ____ ___________________³
+³____ __ _____________________________________________ ____ ___________________³
+³____ __ _____________________________________________ ____ ___________________³
+³____ __ _____________________________________________ ____ ___________________³
+³____ __ _____________________________________________ ____ ___________________³
+³____ __ _____________________________________________ ____ ___________________³
+³____ __ _____________________________________________ ____ ___________________³
+³____ __ _____________________________________________ ____ ___________________³
+³____ __ _____________________________________________ ____ ___________________³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ <ENTER> Completa               <F2> Nova Entidade             <ESC> Retornar ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/*
+
+OBJECT  TELA_PESQUISA IS A NSELECTION_LIST;
+        TELA_PESQUISA IS POPUP MAIN_FILE PARGERAL BY INDEX.1
+
+        ON_KEY KEY_PGDN      SEND DESCE
+        ON_KEY KEY_PGUP      SEND SOBE
+        ON_KEY KHELP         SEND NONE
+        ON_KEY KEY_F2        SEND INCLUIR_ENTIDADE
+        // ON_KEY KEY_F4        SEND ALTERAR_ENTIDADE
+
+        ON_KEY KCANCEL       SEND ABORTAR
+        ON_KEY KPRINT_SCREEN SEND ABORTAR
+
+        SET LOCATION                                TO 5 0  ABSOLUTE
+        SET SCROLL_BAR_VISIBLE_STATE                TO FALSE
+        SET OBJECT_COLOR                            TO IT_COR_TARJA IT_COR_MOLDURA
+
+        PROCEDURE DESCE
+         SEND KEY KSCROLL_FORWARD
+        END_PROCEDURE
+
+        PROCEDURE SOBE
+         SEND KEY KSCROLL_BACK
+        END_PROCEDURE
+          
+        PROCEDURE INCLUIR_ENTIDADE
+         MOVE 'NOVA_ENTIDADE CONAM ' TO ST_DESTINO
+         APPEND ST_DESTINO 'CONAM 1 NOVA_ENTIDADE ' PARGERAL.COD_ENTIDADE ' ' PARGERAL.EXERCICIO
+         CHAIN WAIT ST_DESTINO EXPORT_FILES
+
+         SET LOCATION     TO 5 0  ABSOLUTE
+         SET OBJECT_COLOR TO IT_COR_TARJA IT_COR_MOLDURA
+         
+         SEND SOBE
+         SEND DESCE
+        END_PROCEDURE
+
+        BEGIN_ROW
+         ENTRY_ITEM PARGERAL.EXERCICIO       {AUTOCLEAR}
+         ENTRY_ITEM PARGERAL.COD_ENTIDADE    {AUTOCLEAR}
+         ENTRY_ITEM PARGERAL.NOME_ENTIDADE   {AUTOCLEAR}
+         ENTRY_ITEM PARGERAL.COD_CLIENTE     {AUTOCLEAR}
+         ENTRY_ITEM PARGERAL.SIGLA_ENTIDADE  {AUTOCLEAR}
+        END_ROW
+
+END_OBJECT
+
+PROCEDURE ABORTAR
+ CLEAR PARGERAL
+ ABORT
+END_PROCEDURE
+
+CONTINUA:
+ SEND  POPUP TO TELA_PESQUISA
+ START_UI
+ GOSUB MONTA_TELA
+ SCREENMODE IT_COR_TARJA   OFF
+ GOTO  CONTINUA
+ ABORT
+
+MONTA_TELA:
+/CONFIRMA RESIDENT
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³                                                                            ³
+³Entidade       __                                                           ³
+³                                                                            ³
+³Nome           ____________________________________________________________ ³
+³                                                                            ³
+³Codigo Cliente _____.                 Sigla ____________________            ³
+³                                                                            ³
+³Codigo Siafi   _____.                                                       ³
+³                                                                            ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                  Confirma alteracao dos dados  _ ? <S/N>                   ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/*
+
+AUTOPAGE CONFIRMA
+NAME JN_COD_ENTIDADE JN_NOME_ENTIDADE JN_COD_CLIENTE JN_SIGLA_ENTIDADE JN_COD_SIAFI
+NAME JN_CONFIRMA
+
+PAGE SET CONFIRMA AT 07 01  COLORS IT_COR_TARJA  IT_COR_MOLDURA
+
+MOVE PARGERAL.COD_ENTIDADE   TO JN_COD_ENTIDADE
+MOVE PARGERAL.NOME_ENTIDADE  TO JN_NOME_ENTIDADE
+MOVE PARGERAL.COD_CLIENTE    TO JN_COD_CLIENTE
+MOVE PARGERAL.SIGLA_ENTIDADE TO JN_SIGLA_ENTIDADE
+MOVE PARGERAL.COD_SIAFI      TO JN_COD_SIAFI
+
+INICIO:
+ACCEPT JN_NOME_ENTIDADE  {AUTOCLEAR}
+[KEY.ESCAPE] RETURN CONTINUA
+
+LB_CLIENTE:
+ACCEPT JN_COD_CLIENTE {AUTOCLEAR}
+[KEY.ESCAPE] RETURN CONTINUA
+
+LB_SIGLA:
+ACCEPT JN_SIGLA_ENTIDADE {AUTOCLEAR}
+[KEY.ESCAPE] RETURN CONTINUA
+[KEY.UP] GOTO LB_CLIENTE
+
+ACCEPT JN_COD_SIAFI {AUTOCLEAR}
+[KEY.ESCAPE] RETURN CONTINUA
+[KEY.UP] GOTO LB_SIGLA
+
+REPEAT
+ ACCEPT JN_CONFIRMA {CAPSLOCK}
+ [ KEY.ESCAPE] RETURN CONTINUA
+ IF NOT JN_CONFIRMA IN 'SN' MOVE '' TO JN_CONFIRMA
+UNTIL JN_CONFIRMA NE ''
+
+IF JN_CONFIRMA EQ 'S' BEGIN
+                       REREAD
+                       CLEAR PARGERAL
+                       MOVE JN_COD_ENTIDADE TO PARGERAL.COD_ENTIDADE
+                       REPEAT
+                        FIND GT PARGERAL BY INDEX.2
+                        [ FOUND] INDICATE FOUND AS PARGERAL.COD_ENTIDADE EQ JN_COD_ENTIDADE
+                        [ FOUND] BEGIN
+                                  MOVE JN_NOME_ENTIDADE  TO PARGERAL.NOME_ENTIDADE
+                                  MOVE JN_SIGLA_ENTIDADE TO PARGERAL.SIGLA_ENTIDADE
+                                  MOVE JN_COD_CLIENTE    TO PARGERAL.COD_CLIENTE
+                                  MOVE JN_COD_SIAFI      TO PARGERAL.COD_SIAFI
+                                  SAVERECORD PARGERAL
+                                  
+                                  CLEAR CONFIGS
+                                  MOVE PARGERAL.COD_ENTIDADE TO CONFIGS.COD_ENTIDADE
+                                  MOVE PARGERAL.EXERCICIO    TO CONFIGS.EXERCICIO
+                                  MOVE 'SIGLA_ENTIDADE'      TO CONFIGS.CAMPO
+                                  FIND EQ CONFIGS BY INDEX.2
+                                  MOVE 'DIVERSOS'              TO CONFIGS.TIPO
+                                  MOVE PARGERAL.SIGLA_ENTIDADE TO CONFIGS.CONTEUDO
+                                  SAVERECORD CONFIGS
+                                 
+                                  INDICATE FOUND TRUE
+                                 END
+                       UNTIL [~FOUND]
+                       UNLOCK
+                      END
+
+RETURN CONTINUA

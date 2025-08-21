@@ -1,0 +1,73 @@
+-----------------------------------------------------------------------------
+  DATE: 27/02/2025      TIME: 15:31                                  PAGE:  1
+  FILE DEFINITION FOR FILE: PLANO (# 69)
+-----------------------------------------------------------------------------
+  DRIVER NAME               : DATAFLEX
+  FILE ROOT NAME            : PLANO
+  USER DISPLAY NAME         : PLANO
+  DATAFLEX FILE NAME        : PLANO
+-----------------------------------------------------------------------------
+  RECORD LENGTH             : 512       ( USED: 356 )
+  MAX NUMBER OF RECORDS     : 16711679  ( USED: 168055 )
+  FILE COMPRESSION          : NONE
+  RE-USE DELETED SPACE      : YES
+  LOCKING TYPE              : FILE
+  HEADER INTEGRITY CHECKING : YES
+  TRANSACTION TYPE          : CLIENT ATOMIC
+  RECORD IDENTITY INDEX     : 0 ( 0 , 0 )
+  FILE LOGIN PARAMETER      : 
+  SYSTEM FILE               : NO 
+-----------------------------------------------------------------------------
+
+NUM  FIELD NAME       TYPE SIZE  OFFST IX   RELATES TO FILE.FIELD
+---  ---------------  ---- ----- ----- --   ---------------------------------
+  1  UF               ASC      2     1  1   
+  2  ANO              ASC      4     3  1   
+  3  CODIGO           ASC     18     7  1   
+  4  DESCRICAO        ASC     50    25  2   
+  5  TIPO             ASC      1    75      
+  6  GRAU             ASC      1    76      
+  7  SALDO_DC         ASC      1    77      
+  8  ENCERRA          ASC      2    78      
+  9  SISTEMA          ASC      1    80      
+ 10  CONTA_CORRENTE   ASC      2    81  3   
+ 11  PREVIDENCIA      ASC      1    83      
+ 12  SUPERAVIT        ASC      1    84      
+ 13  INVERTE_SALDO    ASC      1    85      
+ 14  TP_MOVIMENTACAO  ASC      2    86      
+ 15  DETALHAABERTURA  ASC      1    88      
+ 16  DETALHA_M13      ASC      1    89      
+ 17  DETALHA_M14      ASC      1    90      
+ 18  NOME_COMPLETO    ASC    255    91      
+ 19  IDENTIFICACAO    ASC      1   346      
+ 20  DETALHA_M12      ASC      1   347      
+ 21  INVEST_RPPS      ASC      1   348      
+ 22  INVEST_GERAL     ASC      1   349      
+ 23  ALMOXARIFADO     ASC      1   350      
+ 24  GANHOS_RPPS      ASC      1   351      
+ 25  CONTA_CF         ASC      1   352      
+ 26  CONTA_CP         ASC      1   353      
+ 27  CONTA_CT         ASC      1   354      
+ 28  CONTA_CR         ASC      1   355      
+ 29  CONTA_CM         ASC      1   356      
+
+
+INDEX# FIELDS          DES U/C    LENGTH LEVELS SEGMENTS MODE
+------ --------------- --- ---    ------ ------ -------- -------
+  1    UF              NO  NO       24     6       3     ON-LINE
+       ANO             NO  NO 
+       CODIGO          NO  NO 
+
+  2    UF              NO  NO       74     10      4     ON-LINE
+       ANO             NO  NO 
+       DESCRICAO       NO  NO 
+       CODIGO          NO  NO 
+
+  3    UF              NO  NO       26     6       4     ON-LINE
+       ANO             NO  NO 
+       CONTA_CORRENTE  NO  NO 
+       CODIGO          NO  NO 
+
+  4    CODIGO          NO  NO       21     6       2     ON-LINE
+       RECNUM          NO  NO 
+

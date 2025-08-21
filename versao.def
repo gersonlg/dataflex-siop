@@ -1,0 +1,77 @@
+-----------------------------------------------------------------------------
+  DATE: 25/10/2023      TIME: 17:31                                  PAGE:  1
+  FILE DEFINITION FOR FILE: VERSAO (# 186)
+-----------------------------------------------------------------------------
+  DRIVER NAME               : DATAFLEX
+  FILE ROOT NAME            : VERSAO
+  USER DISPLAY NAME         : VERSAO
+  DATAFLEX FILE NAME        : VERSAO
+-----------------------------------------------------------------------------
+  RECORD LENGTH             : 384       ( USED: 266 )
+  MAX NUMBER OF RECORDS     : 16711679  ( USED: 0 )
+  FILE COMPRESSION          : NONE
+  RE-USE DELETED SPACE      : YES
+  LOCKING TYPE              : FILE
+  HEADER INTEGRITY CHECKING : YES
+  TRANSACTION TYPE          : CLIENT ATOMIC
+  RECORD IDENTITY INDEX     : 0 ( 0 , 0 )
+  FILE LOGIN PARAMETER      : 
+  SYSTEM FILE               : NO 
+-----------------------------------------------------------------------------
+
+NUM  FIELD NAME       TYPE SIZE  OFFST IX   RELATES TO FILE.FIELD
+---  ---------------  ---- ----- ----- --   ---------------------------------
+  1  ID_VERSAO        NUM   12.0     1  1   
+  2  TIPO             ASC      3     7  2   
+  3  DATA             DAT      3    10      
+  4  NUMERO           NUM    4.0    13  2   
+  5  NOME             ASC     50    15      
+  6  ANO_VIGENCIA_I   ASC      4    65  2   
+  7  ANO_VIGENCIA_F   ASC      4    69  3   
+  8  STATUS           ASC      1    73      
+  9  TIPO_INSTRUM     ASC      2    74      
+ 10  COD_INSTRUM      ASC      5    76      
+ 11  DATA_INSTRUM     DAT      3    81      
+ 12  JUSTIFICATIVA1   ASC     60    84      
+ 13  JUSTIFICATIVA2   ASC     60   144      
+ 14  ATIVO            ASC      1   204  2   
+ 15  USUARIO          ASC      5   205      
+ 16  ID_VERSAO_REF    NUM   12.0   210      
+ 17  TIPO_ORCAMENTO   ASC      1   216      
+ 18  DT_PUBLIC_LEI    DAT      3   217      
+ 19  DT_VIGENC_LEI    DAT      3   220      
+ 20  XML_PPA          ASC      1   223      
+ 21  XML_LDO          ASC      1   224      
+ 22  XML_LOA          ASC      1   225      
+ 23  AUXILIAR         ASC     10   226      
+ 24  ANO_MEDIA        ASC      4   236      
+ 25  DATA_ABERTURA    DAT      3   240      
+ 26  DATA_VALIDACAO   DAT      3   243      
+ 27  ANO_VIGENCIA     ASC      4   246      
+ 28  BASE_LOA         ASC      1   250      
+ 29  ID_VERSAO_BASE   NUM   12.0   251      
+ 30  USR_ABERTURA     ASC      5   257      
+ 31  COPIA_V_RECEITA  ASC      1   262      
+ 32  COPIA_V_DESPESA  ASC      1   263      
+ 33  PERCENTUAL_ATZ   NUM    4.2   264      
+
+
+INDEX# FIELDS          DES U/C    LENGTH LEVELS SEGMENTS MODE
+------ --------------- --- ---    ------ ------ -------- -------
+  1    ID_VERSAO       NO  NO       6      4       1     ON-LINE
+
+  2    TIPO            NO  NO       10     5       4     ON-LINE
+       ATIVO           NO  NO 
+       ANO_VIGENCIA_I  NO  NO 
+       NUMERO          NO  NO 
+
+  3    TIPO            NO  NO       10     5       4     ON-LINE
+       ATIVO           NO  NO 
+       ANO_VIGENCIA_F  NO  NO 
+       NUMERO          NO  NO 
+
+  4    TIPO            NO  NO       10     5       4     ON-LINE
+       ATIVO           NO  NO 
+       ANO_VIGENCIA_I  YES NO 
+       NUMERO          YES NO 
+

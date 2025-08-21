@@ -1,0 +1,100 @@
+-----------------------------------------------------------------------------
+  DATE: 25/10/2023      TIME: 17:31                                  PAGE:  1
+  FILE DEFINITION FOR FILE: PARGERAL (# 207)
+-----------------------------------------------------------------------------
+  DRIVER NAME               : DATAFLEX
+  FILE ROOT NAME            : PARGERAL
+  USER DISPLAY NAME         : PARGERAL
+  DATAFLEX FILE NAME        : PARGERAL
+-----------------------------------------------------------------------------
+  RECORD LENGTH             : 2176      ( USED: 580 )
+  MAX NUMBER OF RECORDS     : 1         ( USED: 1 )
+  FILE COMPRESSION          : NONE
+  RE-USE DELETED SPACE      : YES
+  LOCKING TYPE              : FILE
+  HEADER INTEGRITY CHECKING : YES
+  TRANSACTION TYPE          : CLIENT ATOMIC
+  RECORD IDENTITY INDEX     : 0 ( 0 , 0 )
+  FILE LOGIN PARAMETER      : 
+  SYSTEM FILE               : YES
+-----------------------------------------------------------------------------
+
+NUM  FIELD NAME       TYPE SIZE  OFFST IX   RELATES TO FILE.FIELD
+---  ---------------  ---- ----- ----- --   ---------------------------------
+  1  EXERCICIO        ASC      4     1  1   
+  2  COD_ENTIDADE     ASC      2     5  1   
+  3  NOME_ENTIDADE    ASC     60     7      
+  4  COR_MOLDURA      NUM    4.0    67      
+  5  COR_TARJA        NUM    4.0    69      
+  6  COR_TITULO       NUM    4.0    71      
+  7  COR_LETRA        NUM    4.0    73      
+  8  LIMITE_ADIANT    NUM    2.0    75      
+  9  TIPO_ATUACAO     ASC      1    76      
+ 10  INDICE_ANTECIPA  ASC      2    77      
+ 11  C_G_C            ASC     18    79      
+ 12  ENDERECO         ASC     50    97      
+ 13  CIDADE           ASC     30   147      
+ 14  ESTADO           ASC      2   177      
+ 15  CEP              ASC      8   179      
+ 16  BAIRRO           ASC     30   187      
+ 17  LIMITE_DISPENSA  NUM   14.2   217      
+ 18  COTAS            ASC      1   225      
+ 19  PATRIMONIO       ASC      1   226      
+ 20  SIAM             ASC      1   227      
+ 21  HABILITADO       ASC     20   228      
+ 22  IDENTIFICACAO    ASC      2   248      
+ 23  ORGAO_CAMARA     ASC      2   250      
+ 24  SIAP             ASC     11   252      
+ 25  CONTRATO         ASC      1   263      
+ 26  QTD_VIAS         ASC     10   264      
+ 27  ORGAO_SAUDE      ASC      2   274      
+ 28  LIMITE_SUPLEMEN  NUM   14.2   276      
+ 29  EMITENTE_FIXO    ASC      1   284      
+ 30  COMPLEMENTO      ASC     30   285      
+ 31  TELEFONE         ASC     16   315      
+ 32  FAX              ASC     16   331      
+ 33  EMAIL            ASC     40   347      
+ 34  CNPJ_ENTE        ASC     18   387      
+ 35  COD_SIAFI        NUM    6.0   405      
+ 36  COD_IBGE         NUM   10.0   408      
+ 37  COD_ENT_TCE      NUM    6.0   413      
+ 38  AUDESP           ASC      1   416      
+ 39  FECHA_MES        ASC      1   417      
+ 40  BLOQ_ALTERACOES  ASC      1   418      
+ 41  AUDESP_PARCIAL   ASC      1   419      
+ 42  AUXILIAR         ASC     50   420      
+ 43  PREVIDENCIA      ASC      1   470      
+ 44  NOTA_DOTACAO     ASC      1   471      
+ 45  DT_EMISSAO_OP    ASC      1   472      
+ 46  AUXILIAR_2       ASC     50   473      
+ 47  MDA              ASC      1   523      
+ 48  MGT              ASC      1   524      
+ 49  MTI              ASC      1   525      
+ 50  MAP              ASC      1   526      
+ 51  IPTU             ASC      1   527      
+ 52  ISS              ASC      1   528      
+ 53  DIVIDA_ATIVA     ASC      1   529      
+ 54  SIREM            ASC      1   530      
+ 55  HABILITA_COTAS   ASC     10   531      
+ 56  LIMITE_TED       NUM   14.2   541      
+ 57  DATA_TED         DAT      3   549      
+ 58  DATA_FUNDEB      DAT      3   552      
+ 59  MOD_SEGURANCA    ASC      3   555      
+ 60  COD_CLIENTE      NUM    6.0   558  3   
+ 61  SIGLA_ENTIDADE   ASC     20   561      
+
+
+INDEX# FIELDS          DES U/C    LENGTH LEVELS SEGMENTS MODE
+------ --------------- --- ---    ------ ------ -------- -------
+  1    EXERCICIO       NO  NO       6      1       2     ON-LINE
+       COD_ENTIDADE    NO  NO 
+
+  2    COD_ENTIDADE    NO  NO       6      1       2     ON-LINE
+       EXERCICIO       NO  NO 
+
+  3    COD_CLIENTE     NO  NO       6      1       2     ON-LINE
+       RECNUM          NO  NO 
+
+  4    EXERCICIO       YES NO       6      1       2     ON-LINE
+       COD_ENTIDADE    NO  NO 
+

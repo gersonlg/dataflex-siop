@@ -1,0 +1,219 @@
+/TELA_PESQUISA RESIDENT
+ฺฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤ Sistema de Ajuda ao Usu rio ฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฟ
+ณ     ______     ______.    _________________________     _____     _____    ณ
+ฦออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออต
+ณ____________________________________________________________________________ณ
+ณ____________________________________________________________________________ณ
+ณ____________________________________________________________________________ณ
+ณ____________________________________________________________________________ณ
+ณ____________________________________________________________________________ณ
+ณ____________________________________________________________________________ณ
+ณ____________________________________________________________________________ณ
+ณ____________________________________________________________________________ณ
+ณ____________________________________________________________________________ณ
+ณ____________________________________________________________________________ณ
+ณ____________________________________________________________________________ณ
+ณ____________________________________________________________________________ณ
+ณ____________________________________________________________________________ณ
+ฦออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออต
+ณ                                                                            ณ
+ภฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤฤู
+/*
+#INCLUDE CONAM.LIB
+
+#COMMAND MOSTRA_JANELA
+MID !1 TO !2 77 IT_POSICAO
+APPEND !2 '                                                                                                                    '
+LEFT !2 TO !2 77
+MOVE !2 TO !3
+#ENDCOMMAND
+
+#COMMAND LE_VARIAVEIS
+MOVE '' TO !1
+MOVE '' TO !2
+READLN !1
+#ENDCOMMAND
+
+#COMMAND ENCHE_JANELA
+  SCREENMODE IT_COR_TARJA ON
+  MOSTRA_JANELA ST_LINHA1   ST_L1   LINHA_1
+  MOSTRA_JANELA ST_LINHA2   ST_L2   LINHA_2
+  MOSTRA_JANELA ST_LINHA3   ST_L3   LINHA_3
+  MOSTRA_JANELA ST_LINHA4   ST_L4   LINHA_4
+  MOSTRA_JANELA ST_LINHA5   ST_L5   LINHA_5
+  MOSTRA_JANELA ST_LINHA6   ST_L6   LINHA_6
+  MOSTRA_JANELA ST_LINHA7   ST_L7   LINHA_7
+  MOSTRA_JANELA ST_LINHA8   ST_L8   LINHA_8
+  MOSTRA_JANELA ST_LINHA9   ST_L9   LINHA_9
+  MOSTRA_JANELA ST_LINHA10  ST_L10  LINHA_10
+  MOSTRA_JANELA ST_LINHA11  ST_L11  LINHA_11
+  MOSTRA_JANELA ST_LINHA12  ST_L12  LINHA_12
+  MOSTRA_JANELA ST_LINHA13  ST_L13  LINHA_13
+#ENDCOMMAND
+
+INTEGER IT_CONTADOR IT_PARADA IT_POSICAO IT_ULT_LINHA
+STRING ST_LINHA 250 ST_ARQUIVO  ST_NOME 1
+
+STRING ST_LINHA1  250
+STRING ST_LINHA2  250
+STRING ST_LINHA3  250
+STRING ST_LINHA4  250
+STRING ST_LINHA5  250
+STRING ST_LINHA6  250
+STRING ST_LINHA7  250
+STRING ST_LINHA8  250
+STRING ST_LINHA9  250
+STRING ST_LINHA10 250
+STRING ST_LINHA11 250
+STRING ST_LINHA12 250
+STRING ST_LINHA13 250
+
+STRING ST_L1  76
+STRING ST_L2  76
+STRING ST_L3  76
+STRING ST_L4  76
+STRING ST_L5  76
+STRING ST_L6  76
+STRING ST_L7  76
+STRING ST_L8  76
+STRING ST_L9  76
+STRING ST_L10 76
+STRING ST_L11 76
+STRING ST_L12 76
+STRING ST_L13 76
+
+AUTOPAGE TELA_PESQUISA
+NAME SERIE MEMORIA NOME_USUARIO VERSAO TECNICO
+NAME LINHA_1
+NAME LINHA_2
+NAME LINHA_3
+NAME LINHA_4
+NAME LINHA_5
+NAME LINHA_6
+NAME LINHA_7
+NAME LINHA_8
+NAME LINHA_9
+NAME LINHA_10
+NAME LINHA_11
+NAME LINHA_12
+NAME LINHA_13
+
+OPEN MENUUSER
+OPEN MENUCOMP
+
+CMDLINE ST_ARQUIVO
+
+IF ST_ARQUIVO EQ '' MOVE ST@PROGRAMA TO ST_ARQUIVO
+
+TRIM ST_ARQUIVO TO ST_ARQUIVO
+APPEND ST_ARQUIVO '.HLP'
+
+PAGE SET TELA_PESQUISA AT  04 01 COLORS IT_COR_TARJA  IT_COR_MOLDURA
+
+MOVE 1 TO IT_POSICAO
+MOVE 1 TO IT_PARADA
+
+BLANKFORM LINHA_1 THRU LINHA_13
+
+MOVE MENUUSER.NOME TO NOME_USUARIO
+MEMORY MEMORIA
+REGISTRATION ST_NOME SERIE
+COMBRANCOS SERIE 6
+MOVE ' 1.0 ' TO VERSAO
+PAGE TELA_PESQUISA
+
+SCREENMODE IT_COR_MOLDURA ON
+BLANKFORM SERIE THRU TECNICO
+SCREENMODE IT_COR_TARJA ON
+
+INICIO:
+
+DIRECT_INPUT ST_ARQUIVO
+
+FOR IT_CONTADOR FROM 1 TO (IT_PARADA-1)
+  READLN
+LOOP
+
+PASSO1:
+
+FOR IT_CONTADOR FROM 1 TO 13
+  IF IT_CONTADOR EQ  1 LE_VARIAVEIS ST_LINHA1   ST_L1
+  IF IT_CONTADOR EQ  2 LE_VARIAVEIS ST_LINHA2   ST_L2
+  IF IT_CONTADOR EQ  3 LE_VARIAVEIS ST_LINHA3   ST_L3
+  IF IT_CONTADOR EQ  4 LE_VARIAVEIS ST_LINHA4   ST_L4
+  IF IT_CONTADOR EQ  5 LE_VARIAVEIS ST_LINHA5   ST_L5
+  IF IT_CONTADOR EQ  6 LE_VARIAVEIS ST_LINHA6   ST_L6
+  IF IT_CONTADOR EQ  7 LE_VARIAVEIS ST_LINHA7   ST_L7
+  IF IT_CONTADOR EQ  8 LE_VARIAVEIS ST_LINHA8   ST_L8
+  IF IT_CONTADOR EQ  9 LE_VARIAVEIS ST_LINHA9   ST_L9
+  IF IT_CONTADOR EQ 10 LE_VARIAVEIS ST_LINHA10  ST_L10
+  IF IT_CONTADOR EQ 11 LE_VARIAVEIS ST_LINHA11  ST_L11
+  IF IT_CONTADOR EQ 12 LE_VARIAVEIS ST_LINHA12  ST_L12
+  IF IT_CONTADOR EQ 13 LE_VARIAVEIS ST_LINHA13  ST_L13
+LOOP
+
+ENCHE_JANELA
+
+CALC (IT_PARADA + 13) TO IT_PARADA
+
+REPEAT
+  gotoxy 30 0
+  inkey st_tecla
+  [KEY.ESCAPE] ABORT
+  [KEY.NEXT] GOTO PASSO1
+  [KEY.PREVIOUS] IF IT_PARADA GT 10 BEGIN
+                                      CALC (IT_PARADA - 26) TO IT_PARADA
+                                      GOTO INICIO
+                                    END
+
+  [KEY.UP] IF IT_PARADA GT 13 BEGIN
+                                CALC (IT_PARADA - 14) TO IT_PARADA
+                                GOTO INICIO
+                              END
+
+  [KEY.DOWN] BEGIN
+             CALC (IT_PARADA - 12) TO IT_PARADA
+             GOTO INICIO
+           END
+
+  [KEY.RIGHT] BEGIN
+                CALC (IT_POSICAO +1) TO IT_POSICAO
+                ENCHE_JANELA
+              END
+
+  [KEY.LEFT] IF IT_POSICAO NE 1 BEGIN
+                CALC (IT_POSICAO -1) TO IT_POSICAO
+                ENCHE_JANELA
+              END
+
+  [KEY.USER] BEGIN
+               MOVE 1 TO IT_PARADA
+               MOVE 1 TO IT_POSICAO
+               GOTO INICIO
+             END
+
+  [KEY.USER2] BEGIN
+               DIRECT_INPUT   ST_ARQUIVO
+               REPEAT
+                 FOR IT_CONTADOR FROM 1 TO 13
+                   IF IT_CONTADOR EQ  1 LE_VARIAVEIS ST_LINHA1   ST_L1
+                   IF IT_CONTADOR EQ  2 LE_VARIAVEIS ST_LINHA2   ST_L2
+                   IF IT_CONTADOR EQ  3 LE_VARIAVEIS ST_LINHA3   ST_L3
+                   IF IT_CONTADOR EQ  4 LE_VARIAVEIS ST_LINHA4   ST_L4
+                   IF IT_CONTADOR EQ  5 LE_VARIAVEIS ST_LINHA5   ST_L5
+                   IF IT_CONTADOR EQ  6 LE_VARIAVEIS ST_LINHA6   ST_L6
+                   IF IT_CONTADOR EQ  7 LE_VARIAVEIS ST_LINHA7   ST_L7
+                   IF IT_CONTADOR EQ  8 LE_VARIAVEIS ST_LINHA8   ST_L8
+                   IF IT_CONTADOR EQ  9 LE_VARIAVEIS ST_LINHA9   ST_L9
+                   IF IT_CONTADOR EQ 10 LE_VARIAVEIS ST_LINHA10  ST_L10
+                   IF IT_CONTADOR EQ 11 LE_VARIAVEIS ST_LINHA11  ST_L11
+                   IF IT_CONTADOR EQ 12 LE_VARIAVEIS ST_LINHA12  ST_L12
+                   IF IT_CONTADOR EQ 13 LE_VARIAVEIS ST_LINHA13  ST_L13
+                 LOOP
+                 ENCHE_JANELA
+                 [~SEQEOF] CALC (IT_PARADA +13) TO IT_PARADA
+               UNTIL [SEQEOF]
+               GOTO INICIO
+             END
+LOOP
+

@@ -1,0 +1,2069 @@
+/VALOR# RESIDENT
+______________.__
+/FANTASMA# RESIDENT
+_________________
+/VALOR_DECIMAL# RESIDENT
+______________.______
+/*
+#IFDEF    ST@DATA
+#ELSE
+ STRING   ST@DATA
+#ENDIF
+#IFDEF    ST@MES@AUX
+#ELSE
+ STRING   ST@MES@AUX
+#ENDIF
+#IFDEF    ST@MES@IMPLANTACAO
+#ELSE
+ STRING   ST@MES@IMPLANTACAO
+#ENDIF
+#IFDEF    ST@EXERCICIO
+#ELSE
+   STRING ST@EXERCICIO 4
+#ENDIF
+#IFDEF    ST@COD@ENTIDADE
+#ELSE
+   STRING ST@COD@ENTIDADE 2
+#ENDIF
+#IFDEF    ST@COD@SIAFI
+#ELSE
+   STRING ST@COD@SIAFI 4
+#ENDIF
+#IFDEF    ST@MES@ENCERRADO
+#ELSE
+   STRING ST@MES@ENCERRADO 2
+#ENDIF
+#IFDEF    ST@MES@AJUSTE@SALDO
+#ELSE
+   STRING ST@MES@AJUSTE@SALDO 2
+#ENDIF
+
+#IFDEF    IT@DEFINE@RP@EXERCICIO
+#ELSE
+   INTEGER IT@DEFINE@RP@EXERCICIO
+#ENDIF
+
+#IFDEF  DT@LIMITE@RP@PROCESSADO@TCE
+#ELSE
+   DATE DT@LIMITE@RP@PROCESSADO@TCE
+#ENDIF
+
+#IFDEF  DT@DATA@INICIAL@EXERCICIO
+#ELSE
+   DATE DT@DATA@INICIAL@EXERCICIO
+#ENDIF
+
+#IFDEF  DT@DATA@INICIAL@IMPLANTACAO
+#ELSE
+   DATE DT@DATA@INICIAL@IMPLANTACAO
+#ENDIF
+
+//--em 2016 comecamos a realizar novos lancamentos no modulo de convenios
+#IFDEF  DT@CONVENIOS
+#ELSE
+   DATE DT@CONVENIOS
+#ENDIF
+
+
+OPEN PLANO
+OPEN BALANCO
+OPEN TEMPAUDE
+OPEN ENTIDADE
+OPEN STATUS
+OPEN ENCERRA
+OPEN REORTCE
+OPEN XSD
+OPEN PCA
+OPEN LANCAXML
+OPEN REGAUDE
+ABRE_CONTACOR ST@EXERCICIO@FINANCEIRO CONTACOR
+
+MOVE PARGERAL.EXERCICIO    TO ST@EXERCICIO
+MOVE PARGERAL.COD_ENTIDADE TO ST@COD@ENTIDADE
+MOVE PARGERAL.COD_SIAFI    TO ST@COD@SIAFI
+
+[ @AJUSTE_IMPLANTACAO!] MOVE (MID(PARGERAL.AUXILIAR,2,6)) TO ST@MES@IMPLANTACAO
+
+INDICATE @INSCRICAO_RP! AS ((PARGERAL.COD_SIAFI EQ 6915) AND (PARGERAL.COD_ENTIDADE EQ '01') AND (PARGERAL.EXERCICIO EQ '2011')) //--pm porto ferreira inscrevendo os rp's do saef que foi extinto
+
+
+//--acerto naturezas invertidas e lancamentos de RP de pm cassia dos coqueiros em 2014 (xml da empresa anterior zuado)
+// INDICATE AC_RP_PM_CASSIA! AS ((PARGERAL.EXERCICIO EQ '2014') AND (PARGERAL.COD_SIAFI EQ 6319) AND (PARGERAL.COD_ENTIDADE EQ '01'))
+
+
+COMZEROS ST@COD@SIAFI 4
+
+INDICATE @CONAM! AS ST@USUARIO EQ 'NOSSA'
+
+//--guarda ultimo mes enviado de xml por outra empresa
+MOVE '' TO ST@MES@AJUSTE@SALDO
+IF (MID(PARGERAL.AUXILIAR,2,6)) GT '01' MOVE ((MID(PARGERAL.AUXILIAR,2,6))-1) TO ST@MES@AJUSTE@SALDO
+ELSE                                    MOVE '14'                             TO ST@MES@AJUSTE@SALDO
+COMZEROS ST@MES@AJUSTE@SALDO 2
+
+//--mantem o formato do empenho dos envios anteriores a conam
+INDICATE MANTEM_FORMATO_EMPENHO! AS (MID(PARGERAL.AUXILIAR_2,2,1)) NE ''
+
+//--nÆo pode mudar pois o c/c 03 carrega saldo com o formato antigo
+//INDICATE   MUDA_CREDOR! AS PARGERAL.EXERCICIO GE '2009'
+INDICATE MUDA_CREDOR! FALSE
+
+//--para importar e gerar o credor da mesma forma da empresa anterior
+//--inicialmente como indicador pm_granada...mas foi verificado que servira
+//--para todos clientes instalados durante o ano
+//--INDICATE ALTERA_CREDOR_CC09! AS (MID(PARGERAL.AUXILIAR,6,2)) NE ''
+INDICATE ALTERA_CREDOR_CC09! TRUE
+
+//--mes para encerramento padrao = 12 comando grava_encerramento
+//--utilizado tambem no enceaude.src (mes 13)
+IF        (MID(PARGERAL.QTD_VIAS,2,9)) EQ '' MOVE '12' TO ST@MES@ENCERRADO
+ELSE MOVE (MID(PARGERAL.QTD_VIAS,2,9))                 TO ST@MES@ENCERRADO
+
+//--define ano do rp anterior
+MOVE 1 TO IT@DEFINE@RP@EXERCICIO
+IF (MID(PARGERAL.AUXILIAR,1,11)) NE '' MOVE (MID(PARGERAL.AUXILIAR,1,11)) TO IT@DEFINE@RP@EXERCICIO
+
+//--novas regras de rp processao TCE (2014 ->)
+INDICATE        @RP@PROCESSADO@TCE! FALSE
+INDICATE @NAO@PROCESSADO@LIQUIDADO! FALSE
+MOVE '01/01/2013' TO DT@LIMITE@RP@PROCESSADO@TCE
+//--
+
+
+//--data inicial exercicio
+MOVE '01/01/' TO ST@DATA
+APPEND ST@DATA PARGERAL.EXERCICIO
+MOVE ST@DATA TO DT@DATA@INICIAL@EXERCICIO
+
+//--data de limite para lancamentos de restos a pagar na conta '2.1.3.1.1.02.00.00 - FORNECEDORES DE EXERCICIOS ANTERIORES'
+#IFDEF  DT@LIMITE@RP
+#ELSE
+   DATE DT@LIMITE@RP
+#ENDIF
+
+MOVE '' TO DT@LIMITE@RP
+[~@AJUSTE_IMPLANTACAO!] MOVE '01/01/2013' TO DT@LIMITE@RP
+[ @AJUSTE_IMPLANTACAO!] BEGIN
+                         IF ST@MES@IMPLANTACAO EQ '01' APPEND ST@DATA '01/' ST@MES@IMPLANTACAO      '/' PARGERAL.EXERCICIO
+                         ELSE                          APPEND ST@DATA '01/' (ST@MES@IMPLANTACAO -1) '/' PARGERAL.EXERCICIO
+                         
+                         MOVE ST@DATA TO DT@LIMITE@RP
+                        END
+
+//--novos clientes a partir de 2018 tentar mandar a conta no RP original
+[ @AJUSTE_IMPLANTACAO!] BEGIN
+                         IF PARGERAL.EXERCICIO GE '2018' MOVE '01/01/2013' TO DT@LIMITE@RP
+                        END
+//--
+
+//--data inicial para mes de ajuste de implantacao (rp, etc)
+[ @AJUSTE_IMPLANTACAO!] BEGIN
+                         MOVE '01/' TO ST@DATA
+                         APPEND ST@DATA ST@MES@IMPLANTACAO '/' PARGERAL.EXERCICIO
+                         MOVE ST@DATA TO DT@DATA@INICIAL@IMPLANTACAO
+                        END
+
+
+//--novos lancamentos do modulo de convenios
+MOVE '01/12/2016' TO DT@CONVENIOS
+//--
+
+//--lancamento janeiro conta corrente ou no mes de implantacao
+#IFDEF    ST@LANCTO@JANEIRO
+#ELSE
+   STRING ST@LANCTO@JANEIRO 
+#ENDIF
+
+#IFDEF    ST@LANCTO@MES@AJUSTE
+#ELSE
+   STRING ST@LANCTO@MES@AJUSTE
+#ENDIF
+
+#IFDEF    DT@LANCTO@MES@AJUSTE
+#ELSE
+   DATE   DT@LANCTO@MES@AJUSTE
+#ENDIF
+
+MOVE '31/01/' TO ST@LANCTO@JANEIRO
+APPEND ST@LANCTO@JANEIRO PARGERAL.EXERCICIO
+
+[ @AJUSTE_IMPLANTACAO!] BEGIN
+                         MOVE (MID(PARGERAL.AUXILIAR,2,6)) TO ST@MES@AUX
+                         
+                         MOVE '01/' TO ST@LANCTO@MES@AJUSTE
+                         
+                         IF ST@MES@AUX LT '12' APPEND ST@LANCTO@MES@AJUSTE (ST@MES@AUX + 1) '/' PARGERAL.EXERCICIO
+                         IF ST@MES@AUX EQ '12' APPEND ST@LANCTO@MES@AJUSTE '01/' (PARGERAL.EXERCICIO + 1)
+                         
+                         MOVE ST@LANCTO@MES@AJUSTE TO DT@LANCTO@MES@AJUSTE
+                         CALC (DT@LANCTO@MES@AJUSTE - 1) TO DT@LANCTO@MES@AJUSTE
+                        END
+//--
+
+
+//--encerramento dezembro de 2014 RP
+//--atualizacao nao feita a tempo encerrou errado
+//--o TCE solicitou a rejeicao dos pacotes do mes 13 devido aos relatorios do TCE serem feitos a partir dos dados do mes 13
+INDICATE @ENCERRA_OK! AS PARGERAL.EXERCICIO GE '2014'
+// IF ((PARGERAL.COD_SIAFI EQ 7145) AND (PARGERAL.COD_ENTIDADE EQ '07')) INDICATE @ENCERRA_OK! FALSE //--sorocaba parque tecnologico
+// IF ((PARGERAL.COD_SIAFI EQ 3061) AND (PARGERAL.COD_ENTIDADE EQ '02')) INDICATE @ENCERRA_OK! FALSE //--nova campina camara
+// IF (MID(PARGERAL.AUXILIAR,1,48)) EQ '*' INDICATE @ENCERRA_OK! FALSE
+//--
+
+
+#COMMAND TROCA_DESCRICAO
+#IFDEF    ST@DESC
+#ELSE
+   STRING ST@DESC 255
+#ENDIF
+#IFDEF    ST@SAIDA
+#ELSE
+   STRING ST@SAIDA 255
+#ENDIF
+#IFDEF    ST@DESCRICAO
+#ELSE
+   STRING ST@DESCRICAO 255
+#ENDIF
+#IFDEF    ST@STRING
+#ELSE
+   STRING ST@STRING
+#ENDIF
+#IFDEF    IT@AUX
+#ELSE
+   INTEGER IT@AUX
+#ENDIF
+#IFDEF    IT@CONTADOR
+#ELSE
+   INTEGER IT@CONTADOR
+#ENDIF
+ move 0  to it@contador
+ move 0  to it@aux
+ move '' to st@saida
+ move !1 to st@desc
+
+ trim st@desc to st@desc
+ move (length(st@desc)) to it@aux
+
+ for it@contador from 1 to it@aux
+  move '' to st@string
+  move (mid(st@desc,1,it@contador)) to st@string
+  replace "&" in st@string with "&amp;"
+  replace "<" in st@string with "&lt;"
+  replace ">" in st@string with "&gt;"
+
+  append st@saida st@string
+ loop
+
+ retira_acento st@saida st@descricao
+
+ move "" to !2
+ trim st@descricao to st@descricao
+
+ if (length(st@descricao)) lt 5 begin
+  pad st@descricao to st@descricao 5
+  end
+
+ move st@descricao to !2
+
+#ENDCOMMAND
+
+#COMMAND TROCA_DATA
+#IFDEF    ST@DATA
+#ELSE
+ STRING ST@DATA
+#ENDIF
+#IFDEF    ST@ANO
+#ELSE
+ STRING ST@ANO
+#ENDIF
+#IFDEF    ST@MES
+#ELSE
+ STRING ST@MES
+#ENDIF
+#IFDEF    ST@DIA
+#ELSE
+ STRING ST@DIA
+#ENDIF
+ move (trim(!1)) to st@data
+ move (mid(st@data,4,7)) to st@ano
+ move (mid(st@data,2,4)) to st@mes
+ move (mid(st@data,2,1)) to st@dia
+ move st@ano to st@data
+ append st@data '-' st@mes '-' st@dia
+ move st@data to !2
+#ENDCOMMAND
+
+#COMMAND TROCA_INDICE
+#IFDEF  ST@INDICE
+#ELSE
+ STRING ST@INDICE
+#ENDIF
+#IFDEF  ST@BYTE
+#ELSE
+ STRING ST@BYTE
+#ENDIF
+#IFDEF  ST@CODIGO@AUXILIAR
+#ELSE
+ STRING ST@CODIGO@AUXILIAR 255
+#ENDIF
+#IFDEF  ST@STRING@PPA
+#ELSE
+ STRING ST@STRING@PPA
+#ENDIF
+#IFDEF  IT@AUX
+#ELSE
+ INTEGER IT@AUX
+#ENDIF
+ moveall '' to st@indice st@byte st@codigo@auxiliar !2
+ move !1 to st@indice
+
+ for it@aux from 1 to 15
+  move (mid(st@indice,1,it@aux)) to st@byte
+  if st@byte eq '/' move 16 to it@aux
+  else begin
+   if st@byte in '0123456789,.' append st@codigo@auxiliar st@byte
+   else append st@string@ppa st@byte
+   end
+ loop
+
+ replace ',' in st@codigo@auxiliar with '.'
+ move (trim(st@codigo@auxiliar)) to !2
+ if !2 eq '' move 0 to !2
+#ENDCOMMAND
+
+#COMMAND TROCA_PONTO
+ move !1 to valor#.1
+ movestr valor#.1 to fantasma#.1
+ replace ',' in fantasma#.1 with '.'
+ move fantasma#.1 to !2
+#ENDCOMMAND
+
+#COMMAND NOME_ACAO
+#IFDEF    ST@DESC
+#ELSE
+   STRING ST@DESC
+#ENDIF
+
+ if (left(!1,1)) in '1357' MOVE '         <gen:TipoAcao>1</gen:TipoAcao>' TO !2
+ if (left(!1,1)) in '2468' MOVE '         <gen:TipoAcao>2</gen:TipoAcao>' TO !2
+ if (left(!1,1)) eq '0'    MOVE '         <gen:TipoAcao>3</gen:TipoAcao>' TO !2
+ if (left(!1,1)) eq '9'    MOVE '         <gen:TipoAcao>4</gen:TipoAcao>' TO !2
+#ENDCOMMAND
+
+#COMMAND SALVA_CONTACOR
+#IFDEF    ST@CODIGO@AUXILIAR
+#ELSE
+   STRING ST@CODIGO@AUXILIAR 255
+#ENDIF
+#IFDEF    NB@SALDO@INICIAL
+#ELSE
+   NUMBER NB@SALDO@INICIAL
+#ENDIF
+#IFDEF    NB@SALDO@FINAL
+#ELSE
+   NUMBER NB@SALDO@FINAL
+#ENDIF
+#IFDEF    ST@NATUREZA@INICIAL
+#ELSE
+   STRING ST@NATUREZA@INICIAL
+#ENDIF
+#IFDEF    ST@NATUREZA@FINAL
+#ELSE
+   STRING ST@NATUREZA@FINAL
+#ENDIF
+#IFDEF    ST@DADOS
+#ELSE
+   STRING ST@DADOS 255
+#ENDIF
+#IFDEF    IT@SEQUENCIA
+#ELSE
+   INTEGER IT@SEQUENCIA
+#ENDIF
+
+ CLEAR TEMPAUDE
+ CONSTRAINT_SET 1
+ CONSTRAIN TEMPAUDE.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+ CONSTRAIN TEMPAUDE.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+ CONSTRAIN TEMPAUDE.USUARIO      EQ ST@USUARIO
+ CONSTRAIN TEMPAUDE.NUMERO       EQ !1
+ CONSTRAINED_FIND FIRST TEMPAUDE BY INDEX.1
+ WHILE [FOUND]
+  CALC (JN_LENDO + 1) TO JN_LENDO
+ 
+             INDICATE @SALVA! AS TEMPAUDE.VALOR   NE 0
+  [~@SALVA!] INDICATE @SALVA! AS TEMPAUDE.VALOR_1 NE 0
+  [~@SALVA!] INDICATE @SALVA! AS TEMPAUDE.VALOR_2 NE 0
+  
+  CLEAR PLANO
+  MOVE PARGERAL.ESTADO             TO PLANO.UF
+  MOVE PARGERAL.EXERCICIO          TO PLANO.ANO
+  MOVE (MID(TEMPAUDE.CODIGO,18,1)) TO PLANO.CODIGO
+  FIND EQ PLANO BY INDEX.1
+  [~FOUND] CLEAR PLANO
+  
+  [ @IMPLANTACAO!] BEGIN
+   [ @MES_13!] IF ((PLANO.ENCERRA EQ '13') AND (PLANO.DETALHA_M13 EQ 'N') AND (!2 EQ '13')) INDICATE @SALVA! FALSE
+   [ @MES_14!] IF ((PLANO.ENCERRA EQ '14') AND (PLANO.DETALHA_M14 EQ 'N') AND (!2 EQ '14')) INDICATE @SALVA! FALSE
+   
+   [~@SALVA!] BEGIN
+    INDICATE @SALVA! AS ((TEMPAUDE.VALOR_1 NE 0) OR (TEMPAUDE.VALOR_2 NE 0))
+   END
+  END
+  
+  [ @SALVA!] BEGIN
+              MOVE TEMPAUDE.VALOR TO NB@SALDO@INICIAL
+             
+              IF PLANO.SALDO_DC EQ 'D' BEGIN
+               CALC (NB@SALDO@INICIAL + TEMPAUDE.VALOR_1 - TEMPAUDE.VALOR_2) TO NB@SALDO@FINAL
+             
+               MOVE 'D' TO ST@NATUREZA@INICIAL
+               MOVE 'D' TO ST@NATUREZA@FINAL
+             
+               IF NB@SALDO@INICIAL LT 0 BEGIN
+                MOVE 'C'                       TO ST@NATUREZA@INICIAL
+                CALC (NB@SALDO@INICIAL * (-1)) TO NB@SALDO@INICIAL
+                END
+               IF NB@SALDO@FINAL LT 0 BEGIN
+                MOVE 'C'                       TO ST@NATUREZA@FINAL
+                CALC (NB@SALDO@FINAL * (-1))   TO NB@SALDO@FINAL
+                END
+               END
+              ELSE BEGIN
+               CALC (NB@SALDO@INICIAL + TEMPAUDE.VALOR_2 - TEMPAUDE.VALOR_1) TO NB@SALDO@FINAL
+             
+               MOVE 'C' TO ST@NATUREZA@INICIAL
+               MOVE 'C' TO ST@NATUREZA@FINAL
+             
+               IF NB@SALDO@INICIAL LT 0 BEGIN
+                MOVE 'D'                       TO ST@NATUREZA@INICIAL
+                CALC (NB@SALDO@INICIAL * (-1)) TO NB@SALDO@INICIAL
+                END
+               IF NB@SALDO@FINAL LT 0 BEGIN
+                MOVE 'D'                       TO ST@NATUREZA@FINAL
+                CALC (NB@SALDO@FINAL * (-1))   TO NB@SALDO@FINAL
+                END
+               END
+
+              MOVE 0 TO IT@SEQUENCIA
+              MOVE (TRIM(TEMPAUDE.CODIGO)) TO ST@DADOS
+              
+              CLEAR CONTACOR
+              MOVE ST@EXERCICIO                TO CONTACOR.ANO
+              MOVE !2                          TO CONTACOR.MES
+              MOVE ST@COD@ENTIDADE             TO CONTACOR.COD_ENTIDADE
+              MOVE TEMPAUDE.NUMERO             TO CONTACOR.XML
+              MOVE ST@DADOS                    TO CONTACOR.DADOS
+              MOVE IT@SEQUENCIA                TO CONTACOR.SEQUENCIA
+              FIND EQ CONTACOR BY INDEX.1
+              INDICATE ERR FALSE
+              ON ERROR GOSUB CHECA_GRAVACAO
+              [ FOUND] REREAD CONTACOR
+              MOVE (LEFT(TEMPAUDE.CODIGO,18))  TO CONTACOR.CONTA
+              MOVE ST@NATUREZA@INICIAL         TO CONTACOR.NAT_INICIAL
+              MOVE NB@SALDO@INICIAL            TO CONTACOR.VALOR
+              MOVE TEMPAUDE.VALOR_1            TO CONTACOR.VALOR_1
+              MOVE TEMPAUDE.VALOR_2            TO CONTACOR.VALOR_2
+              MOVE NB@SALDO@FINAL              TO CONTACOR.VALOR_3
+              MOVE ST@NATUREZA@FINAL           TO CONTACOR.NAT_FINAL
+              MOVE TEMPAUDE.AUXILIAR           TO CONTACOR.AUXILIAR
+              MOVE TEMPAUDE.AUXILIAR_1         TO CONTACOR.AUXILIAR_1
+              MOVE TEMPAUDE.AUXILIAR_2         TO CONTACOR.AUXILIAR_2
+              MOVE TEMPAUDE.AUXILIAR_3         TO CONTACOR.AUXILIAR_3
+
+              SAVERECORD CONTACOR
+              UNLOCK
+              ON ERROR OFF
+             END
+  [~@SALVA!] BEGIN
+              INDICATE ERR FALSE
+              ON ERROR GOSUB CHECA_GRAVACAO
+              REREAD TEMPAUDE
+              DELETE TEMPAUDE
+              UNLOCK
+              ON ERROR OFF
+             END
+
+  CONSTRAINED_FIND NEXT
+  END
+ CONSTRAINT_SET 1 CLEAR
+#ENDCOMMAND
+
+#COMMAND CRIA_TIDY_CONF
+#IFDEF    ST@TIDY
+#ELSE
+   STRING ST@TIDY 255
+#ENDIF
+#IFDEF    ST@DIRETORIO
+#ELSE
+   STRING ST@DIRETORIO 255
+#ENDIF
+#IFDEF    ST@TEXTOS
+#ELSE
+   STRING ST@TEXTOS 255
+#ENDIF
+
+ VERSAO
+ GET_CURRENT_DIRECTORY TO ST@DIRETORIO
+ [ LINUX!] APPEND ST@DIRETORIO '/'
+ [~LINUX!] APPEND ST@DIRETORIO '\'
+ TRIM ST@DIRETORIO TO ST@DIRETORIO
+ MOVE ST@DIRETORIO TO ST@TIDY
+ APPEND ST@TIDY 'tidy.conf'
+
+ DIRECT_OUTPUT ST@TIDY
+ WRITELN 'input-xml:yes'
+ WRITELN 'output-xml:yes'
+ WRITELN 'indent:yes'
+ WRITELN 'tab-size:3'
+ WRITELN 'wrap:180'
+ WRITELN 'input-encoding:latin1'
+ WRITELN 'output-encoding:utf8'
+ CLOSE_OUTPUT
+
+ MOVE ST@DIRETORIO TO ST@TEXTOS
+  
+ IF ST@CODIGO@ENTIDADE EQ '' APPEND ST@TEXTOS '/textos'
+ ELSE                        APPEND ST@TEXTOS '/textos_' ST@CODIGO@ENTIDADE
+  
+ COPYFILE ST@TIDY TO ST@TEXTOS
+#ENDCOMMAND
+
+#COMMAND SALVA_DATA_GERACAO_PACOTE
+ CLEAR ENCERRA
+ MOVE ST@CODIGO@ENTIDADE TO ENCERRA.COD_ENTIDADE
+ MOVE ST@EXERCICIO       TO ENCERRA.ANO
+ MOVE !1                 TO ENCERRA.MES
+ FIND EQ ENCERRA BY INDEX.1
+ INDICATE ERR FALSE
+ ON ERROR GOSUB CHECA_GRAVACAO
+ [ FOUND] REREAD ENCERRA
+ IF !2 EQ 'CAD' SYSDATA ENCERRA.GEROU_CADASTRO
+ IF !2 EQ 'BCI' SYSDATA ENCERRA.GEROU_BALANCO
+ IF !2 EQ 'CCI' SYSDATA ENCERRA.GEROU_C_C
+ IF !2 EQ 'CBM' SYSDATA ENCERRA.GEROU_CONCILIA
+ SAVERECORD ENCERRA
+ UNLOCK
+ ON ERROR OFF
+#ENDCOMMAND
+
+#COMMAND SALVA_DATA_CONTAS_ANUAIS
+ CLEAR PCA
+ MOVE ST@CODIGO@ENTIDADE TO PCA.COD_ENTIDADE
+ MOVE ST@EXERCICIO       TO PCA.ANO
+ MOVE !2                 TO PCA.TIPO_DOCUMENTO
+ FIND EQ PCA BY INDEX.1
+ INDICATE ERR FALSE
+ ON ERROR GOSUB CHECA_GRAVACAO
+ [ FOUND] REREAD PCA
+ SYSDATA PCA.DATA_GERACAO
+ SAVERECORD PCA
+ UNLOCK
+ ON ERROR OFF
+#ENDCOMMAND
+
+#COMMAND MONTA_COD_APLICACAO
+#IFDEF    ST@FIXO@CA
+#ELSE
+   STRING ST@FIXO@CA 3
+#ENDIF
+#IFDEF    ST@VARIAVEL@CA
+#ELSE
+   STRING ST@VARIAVEL@CA 4
+#ENDIF
+
+ TRIM !1 TO !2
+ IF !2 NE '' BEGIN
+  MOVEALL '' TO ST@FIXO@CA ST@VARIAVEL@CA
+  MOVE (MID(!2,3,1)) TO ST@FIXO@CA
+  MOVE (MID(!2,4,4)) TO ST@VARIAVEL@CA
+  TRIM ST@VARIAVEL@CA TO ST@VARIAVEL@CA
+  COMZEROS ST@VARIAVEL@CA 4
+  MOVE ST@FIXO@CA TO !2
+  APPEND !2 ST@VARIAVEL@CA
+  END
+ PAD !2 TO !2 7
+#ENDCOMMAND
+
+#COMMAND MONTA_EMPENHO
+#IFDEF    IT@N@EMPENHO
+#ELSE
+   INTEGER IT@N@EMPENHO
+#ENDIF
+#IFDEF    IT@AUX
+#ELSE
+   INTEGER IT@AUX
+#ENDIF
+
+ MOVE !1 TO !2
+ 
+ [ MANTEM_FORMATO_EMPENHO!] BEGIN
+                             IF (MID(PARGERAL.AUXILIAR_2,1,1)) EQ 'A' BEGIN
+                              MOVE (MID(PARGERAL.AUXILIAR_2,2,2)) TO IT@AUX
+                              TRIM !2 TO !2
+                              COMZEROS   !2 IT@AUX
+                              COMBRANCOS !2 12
+                              END
+                             IF (MID(PARGERAL.AUXILIAR_2,1,1)) EQ 'I' BEGIN
+                              MOVE !2           TO IT@N@EMPENHO
+                              MOVE IT@N@EMPENHO TO !2
+                              COMBRANCOS !2 12
+                              END
+                            END
+ 
+ [~MANTEM_FORMATO_EMPENHO!] BEGIN
+                             MOVE !2           TO IT@N@EMPENHO
+                             MOVE IT@N@EMPENHO TO !2
+                             COMBRANCOS !2 12
+                            END
+#ENDCOMMAND
+
+#COMMAND SOLTA_EMPENHO
+ [ MANTEM_FORMATO_EMPENHO!] BEGIN
+                             TRIM !1 TO !1
+                            END
+ [~MANTEM_FORMATO_EMPENHO!] BEGIN
+                             MOVE !1 TO !2
+                             MOVE !2 TO !1
+                            END
+#ENDCOMMAND
+
+#COMMAND BUSCA_NOME_XSD
+#IFDEF    ST@NOME@XSD
+#ELSE
+   STRING ST@NOME@XSD
+#ENDIF
+
+ CLEAR XSD
+ MOVE ST@EXERCICIO TO XSD.ANO
+ MOVE !1           TO XSD.TIPO
+ FIND EQ XSD BY INDEX.1
+ [~FOUND] BEGIN
+           ADVERTE 'PROBLEMAS NA TABELA DE ARQUIVO XSD'
+           ABORT
+          END
+ MOVE (TRIM(XSD.DESCRICAO)) TO ST@NOME@XSD
+#ENDCOMMAND
+
+//--
+//--arquivo lancaxml guarda lancamentos de acertos diversos de conta corrente (lancar tambem no contabil)
+//--!1=exercicio !2=mes solicitado !3=no. do conta corrente
+//--
+#COMMAND LE_LANCA_XML
+#IFDEF     ST@DADOS
+#ELSE
+   STRING  ST@DADOS 255
+#ENDIF
+
+ CLEAR LANCAXML
+ CONSTRAINT_SET 1
+ CONSTRAIN LANCAXML.ANO               EQ !1
+ CONSTRAIN LANCAXML.COD_ENTIDADE      EQ PARGERAL.COD_ENTIDADE
+ IF !3 EQ '18' CONSTRAIN LANCAXML.MES EQ !2
+ ELSE          CONSTRAIN LANCAXML.MES LE !2
+ CONSTRAIN LANCAXML.XML               EQ !3
+ CONSTRAINED_FIND FIRST LANCAXML BY INDEX.1
+ WHILE [FOUND]
+  CLEAR PLANO
+  MOVE PARGERAL.ESTADO TO PLANO.UF
+  MOVE !1              TO PLANO.ANO
+  MOVE LANCAXML.CONTA  TO PLANO.CODIGO
+  FIND EQ PLANO BY INDEX.1
+  [~FOUND] CLEAR PLANO
+  
+  //--isso porque no comando BUSCA_SALDO_ANTERIOR_AJUSTE o sistema busca esses lancamento dos debitos e creditos do contacor,
+  //--referente as contas de RP que nao podem ser estornadas
+  //--contas de receita
+  //--contas de despesa
+  //--*exemplo guaruja 2019-6.2.1.3.1.01.00
+  INDICATE @FAZ! TRUE
+  
+  IF LANCAXML.REGULARIZA_RP EQ 'S' INDICATE @FAZ! AS LANCAXML.MES EQ !2
+  
+  //--acerto PM cassia em 2014
+//   [~@FAZ!] [ AC_RP_PM_CASSIA!] INDICATE @FAZ! AS (((LEFT(LANCAXML.CONTA,1)) EQ '8') AND (LANCAXML.REGULARIZA_RP EQ 'S'))
+  
+  //--contas que nao carregam saldo para o mes seguinte
+  IF LANCAXML.CONTA EQ '7.2.2.1.1.01.02.00' INDICATE @FAZ! AS LANCAXML.MES EQ !2
+  
+  [ @FAZ!] BEGIN
+            IF PLANO.CONTA_CORRENTE NE '' BEGIN
+                                           INDICATE @DEV! AS PLANO.SALDO_DC EQ 'D'
+                                           
+                                           MOVE (TRIM(LANCAXML.DADOS))  TO ST@DADOS
+                                           
+                                           CLEAR TEMPAUDE
+                                           MOVE ST@CODIGO@ENTIDADE      TO TEMPAUDE.COD_ENTIDADE
+                                           MOVE ST@EXERCICIO@FINANCEIRO TO TEMPAUDE.EXERCICIO
+                                           MOVE ST@USUARIO              TO TEMPAUDE.USUARIO
+                                           MOVE ST@DADOS                TO TEMPAUDE.CODIGO
+                                           MOVE LANCAXML.XML            TO TEMPAUDE.NUMERO
+                                           FIND EQ TEMPAUDE BY INDEX.1
+                                           INDICATE ERR FALSE
+                                           ON ERROR GOSUB CHECA_GRAVACAO
+                                           [ FOUND] REREAD TEMPAUDE
+                                           
+                                           [ @DEV!] BEGIN
+                                                     IF LANCAXML.NAT_INICIAL EQ 'D' CALC (TEMPAUDE.VALOR + LANCAXML.SALDO_INICIAL) TO TEMPAUDE.VALOR
+                                                     ELSE                           CALC (TEMPAUDE.VALOR - LANCAXML.SALDO_INICIAL) TO TEMPAUDE.VALOR
+                                                    END
+                                           [~@DEV!] BEGIN
+                                                     IF LANCAXML.NAT_INICIAL EQ 'C' CALC (TEMPAUDE.VALOR + LANCAXML.SALDO_INICIAL) TO TEMPAUDE.VALOR
+                                                     ELSE                           CALC (TEMPAUDE.VALOR - LANCAXML.SALDO_INICIAL) TO TEMPAUDE.VALOR
+                                                    END
+
+                                           IF LANCAXML.MES LT !2 BEGIN
+                                                                  [ @DEV!] CALC (TEMPAUDE.VALOR + LANCAXML.DEBITO  - LANCAXML.CREDITO) TO TEMPAUDE.VALOR
+                                                                  [~@DEV!] CALC (TEMPAUDE.VALOR + LANCAXML.CREDITO - LANCAXML.DEBITO)  TO TEMPAUDE.VALOR
+                                                                 END
+                                           ELSE BEGIN
+                                                 CALC (TEMPAUDE.VALOR_1 + LANCAXML.DEBITO)  TO TEMPAUDE.VALOR_1
+                                                 CALC (TEMPAUDE.VALOR_2 + LANCAXML.CREDITO) TO TEMPAUDE.VALOR_2
+                                                END
+                                           
+                                           MOVE LANCAXML.AUXILIAR   TO TEMPAUDE.AUXILIAR
+                                           MOVE LANCAXML.AUXILIAR_1 TO TEMPAUDE.AUXILIAR_1
+                                           MOVE LANCAXML.AUXILIAR_3 TO TEMPAUDE.AUXILIAR_3
+                                           SAVERECORD TEMPAUDE
+                                           UNLOCK
+                                           ON ERROR OFF
+                                          END
+           END
+
+  CONSTRAINED_FIND NEXT
+  END
+ CONSTRAINT_SET 1 CLEAR
+#ENDCOMMAND 
+
+//--
+//--arquivo regaude guarda dados para estorno de contas correntes (lancar tambem no contabil)
+//--!1=cod entidade !2=no. do conta corrente !3=exercicio !4=mes solicitado
+//--
+#COMMAND ESTORNA_CC
+ CLEAR REGAUDE
+ CONSTRAINT_SET 1
+ CONSTRAIN REGAUDE.COD_ENTIDADE   EQ !1
+ CONSTRAIN REGAUDE.XML            EQ !2
+ CONSTRAIN REGAUDE.ANO            EQ !3
+ CONSTRAIN REGAUDE.MES_LANCAMENTO EQ !4
+ CONSTRAINED_FIND FIRST REGAUDE BY INDEX.1
+ WHILE [FOUND]
+
+  CLEAR TEMPAUDE
+  MOVE ST@CODIGO@ENTIDADE      TO TEMPAUDE.COD_ENTIDADE
+  MOVE ST@EXERCICIO@FINANCEIRO TO TEMPAUDE.EXERCICIO
+  MOVE ST@USUARIO              TO TEMPAUDE.USUARIO
+  MOVE REGAUDE.XML             TO TEMPAUDE.NUMERO
+  REPEAT
+   FIND GT TEMPAUDE BY INDEX.1
+   [ FOUND] INDICATE FOUND AS TEMPAUDE.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+   [ FOUND] INDICATE FOUND AS TEMPAUDE.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+   [ FOUND] INDICATE FOUND AS TEMPAUDE.USUARIO      EQ ST@USUARIO
+   [ FOUND] INDICATE FOUND AS TEMPAUDE.NUMERO       EQ REGAUDE.XML
+   [ FOUND] BEGIN
+             CALC (JN_LENDO + 1) TO JN_LENDO
+             
+             INDICATE @FAZ! TRUE
+             
+             IF REGAUDE.CONTA NE '' INDICATE @FAZ! AS (LEFT(TEMPAUDE.CODIGO,18)) EQ REGAUDE.CONTA
+             
+             [ @FAZ!] BEGIN
+                       CLEAR PLANO
+                       MOVE PARGERAL.ESTADO             TO PLANO.UF
+                       MOVE !3                          TO PLANO.ANO
+                       MOVE (MID(TEMPAUDE.CODIGO,18,1)) TO PLANO.CODIGO
+                       FIND EQ PLANO BY INDEX.1
+                       [~FOUND] CLEAR PLANO
+
+                       IF TEMPAUDE.VALOR NE 0 BEGIN
+                        INDICATE ERR FALSE
+                        ON ERROR GOSUB CHECA_GRAVACAO
+                        REREAD TEMPAUDE
+                        IF PLANO.SALDO_DC EQ 'D'  BEGIN
+                         IF TEMPAUDE.VALOR GT 0 CALC ( TEMPAUDE.VALOR         + TEMPAUDE.VALOR_1) TO TEMPAUDE.VALOR_1
+                         ELSE                   CALC ((TEMPAUDE.VALOR * (-1)) + TEMPAUDE.VALOR_2) TO TEMPAUDE.VALOR_2
+                         END
+                        IF PLANO.SALDO_DC EQ 'C'  BEGIN
+                         IF TEMPAUDE.VALOR GT 0  CALC ( TEMPAUDE.VALOR         + TEMPAUDE.VALOR_2) TO TEMPAUDE.VALOR_2
+                         ELSE                    CALC ((TEMPAUDE.VALOR * (-1)) + TEMPAUDE.VALOR_1) TO TEMPAUDE.VALOR_1
+                         END
+                        MOVE 0 TO TEMPAUDE.VALOR
+                        SAVERECORD TEMPAUDE
+                        UNLOCK
+                        ON ERROR OFF
+                        END
+                      END
+                     
+             INDICATE FOUND TRUE
+            END
+  UNTIL [~FOUND]          
+
+  CLEAR CONTACOR
+  MOVE REGAUDE.ANO_SALDO    TO CONTACOR.ANO
+  MOVE REGAUDE.MES_SALDO    TO CONTACOR.MES
+  MOVE REGAUDE.COD_ENTIDADE TO CONTACOR.COD_ENTIDADE
+  MOVE REGAUDE.XML          TO CONTACOR.XML
+  REPEAT
+   FIND GT CONTACOR BY INDEX.1
+   [ FOUND] INDICATE FOUND AS CONTACOR.ANO          EQ REGAUDE.ANO_SALDO
+   [ FOUND] INDICATE FOUND AS CONTACOR.MES          EQ REGAUDE.MES_SALDO
+   [ FOUND] INDICATE FOUND AS CONTACOR.COD_ENTIDADE EQ REGAUDE.COD_ENTIDADE
+   [ FOUND] INDICATE FOUND AS CONTACOR.XML          EQ REGAUDE.XML
+   [ FOUND] BEGIN
+             CALC (JN_LENDO + 1) TO JN_LENDO
+
+             INDICATE @FAZ! TRUE
+             
+             IF REGAUDE.CONTA NE '' INDICATE @FAZ! AS CONTACOR.CONTA EQ REGAUDE.CONTA
+             
+             [ @FAZ!] BEGIN
+                      CLEAR PLANO
+                      MOVE PARGERAL.ESTADO TO PLANO.UF
+                      MOVE ST@EXERCICIO    TO PLANO.ANO
+                      MOVE CONTACOR.CONTA  TO PLANO.CODIGO
+                      FIND EQ PLANO BY INDEX.1
+                      [~FOUND] CLEAR PLANO
+                      
+                      CLEAR TEMPAUDE
+                      MOVE ST@CODIGO@ENTIDADE      TO TEMPAUDE.COD_ENTIDADE
+                      MOVE ST@EXERCICIO@FINANCEIRO TO TEMPAUDE.EXERCICIO
+                      MOVE ST@USUARIO              TO TEMPAUDE.USUARIO
+                      MOVE CONTACOR.DADOS          TO TEMPAUDE.CODIGO
+                      MOVE REGAUDE.XML             TO TEMPAUDE.NUMERO
+                      FIND EQ TEMPAUDE BY INDEX.1
+                      INDICATE ERR FALSE
+                      ON ERROR GOSUB CHECA_GRAVACAO
+                      [ FOUND] REREAD TEMPAUDE
+                      IF PLANO.SALDO_DC EQ 'D' BEGIN
+                       IF CONTACOR.NAT_FINAL EQ 'D'  BEGIN
+                        MOVE  CONTACOR.VALOR_3                     TO TEMPAUDE.VALOR
+                        CALC (TEMPAUDE.VALOR_2 + CONTACOR.VALOR_3) TO TEMPAUDE.VALOR_2
+                        END
+                       ELSE BEGIN
+                        MOVE (CONTACOR.VALOR_3 * (-1))             TO TEMPAUDE.VALOR
+                        CALC (TEMPAUDE.VALOR_1 + CONTACOR.VALOR_3) TO TEMPAUDE.VALOR_1
+                        END
+                       END
+                      IF PLANO.SALDO_DC EQ 'C' BEGIN
+                       IF CONTACOR.NAT_FINAL EQ 'C' BEGIN
+                        MOVE  CONTACOR.VALOR_3                     TO TEMPAUDE.VALOR
+                        CALC (TEMPAUDE.VALOR_1 + CONTACOR.VALOR_3) TO TEMPAUDE.VALOR_1
+                        END
+                       ELSE BEGIN
+                        MOVE (CONTACOR.VALOR_3 * (-1))             TO TEMPAUDE.VALOR
+                        CALC (TEMPAUDE.VALOR_2 + CONTACOR.VALOR_3) TO TEMPAUDE.VALOR_2
+                        END
+                       END
+                      MOVE CONTACOR.AUXILIAR TO TEMPAUDE.AUXILIAR 
+                      SAVERECORD TEMPAUDE
+                      UNLOCK
+                      ON ERROR OFF
+                     END
+                     
+             INDICATE FOUND TRUE
+            END
+  UNTIL [~FOUND]
+
+  CONSTRAINED_FIND NEXT
+  END
+ CONSTRAINT_SET 1 CLEAR
+#ENDCOMMAND
+
+//--
+//--busca saldo inicial do regconta (clientes implantados durante o exercicio solicitado)
+//--s¢ qdo o mes solicitado for o proximo ao mes de implantacao
+//-- !1 = XML
+//-- !2 = MES SOLICITADO
+//-- !3 = ANO SOLICITADO
+//--
+#COMMAND BUSCA_SALDO_ANTERIOR_AJUSTE
+#IFDEF     ST@MES@SALDO
+#ELSE
+   STRING  ST@MES@SALDO 2
+#ENDIF
+#IFDEF     ST@MES@AUX
+#ELSE
+   STRING  ST@MES@AUX 2
+#ENDIF
+#IFDEF     ST@MES@BUSCA
+#ELSE
+   STRING  ST@MES@BUSCA 2
+#ENDIF
+#IFDEF     IT@INICIAL
+#ELSE
+   INTEGER IT@INICIAL
+#ENDIF
+#IFDEF     IT@FINAL
+#ELSE
+   INTEGER IT@FINAL
+#ENDIF
+#IFDEF     ST@DADOS
+#ELSE
+   STRING  ST@DADOS 255
+#ENDIF
+ 
+//  IF ST@MES@IMPLANTACAO NE '01' BEGIN
+  IF (MID(PARGERAL.AUXILIAR,2,6)) NE '' BEGIN
+   MOVE (MID(PARGERAL.AUXILIAR,2,6))       TO ST@MES@SALDO
+   CALC ((MID(PARGERAL.AUXILIAR,2,6)) + 1) TO ST@MES@AUX
+   COMZEROS ST@MES@AUX 2
+   
+   INDICATE @BUSCA@SALDO@DIFERENTE! AS !2 GE ST@MES@AUX
+
+   [ @BUSCA@SALDO@DIFERENTE!] BEGIN
+                               //--zera saldo anterior
+                               CLEAR TEMPAUDE
+                               CONSTRAINT_SET 1
+                               CONSTRAIN TEMPAUDE.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+                               CONSTRAIN TEMPAUDE.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+                               CONSTRAIN TEMPAUDE.USUARIO      EQ ST@USUARIO
+                               CONSTRAIN TEMPAUDE.NUMERO  EQ !1
+                               CONSTRAINED_FIND FIRST TEMPAUDE BY INDEX.2
+                               WHILE [FOUND]
+                                CALC (JN_LENDO + 1) TO JN_LENDO
+                                
+                                VERIFICA_CONTA_ESTORNO (LEFT(TEMPAUDE.CODIGO,18))
+                                
+                                [ @COPIA_SALDO!] BEGIN
+                                                  INDICATE ERR FALSE
+                                                  ON ERROR GOSUB CHECA_GRAVACAO
+                                                  REREAD TEMPAUDE
+                                                  MOVE 0 TO TEMPAUDE.VALOR
+                                                  SAVERECORD TEMPAUDE
+                                                  UNLOCK
+                                                  ON ERROR OFF
+                                                 END
+
+                                CONSTRAINED_FIND NEXT
+                                END
+                               CONSTRAINT_SET 1 CLEAR
+                               
+                               //--busca saldo do ultimo mes enviado pela outra empresa (das contas que nao podem ser estornadas)
+                               CLEAR CONTACOR
+                               CONSTRAINT_SET 1
+                               CONSTRAIN CONTACOR.ANO          EQ !3
+                               CONSTRAIN CONTACOR.MES          EQ ST@MES@SALDO
+                               CONSTRAIN CONTACOR.COD_ENTIDADE EQ ST@COD@ENTIDADE
+                               CONSTRAIN CONTACOR.XML          EQ !1
+                               CONSTRAINED_FIND FIRST CONTACOR BY INDEX.2
+                               WHILE [FOUND]
+                                CALC (JN_LENDO + 1) TO JN_LENDO
+
+                                VERIFICA_CONTA_ESTORNO CONTACOR.CONTA
+                                
+                                [ @COPIA_SALDO!] BEGIN
+                                                  CLEAR PLANO
+                                                  MOVE PARGERAL.ESTADO TO PLANO.UF
+                                                  MOVE !3              TO PLANO.ANO
+                                                  MOVE CONTACOR.CONTA  TO PLANO.CODIGO
+                                                  FIND EQ PLANO BY INDEX.1
+                                                  [~FOUND] CLEAR PLANO
+
+                                                  CLEAR TEMPAUDE
+                                                  MOVE ST@CODIGO@ENTIDADE      TO TEMPAUDE.COD_ENTIDADE
+                                                  MOVE ST@EXERCICIO@FINANCEIRO TO TEMPAUDE.EXERCICIO
+                                                  MOVE ST@USUARIO              TO TEMPAUDE.USUARIO
+                                                  MOVE CONTACOR.DADOS          TO TEMPAUDE.CODIGO
+                                                  MOVE !1                      TO TEMPAUDE.NUMERO
+                                                  FIND EQ TEMPAUDE BY INDEX.1
+                                                  INDICATE ERR FALSE
+                                                  ON ERROR GOSUB CHECA_GRAVACAO
+                                                  [ FOUND] REREAD TEMPAUDE
+                                                  IF PLANO.SALDO_DC EQ 'D' BEGIN
+                                                                            IF CONTACOR.NAT_FINAL EQ 'D' MOVE CONTACOR.VALOR_3          TO TEMPAUDE.VALOR
+                                                                            ELSE                         MOVE (CONTACOR.VALOR_3 * (-1)) TO TEMPAUDE.VALOR
+                                                                           END
+                                                  IF PLANO.SALDO_DC EQ 'C' BEGIN
+                                                                            IF CONTACOR.NAT_FINAL EQ 'C' MOVE CONTACOR.VALOR_3          TO TEMPAUDE.VALOR
+                                                                            ELSE                         MOVE (CONTACOR.VALOR_3 * (-1)) TO TEMPAUDE.VALOR
+                                                                           END
+                                                  MOVE CONTACOR.AUXILIAR   TO TEMPAUDE.AUXILIAR
+                                                  MOVE CONTACOR.AUXILIAR_1 TO TEMPAUDE.AUXILIAR_1
+                                                  MOVE CONTACOR.AUXILIAR_2 TO TEMPAUDE.AUXILIAR_2
+                                                  MOVE CONTACOR.AUXILIAR_3 TO TEMPAUDE.AUXILIAR_3
+                                                  SAVERECORD TEMPAUDE
+                                                  UNLOCK
+                                                  ON ERROR OFF
+                                                 END
+
+                                CONSTRAINED_FIND NEXT
+                                END
+                               CONSTRAINT_SET 1 CLEAR
+                               
+                               INDICATE @FAZ! TRUE
+                               
+                               //--
+                               //--devido ao zera saldo anterior acima (pois temos que ter o ultimo saldo enviado pela outra empresa),
+                               //--busca debitos ou creditos dos meses movimentados posteriores ao mes do ajuste ate' o mes selecionado
+                               //--
+                               [ @FAZ!] BEGIN
+                                         IF !2 GT ST@MES@AUX BEGIN
+                                                              MOVE ST@MES@AUX        TO IT@INICIAL
+                                                              MOVE ST_MES_SOLICITADO TO IT@FINAL
+
+                                                              FOR IT@INICIAL FROM IT@INICIAL TO (IT@FINAL - 1)
+                                                               MOVE IT@INICIAL TO ST@MES@BUSCA
+                                                               COMZEROS ST@MES@BUSCA 2
+                                                               
+                                                               CLEAR CONTACOR
+                                                               CONSTRAINT_SET 1
+                                                               CONSTRAIN CONTACOR.ANO          EQ !3
+                                                               CONSTRAIN CONTACOR.MES          EQ ST@MES@BUSCA
+                                                               CONSTRAIN CONTACOR.COD_ENTIDADE EQ ST@COD@ENTIDADE
+                                                               CONSTRAIN CONTACOR.XML          EQ !1
+                                                               CONSTRAINED_FIND FIRST CONTACOR BY INDEX.2
+                                                               WHILE [FOUND]
+                                                                CALC (JN_LENDO + 1) TO JN_LENDO
+                                                                
+                                                                VERIFICA_CONTA_ESTORNO CONTACOR.CONTA
+                                                                
+                                                                [ @COPIA_SALDO!] BEGIN
+                                                                                  CLEAR PLANO
+                                                                                  MOVE PARGERAL.ESTADO TO PLANO.UF
+                                                                                  MOVE !3              TO PLANO.ANO
+                                                                                  MOVE CONTACOR.CONTA  TO PLANO.CODIGO
+                                                                                  FIND EQ PLANO BY INDEX.1
+                                                                                  [~FOUND] CLEAR PLANO
+                                                                                  
+                                                                                  CLEAR TEMPAUDE
+                                                                                  MOVE ST@CODIGO@ENTIDADE      TO TEMPAUDE.COD_ENTIDADE
+                                                                                  MOVE ST@EXERCICIO@FINANCEIRO TO TEMPAUDE.EXERCICIO
+                                                                                  MOVE ST@USUARIO              TO TEMPAUDE.USUARIO
+                                                                                  MOVE CONTACOR.DADOS          TO TEMPAUDE.CODIGO
+                                                                                  MOVE !1                      TO TEMPAUDE.NUMERO
+                                                                                  FIND EQ TEMPAUDE BY INDEX.1
+                                                                                  INDICATE ERR FALSE
+                                                                                  ON ERROR GOSUB CHECA_GRAVACAO
+                                                                                  [ FOUND] REREAD TEMPAUDE
+                                                                                  IF PLANO.SALDO_DC EQ 'D' CALC (TEMPAUDE.VALOR + CONTACOR.VALOR_1 - CONTACOR.VALOR_2) TO TEMPAUDE.VALOR
+                                                                                  IF PLANO.SALDO_DC EQ 'C' CALC (TEMPAUDE.VALOR + CONTACOR.VALOR_2 - CONTACOR.VALOR_1) TO TEMPAUDE.VALOR
+                                                                                  MOVE CONTACOR.AUXILIAR   TO TEMPAUDE.AUXILIAR
+                                                                                  MOVE CONTACOR.AUXILIAR_1 TO TEMPAUDE.AUXILIAR_1
+                                                                                  MOVE CONTACOR.AUXILIAR_2 TO TEMPAUDE.AUXILIAR_2
+                                                                                  MOVE CONTACOR.AUXILIAR_3 TO TEMPAUDE.AUXILIAR_3
+                                                                                  SAVERECORD TEMPAUDE
+                                                                                  UNLOCK
+                                                                                  ON ERROR OFF
+                                                                                 END
+
+                                                                CONSTRAINED_FIND NEXT
+                                                                END
+                                                               CONSTRAINT_SET 1 CLEAR
+                                                              LOOP
+                                                             END
+                                        END
+                              END
+  END
+//  END
+#ENDCOMMAND
+
+#COMMAND DEFINE_PERIODO_CONTA_CORRENTE
+#IFDEF     ST@DATA@INICIAL
+#ELSE
+   STRING  ST@DATA@INICIAL
+#ENDIF
+#IFDEF     ST@DATA@FINAL
+#ELSE
+   STRING  ST@DATA@FINAL
+#ENDIF
+#IFDEF     ST@DATA@INICIAL@ANO
+#ELSE
+   STRING  ST@DATA@INICIAL@ANO
+#ENDIF
+#IFDEF     ST@DATA@LANCAMENTO@MES@13
+#ELSE
+   STRING  ST@DATA@LANCAMENTO@MES@13
+#ENDIF
+#IFDEF     DT@DATA@INICIAL
+#ELSE
+   DATE    DT@DATA@INICIAL
+#ENDIF
+#IFDEF     DT@DATA@FINAL
+#ELSE
+   DATE    DT@DATA@FINAL
+#ENDIF
+#IFDEF     DT@DATA@INICIAL@ANO
+#ELSE
+   DATE    DT@DATA@INICIAL@ANO
+#ENDIF
+#IFDEF     DT@LANCAMENTO@MES@13
+#ELSE
+   DATE    DT@LANCAMENTO@MES@13
+#ENDIF
+ 
+ MOVE '01/'    TO ST@DATA@INICIAL
+ MOVE '01/'    TO ST@DATA@FINAL
+ MOVE '01/01/' TO ST@DATA@INICIAL@ANO
+ 
+ //--variavel criada para separar os lancamentos do mes 13 do arquivo empenho que no
+ //--exercicio de 2013 o mveempen.flx estava gravando "S" to empenho.mes_13 equivocadamente
+ //--nos meses de janeiro a abril
+ MOVE '31/12/' TO ST@DATA@LANCAMENTO@MES@13
+ APPEND ST@DATA@LANCAMENTO@MES@13 PARGERAL.EXERCICIO
+ //--
+
+ APPEND ST@DATA@INICIAL@ANO PARGERAL.EXERCICIO
+ IF !1 LT '12' BEGIN
+                APPEND ST@DATA@INICIAL !1 '/' PARGERAL.EXERCICIO
+                APPEND ST@DATA@FINAL (!1 + 1) '/' PARGERAL.EXERCICIO
+               END
+ IF !1 EQ '12' BEGIN
+                APPEND ST@DATA@INICIAL '12' '/' PARGERAL.EXERCICIO
+                APPEND ST@DATA@FINAL '01/' (PARGERAL.EXERCICIO + 1)
+               END
+ IF !1 GE '13' BEGIN
+                APPEND ST@DATA@INICIAL '01/' (PARGERAL.EXERCICIO + 1)
+                APPEND ST@DATA@FINAL   '01/' (PARGERAL.EXERCICIO + 1)
+               END
+
+ MOVE ST@DATA@INICIAL           TO DT@DATA@INICIAL
+ MOVE ST@DATA@FINAL             TO DT@DATA@FINAL
+ MOVE ST@DATA@INICIAL@ANO       TO DT@DATA@INICIAL@ANO
+ MOVE ST@DATA@LANCAMENTO@MES@13 TO DT@LANCAMENTO@MES@13
+
+ INDICATE        @MES_12! FALSE
+ INDICATE        @MES_13! FALSE
+ INDICATE        @MES_14! FALSE
+ INDICATE  @MES_13_OU_14! FALSE
+ INDICATE  @ENCERRAMENTO! FALSE
+
+ INDICATE @ENCERRAMENTO! AS !1 GE '12'
+ INDICATE @MES_12!       AS !1 EQ '12'
+ INDICATE @MES_13!       AS !1 EQ '13'
+ INDICATE @MES_14!       AS !1 EQ '14'
+
+ INDICATE @MES_13_OU_14! GROUP ANY [ @MES_13! @MES_14!]
+#ENDCOMMAND
+
+#COMMAND IMPRIME_CABECALHO_CC
+  direct_output !1
+  
+  [~@MES_13_OU_14!] BUSCA_NOME_XSD 'CONTAS CORRENTES'
+        [ @MES_13!] BUSCA_NOME_XSD 'CONTAS CORRENTES 13'
+        [ @MES_14!] BUSCA_NOME_XSD 'CONTAS CORRENTES 14'
+  
+  writeln '<?xml version="1.0" encoding="ISO-8859-1"?>'
+  
+  [~@MES_13_OU_14!] writeln '<DetalheMovimentoMensal'
+        [ @MES_13!] writeln '<DetalheMovimentoMensal_13'
+        [ @MES_14!] writeln '<DetalheMovimentoMensal_14'
+  
+                    writeln ' xmlns="http:' st_barra 'www.tce.sp.gov.br/audesp/xml/dadoscontabeis"'
+                    writeln ' xmlns:aux="http:' st_barra 'www.tce.sp.gov.br/audesp/xml/auxiliar"'
+                    writeln ' xmlns:cadc="http:' st_barra 'www.tce.sp.gov.br/audesp/xml/cadastroscontabeis"'
+                    writeln ' xmlns:gen="http:' st_barra 'www.tce.sp.gov.br/audesp/xml/generico"'
+                    writeln ' xmlns:xsi="http:' st_barra 'www.w3.org/2001/XMLSchema-instance"'
+                    writeln ' xsi:schemaLocation="http:' st_barra 'www.tce.sp.gov.br/audesp/xml/dadoscontabeis ../dadoscontabeis/' st@nome@xsd '">'
+  
+                    writeln '   <Descritor>'
+                    writeln '      <gen:AnoExercicio>' pargeral.exercicio '</gen:AnoExercicio>'
+  
+  [~@MES_13_OU_14!] writeln '      <gen:TipoDocumento>BALANCETE-ISOLADO-CONTA-CORRENTE</gen:TipoDocumento>'
+        [ @MES_13!] writeln '      <gen:TipoDocumento>BALANCETE-ISOLADO-ENCERRAMENTO-13-CONTA-CORRENTE</gen:TipoDocumento>'
+        [ @MES_14!] writeln '      <gen:TipoDocumento>BALANCETE-ISOLADO-ENCERRAMENTO-14-CONTA-CORRENTE</gen:TipoDocumento>'
+  
+                    writeln '      <gen:Entidade>' pargeral.cod_ent_tce '</gen:Entidade>'
+                    writeln '      <gen:Municipio>' st@cod@siafi '</gen:Municipio>'
+                    writeln '      <gen:DataCriacaoXML>' !2 '</gen:DataCriacaoXML>'
+                    writeln '      <gen:MesExercicio>' !3 '</gen:MesExercicio>'
+                    writeln '   </Descritor>'
+                    writeln '   <ContasCorrentes>'
+#ENDCOMMAND
+
+#COMMAND IMPRIME_RODAPE_CC
+ [~@MES_13_OU_14!] writeln '   </ContasCorrentes>'
+       [ @MES_13!] writeln '   </ContasCorrentes>'
+       [ @MES_14!] writeln '   </ContasCorrentes_14>'
+
+ [~@MES_13_OU_14!] writeln '</DetalheMovimentoMensal>'
+       [ @MES_13!] writeln '</DetalheMovimentoMensal_13>'
+       [ @MES_14!] writeln '</DetalheMovimentoMensal_14>'
+#ENDCOMMAND
+
+//--
+//-- !1 = codigo chave (dados do conta corrente)
+//-- !2 = numero do conta corrente
+//-- !3 = valor
+//-- !4 = tipo do movimento 'SALDO', 'MOVIMENTO', etc...
+//--      'saldo' -> so acumula no tempaude.valor (referente saldo)
+//--      'movto' -> acumula debitos ou creditos
+//--      'espec' -> acumula so' debito ou so' credito mes13 ou 14 dependente da natureza da conta
+//-- !5 = natureza do movimento 'D'ebito ou 'C'redito
+//-- !6 = data do movimento
+//-- !7 = st-auxiliar (tempaude.auxiliar)
+//-- !8 = st-auxiliar (tempaude.auxiliar_3)
+//-- !9 = st-auxiliar (tempaude.auxiliar_1)
+//--
+#COMMAND SALVA_TEMPORARIO_CONTA_CORRENTE
+#IFDEF     IT@RECNUM@TEMPAUDE
+#ELSE
+   INTEGER IT@RECNUM@TEMPAUDE
+#ENDIF
+#IFDEF     ST@CODIGO@CONTA
+#ELSE
+   STRING  ST@CODIGO@CONTA
+#ENDIF
+#IFDEF     ST@AUXILIAR@1
+#ELSE
+   STRING  ST@AUXILIAR@1
+#ENDIF
+ 
+ MOVE '' TO ST@AUXILIAR@1
+ #IF (!0=9)
+  MOVE !9 TO ST@AUXILIAR@1
+ #ENDIF
+
+ MOVE ''             TO ST@CODIGO@CONTA
+ MOVE (MID(!1,15,1)) TO ST@CODIGO@CONTA
+ APPEND ST@CODIGO@CONTA '.00'
+ 
+ CLEAR PLANO
+ MOVE PARGERAL.ESTADO    TO PLANO.UF
+ MOVE PARGERAL.EXERCICIO TO PLANO.ANO
+ MOVE ST@CODIGO@CONTA    TO PLANO.CODIGO
+ FIND EQ PLANO BY INDEX.1
+ [~FOUND] BEGIN
+           CLEAR PLANO
+          END
+ 
+ INDICATE @FAZ! AS PLANO.CONTA_CORRENTE EQ !2
+ 
+ [ @FAZ!] BEGIN
+           //--verifica natureza da conta
+           INDICATE @DEV! AS PLANO.SALDO_DC EQ 'D'
+
+           CLEAR TEMPAUDE
+           MOVE ST@CODIGO@ENTIDADE      TO TEMPAUDE.COD_ENTIDADE
+           MOVE ST@EXERCICIO@FINANCEIRO TO TEMPAUDE.EXERCICIO
+           MOVE ST@USUARIO              TO TEMPAUDE.USUARIO
+           MOVE !1                      TO TEMPAUDE.CODIGO
+           MOVE !2                      TO TEMPAUDE.NUMERO
+           FIND EQ TEMPAUDE BY INDEX.1
+           [ FOUND] BEGIN
+                     INDICATE ERR FALSE
+                     ON ERROR GOSUB CHECA_GRAVACAO
+                     REREAD TEMPAUDE
+                    END
+           
+           //--acumula saldo
+           //--se natureza do movimento igual a natureza da conta aumenta o saldo, caso contrario, deduz o saldo
+           IF !4 EQ 'SALDO' BEGIN
+                             IF !5 EQ PLANO.SALDO_DC CALC (TEMPAUDE.VALOR + !3) TO TEMPAUDE.VALOR
+                             ELSE                    CALC (TEMPAUDE.VALOR - !3) TO TEMPAUDE.VALOR
+                            END
+           
+           //--saldo de balanco
+           IF !4 EQ 'SALDO_ESP' BEGIN
+                                 CALC (TEMPAUDE.VALOR + !3) TO TEMPAUDE.VALOR
+                                END
+                            
+           //--acumula movimento
+           IF !4 EQ 'MOVTO' BEGIN
+                             //--se data do movimento menor que data inicial da selecao acumula no saldo (segue regra acima)
+                             IF !6 LT DT@DATA@INICIAL BEGIN
+                                                       IF !5 EQ PLANO.SALDO_DC CALC (TEMPAUDE.VALOR + !3) TO TEMPAUDE.VALOR
+                                                       ELSE                    CALC (TEMPAUDE.VALOR - !3) TO TEMPAUDE.VALOR
+                                                      END
+                             ELSE IF !6 LT DT@DATA@FINAL BEGIN
+                                                          //--data do movimento dentro do mes selecionado
+                                                          [ @DEV!] BEGIN
+                                                                    //--se natureza da conta for Devedora e natureza do movimento for Devedor
+                                                                    //--debitar valor posivo, creditar valor negativo
+                                                                    IF !5 EQ 'D' BEGIN
+                                                                                  IF !3 GT 0 CALC (TEMPAUDE.VALOR_1 + !3)          TO TEMPAUDE.VALOR_1
+                                                                                  ELSE       CALC (TEMPAUDE.VALOR_2 + (!3 * (-1))) TO TEMPAUDE.VALOR_2
+                                                                                 END
+                                                                    //--se natureza da conta for Devedora e natureza do movimento for Credor
+                                                                    //--creditar valor posivo, debitar valor negativo
+                                                                    ELSE BEGIN
+                                                                          IF !3 GT 0 CALC (TEMPAUDE.VALOR_2 + !3)          TO TEMPAUDE.VALOR_2
+                                                                          ELSE       CALC (TEMPAUDE.VALOR_1 + (!3 * (-1))) TO TEMPAUDE.VALOR_1
+                                                                         END
+                                                                   END
+                                                          [~@DEV!] BEGIN
+                                                                    //--se natureza da conta for Credora e natureza do movimento for Credor
+                                                                    //--creditar valor posivo, debitar valor negativo
+                                                                    IF !5 EQ 'C' BEGIN
+                                                                                  IF !3 GT 0 CALC (TEMPAUDE.VALOR_2 + !3)          TO TEMPAUDE.VALOR_2
+                                                                                  ELSE       CALC (TEMPAUDE.VALOR_1 + (!3 * (-1))) TO TEMPAUDE.VALOR_1
+                                                                                 END
+                                                                    //--se natureza da conta for Credora e natureza do movimento for Devedor
+                                                                    //--debitar valor posivo, creditar valor negativo
+                                                                    ELSE BEGIN
+                                                                          IF !3 GT 0 CALC (TEMPAUDE.VALOR_1 + !3)          TO TEMPAUDE.VALOR_1
+                                                                          ELSE       CALC (TEMPAUDE.VALOR_2 + (!3 * (-1))) TO TEMPAUDE.VALOR_2
+                                                                         END
+                                                                   END
+                                                         END
+                            END
+                            
+           //--acumula movimento especial (onde natureza do movimento depende da natureza da conta)
+           //--parametro "X" para indicar lancamento de acordo com natureza da conta diferenciando valor(+) de valor(-)
+           IF !4 EQ 'MOVTO_ESP' BEGIN
+                                 IF !6 LT DT@DATA@INICIAL BEGIN
+                                                           IF !5 EQ 'X' BEGIN
+                                                                         [ @DEV!] CALC (TEMPAUDE.VALOR + !3) TO TEMPAUDE.VALOR
+                                                                         [~@DEV!] CALC (TEMPAUDE.VALOR - !3) TO TEMPAUDE.VALOR
+                                                                        END
+                                                           ELSE         BEGIN
+                                                                         [ @DEV!] CALC (TEMPAUDE.VALOR - !3) TO TEMPAUDE.VALOR
+                                                                         [~@DEV!] CALC (TEMPAUDE.VALOR + !3) TO TEMPAUDE.VALOR
+                                                                        END
+                                                          END
+                                 ELSE IF !6 LT DT@DATA@FINAL BEGIN
+                                                              IF !5 EQ 'X' BEGIN
+                                                                            [ @DEV!] BEGIN
+                                                                                      IF !3 GT 0 CALC (TEMPAUDE.VALOR_1 + !3)          TO TEMPAUDE.VALOR_1
+                                                                                      ELSE       CALC (TEMPAUDE.VALOR_2 + (!3 * (-1))) TO TEMPAUDE.VALOR_2
+                                                                                     END
+                                                                            [~@DEV!] BEGIN
+                                                                                      IF !3 GT 0 CALC (TEMPAUDE.VALOR_2 + !3)          TO TEMPAUDE.VALOR_2
+                                                                                      ELSE       CALC (TEMPAUDE.VALOR_1 + (!3 * (-1))) TO TEMPAUDE.VALOR_1
+                                                                                     END
+                                                                           END
+                                                              ELSE         BEGIN
+                                                                            [ @DEV!] BEGIN
+                                                                                      IF !3 GT 0 CALC (TEMPAUDE.VALOR_2 + !3)          TO TEMPAUDE.VALOR_2
+                                                                                      ELSE       CALC (TEMPAUDE.VALOR_1 + (!3 * (-1))) TO TEMPAUDE.VALOR_1
+                                                                                     END
+                                                                            [~@DEV!] BEGIN
+                                                                                      IF !3 GT 0 CALC (TEMPAUDE.VALOR_1 + !3)          TO TEMPAUDE.VALOR_1
+                                                                                      ELSE       CALC (TEMPAUDE.VALOR_2 + (!3 * (-1))) TO TEMPAUDE.VALOR_2
+                                                                                     END
+                                                                           END
+                                                             END
+                                END
+                            
+           //--acumula movimento especifico (mes13 ou 14 qdo so' credita ou debita determinada conta)
+           //--caso variar o D ou C de acordo com o valor, utilizar o ESPEC_V logo abaixo
+           IF !4 EQ 'ESPEC_U' BEGIN
+                               IF !5 EQ 'C' CALC (TEMPAUDE.VALOR_2 + !3) TO TEMPAUDE.VALOR_2
+                               ELSE         CALC (TEMPAUDE.VALOR_1 + !3) TO TEMPAUDE.VALOR_1
+                              END
+           
+           //--acumula movimento especifico (mes13 ou 14) mas dependendo do valor Debita ou Credita a conta
+           IF !4 EQ 'ESPEC_V' BEGIN
+                               IF !5 EQ 'C' BEGIN
+                                             IF !3 GT 0 CALC (TEMPAUDE.VALOR_2 + !3)          TO TEMPAUDE.VALOR_2
+                                             ELSE       CALC (TEMPAUDE.VALOR_1 + (!3 * (-1))) TO TEMPAUDE.VALOR_1
+                                            END
+                               ELSE         BEGIN
+                                             IF !3 GT 0 CALC (TEMPAUDE.VALOR_1 + !3)          TO TEMPAUDE.VALOR_1
+                                             ELSE       CALC (TEMPAUDE.VALOR_2 + (!3 * (-1))) TO TEMPAUDE.VALOR_2
+                                            END
+                              END
+           
+           //--acumula movimento do mes 13 referente ao 'MOVTO_ESP'
+           IF !4 EQ 'MOVTO_ESP_13' BEGIN
+                                    IF !5 EQ 'X' BEGIN
+                                                  [ @DEV!] BEGIN
+                                                            IF !3 GT 0 CALC (TEMPAUDE.VALOR_1 + !3)          TO TEMPAUDE.VALOR_1
+                                                            ELSE       CALC (TEMPAUDE.VALOR_2 + (!3 * (-1))) TO TEMPAUDE.VALOR_2
+                                                           END
+                                                  [~@DEV!] BEGIN
+                                                            IF !3 GT 0 CALC (TEMPAUDE.VALOR_2 + !3)          TO TEMPAUDE.VALOR_2
+                                                            ELSE       CALC (TEMPAUDE.VALOR_1 + (!3 * (-1))) TO TEMPAUDE.VALOR_1
+                                                           END
+                                                 END
+                                    ELSE         BEGIN
+                                                  [ @DEV!] BEGIN
+                                                            IF !3 GT 0 CALC (TEMPAUDE.VALOR_2 + !3)          TO TEMPAUDE.VALOR_2
+                                                            ELSE       CALC (TEMPAUDE.VALOR_1 + (!3 * (-1))) TO TEMPAUDE.VALOR_1
+                                                           END
+                                                  [~@DEV!] BEGIN
+                                                            IF !3 GT 0 CALC (TEMPAUDE.VALOR_1 + !3)          TO TEMPAUDE.VALOR_1
+                                                            ELSE       CALC (TEMPAUDE.VALOR_2 + (!3 * (-1))) TO TEMPAUDE.VALOR_2
+                                                           END
+                                                 END
+                                   END
+           
+           //--acumula movimento do mes 14 referente ao 'MOVTO_ESP'
+           IF !4 EQ 'MOVTO_ESP_14' BEGIN
+                                    IF !5 EQ 'X' BEGIN
+                                                  [ @DEV!] CALC (TEMPAUDE.VALOR + !3) TO TEMPAUDE.VALOR
+                                                  [~@DEV!] CALC (TEMPAUDE.VALOR - !3) TO TEMPAUDE.VALOR
+                                                 END
+                                    ELSE         BEGIN
+                                                  [ @DEV!] CALC (TEMPAUDE.VALOR - !3) TO TEMPAUDE.VALOR
+                                                  [~@DEV!] CALC (TEMPAUDE.VALOR + !3) TO TEMPAUDE.VALOR
+                                                 END
+                                   END
+
+           MOVE !7            TO TEMPAUDE.AUXILIAR
+           MOVE !8            TO TEMPAUDE.AUXILIAR_3
+           MOVE ST@AUXILIAR@1 TO TEMPAUDE.AUXILIAR_1
+           
+           SAVERECORD TEMPAUDE
+           UNLOCK
+           ON ERROR OFF
+           
+           //--guarda recnum do ultimo registro para ajustes de movimentos derivados de percentuais (ajustes de centavos)
+           MOVE TEMPAUDE.RECNUM TO IT@RECNUM@TEMPAUDE
+          END
+#ENDCOMMAND
+
+//--
+//-- !1 = codigo chave (dados do conta corrente)
+//-- !2 = numero do conta corrente
+//-- !3 = valor
+//-- !4 = tipo do movimento 'SALDO' ou 'MOVIMENTO' etc..
+//--      'saldo' -> so acumula no tempaude.valor (referente saldo)
+//--      'movto' -> acumula debitos ou creditos
+//--      'espec' -> acumula so' debito ou so' credito mes13 ou 14 dependente da natureza da conta
+//-- !5 = natureza do movimento 'D'ebito ou 'C'redito
+//-- !6 = data do movimento
+//-- !7 = st-auxiliar (tempaude.auxiliar)
+//-- !8 = st-auxiliar (tempaude.auxiliar_3)
+//-- !9 = st-auxiliar (tempaude.auxiliar_1)
+//--
+//--
+#COMMAND SALVA_TEMPORARIO_CONTA_CORRENTE_ARREDONDAMENTO
+ CLEAR PLANO
+ MOVE PARGERAL.ESTADO    TO PLANO.UF
+ MOVE PARGERAL.EXERCICIO TO PLANO.ANO
+ MOVE (MID(!1,18,1))     TO PLANO.CODIGO
+ FIND EQ PLANO BY INDEX.1
+ [~FOUND] CLEAR PLANO
+ 
+ //--verifica natureza da conta
+ INDICATE @DEV! AS PLANO.SALDO_DC EQ 'D'
+
+ CLEAR TEMPAUDE
+ MOVE IT@RECNUM@TEMPAUDE TO TEMPAUDE.RECNUM
+ FIND EQ TEMPAUDE BY RECNUM
+ [ FOUND] BEGIN
+           INDICATE ERR FALSE
+           ON ERROR GOSUB CHECA_GRAVACAO
+           REREAD TEMPAUDE
+           //--acumula saldo
+           //--se natureza do movimento igual a natureza da conta aumenta o saldo, caso contrario, deduz o saldo
+           IF !4 EQ 'SALDO' BEGIN
+                             IF !5 EQ PLANO.SALDO_DC CALC (TEMPAUDE.VALOR + !3) TO TEMPAUDE.VALOR
+                             ELSE                    CALC (TEMPAUDE.VALOR - !3) TO TEMPAUDE.VALOR
+                            END
+           
+           //--acumula movimento
+           IF !4 EQ 'MOVTO' BEGIN
+                             //--se data do movimento menor que data inicial da selecao acumula no saldo (segue regra acima)
+                             IF !6 LT DT@DATA@INICIAL BEGIN
+                                                       IF !5 EQ PLANO.SALDO_DC CALC (TEMPAUDE.VALOR + !3) TO TEMPAUDE.VALOR
+                                                       ELSE                    CALC (TEMPAUDE.VALOR - !3) TO TEMPAUDE.VALOR
+                                                      END
+                             ELSE BEGIN
+                                   //--data do movimento dentro do mes selecionado
+                                   [ @DEV!] BEGIN
+                                             //--se natureza da conta for Devedora e natureza do movimento for Devedor
+                                             //--debitar valor posivo, creditar valor negativo
+                                             IF !5 EQ 'D' BEGIN
+                                                           IF !3 GT 0 CALC (TEMPAUDE.VALOR_1 + !3)          TO TEMPAUDE.VALOR_1
+                                                           ELSE       CALC (TEMPAUDE.VALOR_2 + (!3 * (-1))) TO TEMPAUDE.VALOR_2
+                                                          END
+                                             //--se natureza da conta for Devedora e natureza do movimento for Credor
+                                             //--creditar valor posivo, debitar valor negativo
+                                             ELSE BEGIN
+                                                   IF !3 GT 0 CALC (TEMPAUDE.VALOR_2 + !3)          TO TEMPAUDE.VALOR_2
+                                                   ELSE       CALC (TEMPAUDE.VALOR_1 + (!3 * (-1))) TO TEMPAUDE.VALOR_1
+                                                  END
+                                            END
+                                   [~@DEV!] BEGIN
+                                             //--se natureza da conta for Credora e natureza do movimento for Credor
+                                             //--creditar valor posivo, debitar valor negativo
+                                             IF !5 EQ 'C' BEGIN
+                                                           IF !3 GT 0 CALC (TEMPAUDE.VALOR_2 + !3)          TO TEMPAUDE.VALOR_2
+                                                           ELSE       CALC (TEMPAUDE.VALOR_1 + (!3 * (-1))) TO TEMPAUDE.VALOR_1
+                                                          END
+                                             //--se natureza da conta for Credora e natureza do movimento for Devedor
+                                             //--debitar valor posivo, creditar valor negativo
+                                             ELSE BEGIN
+                                                   IF !3 GT 0 CALC (TEMPAUDE.VALOR_1 + !3)          TO TEMPAUDE.VALOR_1
+                                                   ELSE       CALC (TEMPAUDE.VALOR_2 + (!3 * (-1))) TO TEMPAUDE.VALOR_2
+                                                  END
+                                            END
+                                  END
+                            END
+           
+           //--acumula movimento especifico (so' credita ou debita determinada conta)
+           IF !4 EQ 'ESPEC_U' BEGIN
+                               IF !5 EQ 'C' CALC (TEMPAUDE.VALOR_2 + !3) TO TEMPAUDE.VALOR_2
+                               ELSE         CALC (TEMPAUDE.VALOR_1 + !3) TO TEMPAUDE.VALOR_1
+                              END
+           
+           //--acumula movimento especifico (mas dependendo do valor Debita ou Credita a conta)
+           IF !4 EQ 'ESPEC_V' BEGIN
+                               IF !5 EQ 'C' BEGIN
+                                             IF !3 GT 0 CALC (TEMPAUDE.VALOR_2 + !3)          TO TEMPAUDE.VALOR_2
+                                             ELSE       CALC (TEMPAUDE.VALOR_1 + (!3 * (-1))) TO TEMPAUDE.VALOR_1
+                                            END
+                               ELSE         BEGIN
+                                             IF !3 GT 0 CALC (TEMPAUDE.VALOR_1 + !3)          TO TEMPAUDE.VALOR_1
+                                             ELSE       CALC (TEMPAUDE.VALOR_2 + (!3 * (-1))) TO TEMPAUDE.VALOR_2
+                                            END
+                              END
+           
+           SAVERECORD TEMPAUDE
+           UNLOCK
+           ON ERROR OFF
+          END
+#ENDCOMMAND
+
+//--
+//-- !1 = tempaude.codigo   (conta)
+//-- !2 = tempaude.valor    (saldo inicial)
+//-- !3 = tempaude.valor_1  (valor debito)
+//-- !4 = tempaude.valor_2  (valor_credito)
+//--
+#COMMAND PREPARA_SALDO_CONTA_CORRENTE
+#IFDEF     ST@NATUREZA@INICIAL
+#ELSE
+   STRING  ST@NATUREZA@INICIAL
+#ENDIF
+#IFDEF     ST@NATUREZA@FINAL
+#ELSE
+   STRING  ST@NATUREZA@FINAL
+#ENDIF
+#IFDEF     ST@SALDO@INICIAL
+#ELSE
+   STRING  ST@SALDO@INICIAL
+#ENDIF
+#IFDEF     ST@SALDO@FINAL
+#ELSE
+   STRING  ST@SALDO@FINAL
+#ENDIF
+#IFDEF     ST@DEBITO
+#ELSE
+   STRING  ST@DEBITO
+#ENDIF
+#IFDEF     ST@CREDITO
+#ELSE
+   STRING  ST@CREDITO
+#ENDIF
+#IFDEF     NB@SALDO@INICIAL
+#ELSE
+   NUMBER  NB@SALDO@INICIAL
+#ENDIF
+#IFDEF     NB@SALDO@FINAL
+#ELSE
+   NUMBER  NB@SALDO@FINAL
+#ENDIF
+
+ CLEAR PLANO
+ MOVE PARGERAL.ESTADO    TO PLANO.UF
+ MOVE PARGERAL.EXERCICIO TO PLANO.ANO
+ MOVE (MID(!1,18,1))     TO PLANO.CODIGO
+ FIND EQ PLANO BY INDEX.1
+ [~FOUND] CLEAR PLANO
+
+ MOVE !2 TO NB@SALDO@INICIAL
+
+ IF PLANO.SALDO_DC EQ 'D' BEGIN
+                           CALC (NB@SALDO@INICIAL + !3 - !4) TO NB@SALDO@FINAL
+
+                           MOVE 'D' TO ST@NATUREZA@INICIAL
+                           MOVE 'D' TO ST@NATUREZA@FINAL
+
+                           IF NB@SALDO@INICIAL LT 0 BEGIN
+                                                     MOVE 'C'                       TO ST@NATUREZA@INICIAL
+                                                     CALC (NB@SALDO@INICIAL * (-1)) TO NB@SALDO@INICIAL
+                                                    END
+                           IF NB@SALDO@FINAL LT 0 BEGIN
+                                                   MOVE 'C'                       TO ST@NATUREZA@FINAL
+                                                   CALC (NB@SALDO@FINAL * (-1))   TO NB@SALDO@FINAL
+                                                  END
+                          END
+ ELSE BEGIN
+       CALC (NB@SALDO@INICIAL + !4 - !3) TO NB@SALDO@FINAL
+
+       MOVE 'C' TO ST@NATUREZA@INICIAL
+       MOVE 'C' TO ST@NATUREZA@FINAL
+
+       IF NB@SALDO@INICIAL LT 0 BEGIN
+                                 MOVE 'D'                       TO ST@NATUREZA@INICIAL
+                                 CALC (NB@SALDO@INICIAL * (-1)) TO NB@SALDO@INICIAL
+                                END
+       IF NB@SALDO@FINAL LT 0 BEGIN
+                               MOVE 'D'                       TO ST@NATUREZA@FINAL
+                               CALC (NB@SALDO@FINAL * (-1))   TO NB@SALDO@FINAL
+                              END
+      END
+
+ TROCA_PONTO NB@SALDO@INICIAL ST@SALDO@INICIAL
+ TROCA_PONTO !3               ST@DEBITO
+ TROCA_PONTO !4               ST@CREDITO
+ TROCA_PONTO NB@SALDO@FINAL   ST@SALDO@FINAL
+#ENDCOMMAND
+
+//--
+//-- !1 = codigo do fornecedor
+//-- !2 = sequencia do fornecedor
+//-- !3 = variavel que recebe inscricao
+//--
+#COMMAND BUSCA_INSCRICAO_CREDOR_FORNECEDOR
+#IFDEF     ST@N@INSCRICAO
+#ELSE
+   STRING  ST@N@INSCRICAO
+#ENDIF
+ 
+ MOVEALL '' TO ST@N@INSCRICAO !3
+ 
+ CLEAR FORNECED
+ MOVE ST@CODIGO@ENTIDADE TO FORNECED.COD_ENTIDADE
+ MOVE !1                 TO FORNECED.CODIGO
+ MOVE !2                 TO FORNECED.SEQUENCIA
+ FIND EQ FORNECED BY INDEX.1
+ [~FOUND] CLEAR FORNECED
+
+ LIMPA_CODIGO FORNECED.C_G_C ST@N@INSCRICAO 18
+
+ INDICATE @CNPJ! AS (LENGTH(ST@N@INSCRICAO)) EQ 14
+ INDICATE @CPF!  AS (LENGTH(ST@N@INSCRICAO)) EQ 11
+ 
+ INDICATE @ESTRANGEIRO! FALSE
+
+ [ @CNPJ!] BEGIN
+    CHECA_CGC ST@N@INSCRICAO
+    [ ERR] INDICATE @CNPJ! FALSE
+    [~ERR] INDICATE @CNPJ! TRUE
+ END
+ 
+ [ @CPF!] BEGIN
+    CHECA_CPF ST@N@INSCRICAO
+    [ ERR] INDICATE @CPF! FALSE
+    [~ERR] INDICATE @CPF! TRUE
+ END
+ 
+ [ @CPF!] BEGIN
+    VALIDA_CPF ST@N@INSCRICAO
+    [~@CPF_OK!] INDICATE @CPF! FALSE
+ END
+
+ [ @CNPJ!] BEGIN
+    VALIDA_CNPJ ST@N@INSCRICAO
+    [~@CNPJ_OK!] INDICATE @CNPJ! FALSE
+ END
+
+ INDICATE @OUT! GROUP ALL [~@CNPJ! ~@CPF!]
+ 
+ [~@OUT!] BEGIN
+           MOVE ST@N@INSCRICAO  TO !3
+          END
+ [ @OUT!] BEGIN
+                            INDICATE @ESTRANGEIRO! AS FORNECED.DOC_ESTRANGEIRO   NE ''
+           [ @ESTRANGEIRO!] INDICATE @ESTRANGEIRO! AS FORNECED.PAIS              NE ''
+           [ @ESTRANGEIRO!] INDICATE @ESTRANGEIRO! AS (UPPERCASE(FORNECED.PAIS)) NE 'BRASIL'
+           [ @ESTRANGEIRO!] BEGIN
+                             MOVE FORNECED.DOC_ESTRANGEIRO TO !3
+                             INDICATE @ESTRANGEIRO! TRUE
+                            END
+           [~@ESTRANGEIRO!] BEGIN
+                             MOVE FORNECED.CODIGO TO !3
+                            END
+          END
+ TRIM !3 TO !3
+#ENDCOMMAND
+
+//--
+//-- verifica se a conta devera ir no c/c
+//-- !1 = conta
+//-- !2 = mes solicitado
+//-- !3 = saldo inicial (tempaude.valor)
+//-- !4 = debito        (tempaude.valor_1)
+//-- !5 = credito       (tempaude.valor_2)
+//-- !6 = saldo final   (tempaude.valor_3)
+//--
+#COMMAND DETALHA_MES
+#IFDEF     ST@CONTA@PLANO@AUX
+#ELSE
+   STRING  ST@CONTA@PLANO@AUX
+#ENDIF
+ 
+ INDICATE DETALHA@MES! TRUE
+ 
+ MOVE !1 TO ST@CONTA@PLANO@AUX
+ TRIM ST@CONTA@PLANO@AUX TO ST@CONTA@PLANO@AUX
+ APPEND ST@CONTA@PLANO@AUX '.00'
+ 
+ CLEAR PLANO
+ MOVE PARGERAL.ESTADO    TO PLANO.UF
+ MOVE PARGERAL.EXERCICIO TO PLANO.ANO
+ MOVE ST@CONTA@PLANO@AUX TO PLANO.CODIGO
+ FIND EQ PLANO BY INDEX.1
+ [~FOUND] CLEAR PLANO
+ 
+ IF ((!2 GT '01') AND (!2 LT '13')) INDICATE DETALHA@MES! AS ((!4 NE 0) OR (!5 NE 0))
+ 
+ IF   !2 EQ '13' INDICATE DETALHA@MES! AS ((PLANO.DETALHA_M13 EQ 'S') OR (!4 NE 0) OR (!5 NE 0))
+ IF   !2 EQ '14' INDICATE DETALHA@MES! AS   PLANO.DETALHA_M14 EQ 'S'
+ 
+ //--limpa pontuacao da conta para listar no conta corrente
+ REPEAT
+  REMOVE '.' FROM !1
+ UNTIL [~FOUND]
+ TRIM !1 TO !1
+#ENDCOMMAND
+
+//-- rp processado e nao processado segundo o TCE (a partir de dez/2013)
+//--
+//-- !1 = pargeral.exercicio
+//-- !2 = data liquidacao
+//-- !3 = ano empenho
+//--
+#COMMAND OBTER_SITUACAO_RP
+
+ INDICATE        @RP@PROCESSADO@TCE! FALSE
+ INDICATE @NAO@PROCESSADO@LIQUIDADO! FALSE
+ 
+ //--somente e' processado se foi liquidado no mesmo ano do empenho
+                        INDICATE @RP@PROCESSADO@TCE! AS !1            GE '2014'
+ [ @RP@PROCESSADO@TCE!] INDICATE @RP@PROCESSADO@TCE! AS !2            LT DT@DATA@INICIAL@EXERCICIO
+ [ @RP@PROCESSADO@TCE!] INDICATE @RP@PROCESSADO@TCE! AS (MID(!2,4,7)) EQ LIQUIDRP.ANO_EMPENHO
+ 
+ //--para as liquidacoes efetuadas anteriores a 01/01/2013 ainda considera processado mesmo sendo liquidado em ano diferente do empenho (era a regra anterior)
+ [~@RP@PROCESSADO@TCE!] BEGIN
+                         IF ((!2 LT DT@DATA@INICIAL@EXERCICIO) AND (!2 LT DT@LIMITE@RP@PROCESSADO@TCE)) INDICATE @RP@PROCESSADO@TCE! TRUE
+                        END
+ 
+// [ @RP@PROCESSADO@TCE!] INDICATE @RP@PROCESSADO@TCE! AS !2            GE DT@LIMITE@RP@PROCESSADO@TCE
+ 
+                               INDICATE @NAO@PROCESSADO@LIQUIDADO! AS PARGERAL.EXERCICIO  GE '2014'
+ [ @NAO@PROCESSADO@LIQUIDADO!] INDICATE @NAO@PROCESSADO@LIQUIDADO! AS !2                  GE DT@LIMITE@RP@PROCESSADO@TCE  // 01/01/2013
+ [ @NAO@PROCESSADO@LIQUIDADO!] INDICATE @NAO@PROCESSADO@LIQUIDADO! AS (MID(!2,4,7))       NE LIQUIDRP.ANO_EMPENHO
+#ENDCOMMAND
+           
+//-- verifica se conta pode estornar para envio do primeiro xml
+//--
+//-- !1 = conta
+//--
+#COMMAND VERIFICA_CONTA_ESTORNO
+#IFDEF     IT@COPIA@SALDO
+#ELSE
+   INTEGER IT@COPIA@SALDO
+#ENDIF
+#IFDEF     IT@ENTIDADES
+#ELSE
+   INTEGER IT@ENTIDADES
+#ENDIF
+ 
+ MOVE 0 TO IT@COPIA@SALDO
+ MOVE 0 TO IT@ENTIDADES
+ 
+ INDICATE     @ESTORNA! TRUE
+ INDICATE @COPIA_SALDO! FALSE
+ 
+ CLEAR PLANO
+ MOVE PARGERAL.ESTADO    TO PLANO.UF
+ MOVE PARGERAL.EXERCICIO TO PLANO.ANO
+ MOVE !1                 TO PLANO.CODIGO
+ FIND EQ PLANO BY INDEX.1
+ [~FOUND] CLEAR PLANO
+ 
+ //--
+ //--(estornamos as contas de despesa 6.x 7.x 8.x)
+ //--
+ IF ((PARGERAL.COD_SIAFI EQ 6269) AND (PARGERAL.COD_ENTIDADE EQ '01') AND (PARGERAL.EXERCICIO EQ '2022')) MOVE 1 TO IT@ENTIDADES //-- pm cabreuva
+ IF ((PARGERAL.COD_SIAFI EQ 6711) AND (PARGERAL.COD_ENTIDADE EQ '01') AND (PARGERAL.EXERCICIO EQ '2022')) MOVE 0 TO IT@ENTIDADES //-- pm mococa
+ 
+ IF IT@ENTIDADES EQ 1 BEGIN
+                       //--receita orcamentaria
+                            IF (LEFT(!1,5)) EQ '5.2.1'   INDICATE @ESTORNA! FALSE
+                       ELSE IF (LEFT(!1,5)) EQ '6.2.1'   INDICATE @ESTORNA! FALSE
+
+                       //--despesa orcamentaria
+                            IF (LEFT(!1,5)) EQ '5.2.2'   INDICATE @ESTORNA! FALSE
+                      END
+
+ IF IT@ENTIDADES EQ 0 BEGIN
+                       //--receita orcamentaria
+                            IF (LEFT(!1,5)) EQ '5.2.1'   INDICATE @ESTORNA! FALSE
+                       ELSE IF (LEFT(!1,5)) EQ '6.2.1'   INDICATE @ESTORNA! FALSE
+
+                       //--despesa orcamentaria
+                            IF (LEFT(!1,5)) EQ '5.2.2'   INDICATE @ESTORNA! FALSE
+                       ELSE IF (LEFT(!1,5)) EQ '6.2.2'   INDICATE @ESTORNA! FALSE  //--tentando estornar a execucao da despesa sem o fixado
+
+                       //--despesa orcamentaria (nova regra de validacao... tem que bater com as contas 6.2.2.1.3.04)
+                            IF (LEFT(!1,7)) EQ '7.9.6.1' INDICATE @ESTORNA! FALSE
+                       ELSE IF (LEFT(!1,7)) EQ '8.9.6.1' INDICATE @ESTORNA! FALSE
+                       
+                       //--restos a pagar em janeiro (e a porra do ano todo)
+                            IF (LEFT(!1,5)) EQ '5.3.1'   INDICATE @ESTORNA! FALSE
+                       ELSE IF (LEFT(!1,5)) EQ '5.3.2'   INDICATE @ESTORNA! FALSE
+                       
+                            IF (LEFT(!1,5)) EQ '6.3.1'   INDICATE @ESTORNA! FALSE
+                       ELSE IF (LEFT(!1,5)) EQ '6.3.2'   INDICATE @ESTORNA! FALSE
+                       
+                       //--restos a pagar em janeiro controle das contas acima
+                            IF (LEFT(!1,7)) EQ '7.9.6.2' INDICATE @ESTORNA! FALSE
+                       ELSE IF (LEFT(!1,7)) EQ '8.9.6.2' INDICATE @ESTORNA! FALSE
+                      END
+
+ 
+ IF (MID(PARGERAL.AUXILIAR,2,6)) EQ '01' BEGIN
+                                          INDICATE @ESTORNA! TRUE
+                                          
+                                          //--restos a pagar em janeiro (excessao janeiro)
+                                               IF (LEFT(!1,5)) EQ '5.3.1'   INDICATE @ESTORNA! FALSE
+                                          ELSE IF (LEFT(!1,5)) EQ '5.3.2'   INDICATE @ESTORNA! FALSE
+                                          
+                                               IF (LEFT(!1,5)) EQ '6.3.1'   INDICATE @ESTORNA! FALSE
+                                          ELSE IF (LEFT(!1,5)) EQ '6.3.2'   INDICATE @ESTORNA! FALSE
+                                          
+                                          //--restos a pagar em janeiro controle das contas acima
+                                               IF (LEFT(!1,7)) EQ '7.9.6.2' INDICATE @ESTORNA! FALSE
+                                          ELSE IF (LEFT(!1,7)) EQ '8.9.6.2' INDICATE @ESTORNA! FALSE
+                                          
+                                          //-- vamos tentar o envio de algum cliente sem estorno em janeiro
+                                          IF (MID(PARGERAL.AUXILIAR,1,8)) EQ 'N' INDICATE @ESTORNA! FALSE
+                                         END
+ 
+ //--so as contas que nao podem ser estornadas
+ //--rotina nao foi testada ainda - pode ser que devido a contabilizacao da outra empresa de diferenca entre Debito e Credito
+ //  IF ((PLANO.TP_MOVIMENTACAO EQ 'UD') OR (PLANO.TP_MOVIMENTACAO EQ 'UC')) INDICATE  @ESTORNA! FALSE
+ 
+ //--
+ //--mantendo o indicador para os grupos de contas acima (5.2.1  6.2.1    5.2.2  6.2.2    7.9.6.1  8.9.6.1)
+ //--apos criacao dos pacotes e demais acertos rodar as ferramentas ac_contas_despesa e ac_contas_receita
+ //--para regularizacao dos saldos das contas de receita e despesa executadas (CASO APRESENTE DIFERENCAS)
+ //--
+ 
+ //--
+ //-- vamos tentar o envio de algum cliente sem estorno !!??
+ //--
+//  INDICATE @ESTORNA! FALSE
+ //--
+ //--
+ 
+ [~@ESTORNA!] INDICATE @COPIA_SALDO! TRUE
+ 
+ //--
+ //--conversao a partir de 2022 diferenciada para alguns clientes
+ //--
+ IF ((PARGERAL.EXERCICIO GE '2022') AND (PARGERAL.COD_SIAFI EQ 6269) AND (PARGERAL.COD_ENTIDADE EQ '01')) MOVE 1 TO IT@COPIA@SALDO //--cabreuva
+ 
+ IF IT@COPIA@SALDO EQ 1 BEGIN
+                         IF !1 IN '6.2.2.9.2.01.03.00-6.2.2.9.2.01.05.00' INDICATE @COPIA_SALDO! TRUE
+                         IF !1 IN '8.9.6.1.1.01.00.00-8.9.6.1.1.02.00.00' INDICATE @COPIA_SALDO! TRUE
+                         IF !1 IN '8.9.6.1.2.01.00.00-8.9.6.1.2.02.00.00' INDICATE @COPIA_SALDO! TRUE
+                        END
+#ENDCOMMAND
+
+//-- verifica conta obrigacao para separar os restos a pagar
+//--
+//-- !1 = conta obrigacao
+//-- !2 = ano-empenho
+//-- !3 = string que recebera conta obrigacao
+//--
+#COMMAND SEPARA_CONTA_RP
+ INDICATE @SEPARA_RP! FALSE
+ 
+ IF PARGERAL.EXERCICIO LE '2014' BEGIN
+                                                 INDICATE @SEPARA_RP! AS !1 EQ '2.1.2.5.1.01.00.00'
+                                  [~@SEPARA_RP!] INDICATE @SEPARA_RP! AS !1 EQ '2.1.2.6.1.03.00.00'
+                                 
+                                  [~@SEPARA_RP!] IF !2 GE '2009' BEGIN
+                                                                                 INDICATE @SEPARA_RP! AS ((LEFT(!1,12)) EQ '2.1.1.1.1.03')
+                                                                  [~@SEPARA_RP!] INDICATE @SEPARA_RP! AS ((LEFT(!1,12)) EQ '2.1.1.1.1.04')
+                                                                  [~@SEPARA_RP!] INDICATE @SEPARA_RP! AS ((LEFT(!1,12)) EQ '2.1.1.2.1.03')
+                                                                  [~@SEPARA_RP!] INDICATE @SEPARA_RP! AS ((LEFT(!1,12)) EQ '2.1.1.2.1.04')
+                                                                  [~@SEPARA_RP!] INDICATE @SEPARA_RP! AS ((LEFT(!1,12)) EQ '2.1.3.1.1.03')
+                                                                  [~@SEPARA_RP!] INDICATE @SEPARA_RP! AS ((LEFT(!1,12)) EQ '2.1.3.1.1.04')
+                                                                 END
+                                 END
+ ELSE BEGIN
+                     INDICATE @SEPARA_RP! AS !1 EQ '2.1.2.5.1.11.00.00'
+      [~@SEPARA_RP!] INDICATE @SEPARA_RP! AS !1 EQ '2.1.2.6.1.01.00.00'
+      
+      [~@SEPARA_RP!] IF !2 GE '2009' BEGIN
+                                                     INDICATE @SEPARA_RP! AS ((LEFT(!1,12)) EQ '2.1.1.1.1.03')
+                                      [~@SEPARA_RP!] INDICATE @SEPARA_RP! AS ((LEFT(!1,12)) EQ '2.1.1.1.1.04')
+                                      [~@SEPARA_RP!] INDICATE @SEPARA_RP! AS ((LEFT(!1,12)) EQ '2.1.1.1.1.05')
+                                      [~@SEPARA_RP!] INDICATE @SEPARA_RP! AS ((LEFT(!1,12)) EQ '2.1.1.2.1.03')
+                                      [~@SEPARA_RP!] INDICATE @SEPARA_RP! AS ((LEFT(!1,12)) EQ '2.1.1.2.1.04')
+                                      [~@SEPARA_RP!] INDICATE @SEPARA_RP! AS ((LEFT(!1,12)) EQ '2.1.1.2.1.05')
+                                      [~@SEPARA_RP!] INDICATE @SEPARA_RP! AS ((LEFT(!1,12)) EQ '2.1.3.1.1.02')
+                                      [~@SEPARA_RP!] INDICATE @SEPARA_RP! AS ((LEFT(!1,12)) EQ '2.1.3.1.1.06')
+                                      [~@SEPARA_RP!] INDICATE @SEPARA_RP! AS ((LEFT(!1,12)) EQ '2.1.3.1.1.05')
+                                      [~@SEPARA_RP!] INDICATE @SEPARA_RP! AS ((LEFT(!1,12)) EQ '2.1.3.1.1.08')
+                                     END
+      END
+ 
+ [ @SEPARA_RP!] MOVE !1 TO !3
+#ENDCOMMAND
+
+//--
+//-- obter mes aberto no exercicio
+//--
+//-- !1 = exercicio
+//--
+#COMMAND DATA_MES_ABERTO
+#IFDEF    ST@MES@ABERTO
+#ELSE
+   STRING ST@MES@ABERTO
+#ENDIF
+#IFDEF    ST@DATA@ABERTO
+#ELSE
+   STRING ST@DATA@ABERTO
+#ENDIF
+ 
+ MOVEALL '' TO ST@MES@ABERTO ST@DATA@ABERTO
+ 
+ CLEAR ENCERRA
+ MOVE ST@CODIGO@ENTIDADE TO ENCERRA.COD_ENTIDADE
+ MOVE !1                 TO ENCERRA.ANO
+ REPEAT
+  FIND GT ENCERRA BY INDEX.1
+  [ FOUND] INDICATE FOUND AS ENCERRA.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+  [ FOUND] INDICATE FOUND AS ENCERRA.ANO EQ !1
+  [ FOUND] BEGIN
+            IF ENCERRA.STATUS EQ '' BEGIN
+                                     MOVE ENCERRA.MES TO ST@MES@ABERTO
+                                     INDICATE FOUND FALSE
+                                    END
+           END
+ UNTIL [~FOUND]
+ 
+ IF ST@MES@ABERTO NE '' BEGIN
+                         MOVE '01' TO ST@DATA@ABERTO
+                         APPEND ST@DATA@ABERTO '/' ST@MES@ABERTO '/' ST@EXERCICIO
+                        END
+ ELSE BEGIN
+       ADVERTE 'PROBLEMAS NO ARQUIVO DE ENCERRAMENTO DE MES'
+       GOTO INICIO
+      END
+#ENDCOMMAND
+
+
+//--
+//-- define a partir que qual data inicia os lancamentos em determinadas contas (novos lancamentos e tal)
+//--
+//-- !1 = data do arquivo
+//-- !2 = data inicial limite
+//--
+//--
+#COMMAND DEFINE_DATA_LANCAMENTO
+#IFDEF    DT@MOVIMENTO
+#ELSE
+ STRING   DT@MOVIMENTO
+#ENDIF
+ MOVE '' TO DT@MOVIMENTO
+
+ IF !1 LT !2 MOVE !2 TO DT@MOVIMENTO
+ ELSE        MOVE !1 TO DT@MOVIMENTO
+#ENDCOMMAND
+                                                       
+
+//--
+//--imprime dado INTEGER
+//--
+FUNCTION IMPRIME_INT GLOBAL INTEGER IT@AUX@PARAMETRO RETURNS STRING
+  LOCAL STRING ST@RESULTADO
+  
+  MOVE IT@AUX@PARAMETRO TO ST@RESULTADO
+  
+  TRIM ST@RESULTADO TO ST@RESULTADO
+  FUNCTION_RETURN ST@RESULTADO
+END_FUNCTION
+
+//--
+//--imprime dado VALOR MONETARIO
+//--
+FUNCTION IMPRIME_VALOR GLOBAL NUMBER NB@AUX@PARAMETRO RETURNS STRING
+  LOCAL STRING ST@RESULTADO
+  
+  PRINT NB@AUX@PARAMETRO TO VALOR#.1
+  
+  MOVESTR VALOR#.1 TO ST@RESULTADO
+  REPLACE ',' IN ST@RESULTADO WITH '.'
+
+  TRIM ST@RESULTADO TO ST@RESULTADO
+  FUNCTION_RETURN ST@RESULTADO
+END_FUNCTION
+
+//--
+//--imprime dado VALOR 6 ate' casas decimais
+//--
+FUNCTION IMPRIME_VALOR_DECIMAL GLOBAL NUMBER NB@AUX@PARAMETRO RETURNS STRING
+  LOCAL STRING ST@RESULTADO
+  
+  PRINT NB@AUX@PARAMETRO TO VALOR_DECIMAL#.1
+  
+  MOVESTR VALOR_DECIMAL#.1 TO ST@RESULTADO
+  REPLACE ',' IN ST@RESULTADO WITH '.'
+
+  TRIM ST@RESULTADO TO ST@RESULTADO
+  FUNCTION_RETURN ST@RESULTADO
+END_FUNCTION
+
+//--
+//--imprime dado VALOR COM "n" CASAS DECIMAIS
+//--
+FUNCTION IMPRIME_VALOR_DECIMAL_LIVRE GLOBAL STRING ST@AUX@PARAMETRO RETURNS STRING
+  LOCAL STRING  ST@RESULTADO ST@AUX@DECIMAL
+  LOCAL INTEGER IT@AUX
+  
+  MOVE '' TO ST@AUX@DECIMAL
+  FOR IT@AUX FROM 1 TO 20
+   IF (MID(ST@AUX@PARAMETRO,1,IT@AUX)) IN '0123456789,' APPEND ST@AUX@DECIMAL (MID(ST@AUX@PARAMETRO,1,IT@AUX))
+  LOOP
+  
+  MOVE ST@AUX@DECIMAL TO ST@RESULTADO
+  REPLACE ',' IN ST@RESULTADO WITH '.'
+  
+  TRIM ST@RESULTADO TO ST@RESULTADO
+  FUNCTION_RETURN ST@RESULTADO
+END_FUNCTION
+
+//--
+//--imprime dado DATA
+//--
+FUNCTION IMPRIME_DATA GLOBAL DATE DT@AUX@PARAMETRO RETURNS STRING
+  LOCAL STRING ST@RESULTADO
+  
+  MOVE (MID(DT@AUX@PARAMETRO,4,7)) TO ST@RESULTADO
+  APPEND ST@RESULTADO '-' (MID(DT@AUX@PARAMETRO,2,4)) '-' (MID(DT@AUX@PARAMETRO,2,1))
+  
+  TRIM ST@RESULTADO TO ST@RESULTADO
+  FUNCTION_RETURN ST@RESULTADO
+END_FUNCTION
+
+//--
+//--imprime dado CODIGO NUMERICO 
+//--
+FUNCTION IMPRIME_CODIGO_NUMERICO GLOBAL STRING ST@AUX@PARAMETRO INTEGER IT@TAMANHO@PARAMETRO RETURNS STRING
+  LOCAL STRING  ST@RESULTADO 
+  LOCAL INTEGER IT@AUX
+  
+  FOR IT@AUX FROM 1 TO IT@TAMANHO@PARAMETRO
+   IF (MID(ST@AUX@PARAMETRO,1,IT@AUX)) IN '0123456789' APPEND ST@RESULTADO (MID(ST@AUX@PARAMETRO,1,IT@AUX))
+  LOOP
+
+  TRIM ST@RESULTADO TO ST@RESULTADO
+  FUNCTION_RETURN ST@RESULTADO
+END_FUNCTION
+ 
+//--
+//--imprime dado DESCRICAO (maximo 255 caracteres)
+//--
+FUNCTION IMPRIME_DESCRICAO GLOBAL STRING ST@AUX@PARAMETRO RETURNS STRING
+  LOCAL STRING  ST@RESULTADO ST@STRING    ST@SAIDA
+  LOCAL INTEGER IT@AUX       IT@CONTADOR
+  
+  MOVE 0  TO IT@CONTADOR
+  MOVE 0  TO IT@AUX
+  MOVE '' TO ST@SAIDA
+
+  TRIM ST@AUX@PARAMETRO TO ST@AUX@PARAMETRO
+  MOVE (LENGTH(ST@AUX@PARAMETRO)) TO IT@AUX
+
+  FOR IT@CONTADOR FROM 1 TO IT@AUX
+   MOVE (MID(ST@AUX@PARAMETRO,1,IT@CONTADOR)) TO ST@STRING
+   REPLACE "&" IN ST@STRING WITH "&AMP;"
+   REPLACE "<" IN ST@STRING WITH "&LT;"
+   REPLACE ">" IN ST@STRING WITH "&GT;"
+
+   APPEND ST@SAIDA ST@STRING
+  LOOP
+
+  RETIRA_ACENTO ST@SAIDA ST@RESULTADO
+
+  TRIM ST@RESULTADO TO ST@RESULTADO
+  FUNCTION_RETURN ST@RESULTADO
+END_FUNCTION

@@ -1,0 +1,597 @@
+/TELA RESIDENT
+ÆÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍµ
+³                                                                              ³
+³                                                                              ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ BALANCETE DE VERIFICA€ŽO CONTABIL - SICOM ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                                                                              ³
+³Entidade      <F2>: __ _______________________________________________________³
+³                                                                              ³
+³Mˆs/Ano desejado -> Inicial: __ / ____  Final: __ / ____    Grau da Conta : _ ³
+³                                                            <ENTER> para todas³
+³Conta Inicial <F2>: __________________ _______________________________________³
+³                                                                              ³
+³Conta Final   <F2>: __________________ _______________________________________³
+³                                                                              ³
+³Anal¡ticas, Sint‚ticas ou Todas : _           Somente contas com C/C : _ <S/N>³
+³                                                                              ³
+³Informe um C/C<F2>: __ _______________________________________________________³
+³<ENTER>p/todos                                                                ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                               <ESC>  Retorna                                 ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/MSG RESIDENT
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ BALANCETE DE VERIFICA€ŽO CONTABIL - SICOM ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³                                                                            ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ SOLICITADO ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                                                                            ³
+³                                                                            ³
+³              Mˆs Inicial : __ / ____   Mˆs Final : __ / ____               ³
+³                                                                            ³
+³                                                                            ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ PROCESSANDO ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                                                                            ³
+³                                                                            ³
+³                                                                            ³
+³                         Lendo :  __________.                               ³
+³                                                                            ³
+³                                                                            ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/CONFIRMA RESIDENT
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³______________________________________________________________________________³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/HEADER
+ -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+|                                                                                                                                                                                                                       |
+|                                                                           ____________________________________________________________                                                                                |
+|                                                                                                                                                                                                                       |
+|                                                                                                                                                                                                                       |
+|                                                                BALANCETE DE VERIFICACAO CONTABIL - PERIODO MES INICIAL __ / ____ MES FINAL __ / ____                                                                  |
+|                                                                                                                                                                                                                       |
+|                                                                           ____________________________________________________________                                                                                |
+|  DATA   __/__/____                                                        ____________________________________________________________                                                                Pagina ______.  |
+|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| CONTA                                                                  C/C Sistema  Natureza Superavit Tipo  | D/C |        SALDO ANTERIOR |               DEBITO |              CREDITO |          SALDO ATUAL | D/C |
+|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+/BODY RESIDENT
+| __________________ __________________________________________________   __     _       _        _        _   |  _  |     __________,___.__ |    __________,___.__ |    __________,___.__ |    __________,___.__ |  _  |
+/TOTAL RESIDENT
+ -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                                                                                                        Total  ->    |     __________,___.__ |    __________,___.__ |    __________,___.__ |    __________,___.__ |     |
+                                                                                                                     ---------------------------------------------------------------------------------------------------
+/FOOTER RESIDENT
+ -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/*
+#INCLUDE CONAM.LIB
+#INCLUDE BUSCAINF.LIB
+
+STRING ST_EXERCICIO     4 ST_COD_ENTIDADE 2  ST_PLANO_CODIGO  ST_BARRA
+STRING ST_SALDO_INICIAL   ST_CREDITO         ST_DEBITO        ST_SALDO_FINAL
+
+STRING ST_ARQUIVO 255 ST_DIRETORIO 255 ST_JUNTA 255 ST_CONTA_CORRENTE
+
+STRING ST_PLANO_CODIGO_INICIAL 18 ST_PLANO_CODIGO_FINAL 18 ST_MES
+
+INTEGER IT_CONTADOR IT_RECNUM RECCOUNT IT_AUX
+
+NUMBER NB_DEBITO NB_CREDITO NB_SALDO_INICIAL NB_SALDO_FINAL
+
+NUMBER NB_TOTAL_SALDO_INICIAL NB_TOTAL_SALDO_FINAL NB_TOTAL_D NB_TOTAL_C
+NUMBER NB_TOTAL_DEBITO        NB_TOTAL_CREDITO
+
+AUTOPAGE BODY
+NAME JBD_CODIGO           JBD_DESCRICAO      JBD_C_C
+NAME JBD_SISTEMA          JBD_NATUREZA       JBD_SUPERAVIT JBD_TIPO
+NAME JBD_NATUREZA_INICIAL JBD_SALDO_INICIAL  JBD_DEBITO    JBD_CREDITO
+NAME JBD_SALDO_FINAL      JBD_NATUREZA_FINAL
+
+OPEN ENTIDADE
+OPEN PLANO
+OPEN BALANCO
+
+AUTOPAGE TELA
+NAME JN_COD_ENTIDADE   JN_ENTIDADE
+NAME JN_MES_INICIAL    JN_ANO_INICIAL
+NAME JN_MES_FINAL      JN_ANO_FINAL
+NAME JN_GRAU
+NAME JN_CONTA_INICIAL  JN_INICIAL
+NAME JN_CONTA_FINAL    JN_FINAL
+NAME JN_TIPO           JN_CC
+NAME JN_TIPO_CC        JN_NOME_CC
+
+AUTOPAGE MSG
+NAME JN_MES_SOLICITADO_I JN_ANO_SOLICITADO_I
+NAME JN_MES_SOLICITADO_F JN_ANO_SOLICITADO_F
+NAME JN_LENDO
+
+MOVE PARGERAL.EXERCICIO    TO ST_EXERCICIO
+MOVE PARGERAL.COD_ENTIDADE TO ST_COD_ENTIDADE
+
+PAGE SET MSG       AT 05 01 COLORS IT_COR_TITULO IT_COR_TITULO
+PAGE SET TELA      AT  4  0 COLORS IT_COR_TARJA  IT_COR_MOLDURA
+PAGE SET CONFIRMA  AT 21 00 COLORS IT_COR_TARJA  IT_COR_MOLDURA
+
+INICIO:
+CLEARFORM TELA
+PAGE TELA
+MOVE PARGERAL.EXERCICIO TO JN_ANO_INICIAL
+MOVE PARGERAL.EXERCICIO TO JN_ANO_FINAL
+
+IF PARGERAL.COD_ENTIDADE EQ '01' BEGIN
+ REPEAT
+  ACCEPT JN_COD_ENTIDADE {AUTOCLEAR}
+  [KEY.ESCAPE] ABORT
+  IF JN_COD_ENTIDADE EQ '' MENSAGEM 1
+  ELSE BEGIN
+        COMZEROS JN_COD_ENTIDADE 2
+        CLEAR ENTIDADE
+        MOVE ST@EXERCICIO@FINANCEIRO TO ENTIDADE.EXERCICIO 
+        MOVE JN_COD_ENTIDADE         TO ENTIDADE.CODIGO
+        FIND EQ ENTIDADE BY INDEX.1
+        [~FOUND] BEGIN
+                  ADVERTE 'ENTIDADE NŽO CADASTRADA'
+                  CLEARFORM JN_COD_ENTIDADE THRU JN_ENTIDADE
+                 END
+       END
+ UNTIL JN_COD_ENTIDADE NE ''
+ MOVE ENTIDADE.DESCRICAO TO JN_ENTIDADE
+ END
+ELSE BEGIN
+ MOVE PARGERAL.COD_ENTIDADE TO JN_COD_ENTIDADE
+ CLEAR ENTIDADE
+ MOVE ST@EXERCICIO@FINANCEIRO TO ENTIDADE.EXERCICIO 
+ MOVE JN_COD_ENTIDADE         TO ENTIDADE.CODIGO
+ FIND EQ ENTIDADE BY INDEX.1
+ [~FOUND] BEGIN
+           ADVERTE 'ENTIDADE NŽO CADASTRADA'
+           CLEARFORM JN_COD_ENTIDADE THRU JN_ENTIDADE
+          END
+ MOVE ENTIDADE.DESCRICAO TO JN_ENTIDADE
+ END
+
+INDICATE TODAS! FALSE
+
+LB_MES_I:
+ACCEPT JN_MES_INICIAL {AUTOCLEAR}
+[KEY.ESCAPE] ABORT
+IF JN_MES_INICIAL EQ '' GOTO LB_MES_I
+COMZEROS JN_MES_INICIAL 2
+IF ((JN_MES_INICIAL LE 0) OR (JN_MES_INICIAL GT 13)) BEGIN
+ ADVERTE 'MˆS INV LIDO. TENTE NOVAMENTE.'
+ CLEARFORM JN_MES_INICIAL
+ GOTO LB_MES_I
+ END
+
+ANO_2000 JN_ANO_INICIAL {AUTOCLEAR}
+
+LB_MES_F:
+ACCEPT JN_MES_FINAL {AUTOCLEAR}
+[KEY.ESCAPE] ABORT
+IF JN_MES_FINAL EQ '' GOTO LB_MES_F
+COMZEROS JN_MES_FINAL 2
+IF ((JN_MES_FINAL LE 0) OR (JN_MES_FINAL GT 13)) BEGIN
+ ADVERTE 'MˆS INV LIDO. TENTE NOVAMENTE.'
+ CLEARFORM JN_MES_FINAL
+ GOTO LB_MES_F
+ END
+IF JN_MES_FINAL LT JN_MES_INICIAL BEGIN
+ ADVERTE 'MˆS INV LIDO. TENTE NOVAMENTE.'
+ CLEARFORM JN_MES_FINAL
+ GOTO LB_MES_F
+ END
+
+MOVE JN_ANO_INICIAL TO JN_ANO_FINAL
+//ANO_2000 JN_ANO_FINAL {AUTOCLEAR}
+
+LB_GRAU:
+MOVE '' TO JN_GRAU
+ACCEPT JN_GRAU {AUTOCLEAR,CAPSLOCK}
+[KEY.ESCAPE] ABORT
+IF JN_GRAU NE '' BEGIN
+ IF NOT JN_GRAU IN '1234567' GOTO LB_GRAU
+ END
+INDICATE TODOS_GRAU! AS JN_GRAU EQ ''
+
+ACCEPT JN_CONTA_INICIAL {AUTOCLEAR}
+[KEY.ESCAPE] ABORT
+IF JN_CONTA_INICIAL EQ '' MOVE '1' TO JN_CONTA_INICIAL
+PONTUA_CONTA_CONTABIL JN_CONTA_INICIAL 'I'
+
+CLEAR PLANO
+MOVE PARGERAL.ESTADO    TO PLANO.UF
+MOVE PARGERAL.EXERCICIO TO PLANO.ANO
+MOVE JN_CONTA_INICIAL   TO PLANO.CODIGO
+FIND EQ PLANO BY INDEX.1
+MOVE PLANO.DESCRICAO TO JN_INICIAL
+
+MOVE JN_CONTA_INICIAL TO JN_CONTA_FINAL
+IF JN_CONTA_INICIAL EQ '1.0.0.0.0.00.00.00' MOVE '99999999999999' TO JN_CONTA_FINAL
+ACCEPT JN_CONTA_FINAL {AUTOCLEAR}
+IF JN_CONTA_FINAL EQ '' MOVE '99999999999999' TO JN_CONTA_FINAL
+[KEY.ESCAPE] ABORT
+PONTUA_CONTA_CONTABIL JN_CONTA_FINAL 'F'
+
+CLEAR PLANO
+MOVE PARGERAL.ESTADO    TO PLANO.UF
+MOVE PARGERAL.EXERCICIO TO PLANO.ANO
+MOVE JN_CONTA_FINAL     TO PLANO.CODIGO
+FIND EQ PLANO BY INDEX.1
+MOVE PLANO.DESCRICAO TO JN_FINAL
+
+MOVE 'T' TO JN_TIPO
+REPEAT
+ ACCEPT JN_TIPO {AUTOCLEAR,CAPSLOCK}
+ IF NOT JN_TIPO IN 'AaSsTt' CLEARFORM JN_TIPO
+UNTIL JN_TIPO NE ''
+
+INDICATE TODOS_TIPOS! AS JN_TIPO IN 'Tt'
+
+MOVE 'N' TO JN_CC
+REPEAT
+ ACCEPT JN_CC {AUTOCLEAR,CAPSLOCK}
+ [KEY.ESCAPE] ABORT
+ IF NOT JN_CC IN 'SSNN' CLEARFORM JN_CC
+UNTIL JN_CC NE ''
+
+INDICATE CC! AS JN_CC IN 'Ss'
+
+LB_TIPO_CC:
+ACCEPT JN_TIPO_CC {AUTOCLEAR}
+[KEY.ESCAPE] ABORT
+IF JN_TIPO_CC NE '' BEGIN
+ COMZEROS JN_TIPO_CC 2
+ BUSCA_TBINFTCE 'RELACAO DE CONTAS CORRENTES' JN_TIPO_CC JN_NOME_CC
+ [~@OK!] BEGIN
+          ADVERTE 'CONTA CORRENTE INEXISTENTE'
+          GOTO LB_TIPO_CC
+         END
+ END
+INDICATE TODOS! AS JN_TIPO_CC EQ ''
+
+MOVE 'BAL.VERIFICACAO CONTABIL-PERIODO ' TO ST_JUNTA
+APPEND ST_JUNTA JN_MES_INICIAL '-' JN_ANO_INICIAL ' A ' JN_MES_FINAL '-' JN_ANO_FINAL
+ABREREL ST_JUNTA '132C+'
+
+MOVE JN_MES_INICIAL TO JN_MES_SOLICITADO_I
+MOVE JN_ANO_INICIAL TO JN_ANO_SOLICITADO_I
+
+MOVE JN_MES_FINAL   TO JN_MES_SOLICITADO_F
+MOVE JN_ANO_FINAL   TO JN_ANO_SOLICITADO_F
+
+GOSUB LB_VERIFICA_SOMATORIA
+
+PAGE TELA
+PAGE MSG
+GOTOXY 25 0
+
+MOVE 1 TO PAGECOUNT
+MOVE 0 TO RECCOUNT
+
+IF JN_TIPO_CC NE '' BEGIN
+ MOVE JN_TIPO_CC TO ST_CONTA_CORRENTE
+ APPEND ST_CONTA_CORRENTE '-' JN_NOME_CC
+ END
+
+CABEC ST@PREFEITURA           HEADER.1
+
+PRINT JN_MES_INICIAL       TO HEADER.2
+PRINT JN_ANO_INICIAL       TO HEADER.3
+PRINT JN_MES_FINAL         TO HEADER.4
+PRINT JN_ANO_FINAL         TO HEADER.5
+
+SYSDATA                       HEADER.7
+PRINT PAGECOUNT            TO HEADER.9
+
+CABEC JN_ENTIDADE             HEADER.6
+IF JN_TIPO_CC EQ '' BLANKFORM HEADER.8
+ELSE CABEC ST_CONTA_CORRENTE  HEADER.8
+OUTPUT HEADER
+
+MOVEALL 0 TO NB_TOTAL_SALDO_INICIAL NB_TOTAL_SALDO_FINAL
+
+CLEAR PLANO
+CONSTRAINT_SET 1
+CONSTRAIN PLANO.UF     EQ PARGERAL.ESTADO
+CONSTRAIN PLANO.ANO    EQ PARGERAL.EXERCICIO
+CONSTRAIN PLANO.CODIGO GE JN_CONTA_INICIAL
+CONSTRAIN PLANO.CODIGO LE JN_CONTA_FINAL
+
+[      ~TODOS_GRAU!] CONSTRAIN PLANO.GRAU           EQ JN_GRAU
+[     ~TODOS_TIPOS!] CONSTRAIN PLANO.TIPO           EQ JN_TIPO
+[               CC!] CONSTRAIN PLANO.CONTA_CORRENTE NE ''
+[           ~TODOS!] CONSTRAIN PLANO.CONTA_CORRENTE EQ JN_TIPO_CC
+[       TODOS_GRAU!] CONSTRAIN PLANO.GRAU           LE '7'
+
+CONSTRAINED_FIND FIRST PLANO BY INDEX.1
+WHILE [FOUND]
+ CALC (JN_LENDO + 1) TO JN_LENDO
+ KEYCHECK GOSUB LB_ROTINA_PARADA
+
+ BLANKFORM BODY
+
+ MOVEALL 0 TO NB_DEBITO NB_CREDITO NB_SALDO_INICIAL NB_SALDO_FINAL IT_AUX
+
+ INDICATE IMPRIME! FALSE
+ 
+ FOR IT_AUX FROM JN_MES_INICIAL TO JN_MES_FINAL
+  MOVE IT_AUX TO ST_MES
+  COMZEROS ST_MES 2
+
+  CLEAR BALANCO
+  CONSTRAINT_SET 2
+  CONSTRAIN BALANCO.COD_ENTIDADE EQ JN_COD_ENTIDADE
+  CONSTRAIN BALANCO.ANO          EQ JN_ANO_INICIAL
+  CONSTRAIN BALANCO.MES          EQ ST_MES
+  CONSTRAIN BALANCO.CONTA        EQ PLANO.CODIGO
+  CONSTRAINED_FIND FIRST BALANCO BY INDEX.1
+  WHILE [FOUND]
+   CALC (JN_LENDO + 1) TO JN_LENDO
+
+   //--saldo inicial
+   IF BALANCO.MES EQ JN_MES_INICIAL BEGIN
+                                     MOVE BALANCO.SALDO_INICIAL TO NB_SALDO_INICIAL
+                                     MOVE BALANCO.NAT_INICIAL   TO JBD_NATUREZA_INICIAL
+                                    
+                                     IF BALANCO.NAT_INICIAL EQ 'D' CALC (NB_TOTAL_SALDO_INICIAL + NB_SALDO_INICIAL) TO NB_TOTAL_SALDO_INICIAL
+                                     ELSE                          CALC (NB_TOTAL_SALDO_INICIAL - NB_SALDO_INICIAL) TO NB_TOTAL_SALDO_INICIAL
+                                    END
+   
+   //--movimento
+   CALC (NB_DEBITO  + BALANCO.DEBITO)  TO NB_DEBITO
+   CALC (NB_CREDITO + BALANCO.CREDITO) TO NB_CREDITO
+
+   //--ja movimenta nat final caso nao tenha mais a conta no ultimo mes selecionado
+   MOVE BALANCO.NAT_FINAL TO JBD_NATUREZA_FINAL
+   
+   //--saldo final
+   IF BALANCO.MES EQ JN_MES_FINAL BEGIN
+                                   MOVE BALANCO.SALDO_FINAL TO NB_SALDO_FINAL
+                                   MOVE BALANCO.NAT_FINAL   TO JBD_NATUREZA_FINAL
+                                          
+                                   IF BALANCO.NAT_FINAL EQ 'D' CALC (NB_TOTAL_SALDO_FINAL   + NB_SALDO_FINAL)   TO NB_TOTAL_SALDO_FINAL
+                                   ELSE                        CALC (NB_TOTAL_SALDO_FINAL   - NB_SALDO_FINAL)   TO NB_TOTAL_SALDO_FINAL
+                                  END
+   
+   INDICATE IMPRIME! TRUE
+
+   CONSTRAINED_FIND NEXT
+  END
+  CONSTRAINT_SET 2 CLEAR
+ LOOP
+
+ CALC (JN_LENDO + 1) TO JN_LENDO
+ KEYCHECK GOSUB LB_ROTINA_PARADA
+
+ PRINT PLANO.CODIGO          TO JBD_CODIGO
+ PRINT PLANO.DESCRICAO       TO JBD_DESCRICAO
+ PRINT PLANO.CONTA_CORRENTE  TO JBD_C_C
+
+ PRINT NB_SALDO_INICIAL      TO JBD_SALDO_INICIAL
+ PRINT NB_DEBITO             TO JBD_DEBITO
+ PRINT NB_CREDITO            TO JBD_CREDITO
+ PRINT NB_SALDO_FINAL        TO JBD_SALDO_FINAL
+
+ PRINT PLANO.SISTEMA         TO JBD_SISTEMA
+ PRINT PLANO.TIPO            TO JBD_TIPO
+ PRINT PLANO.SUPERAVIT       TO JBD_SUPERAVIT
+ IF PLANO.SALDO_DC NE '' PRINT PLANO.SALDO_DC     TO JBD_NATUREZA
+ ELSE                    BLANKFORM                   JBD_NATUREZA
+
+ GOSUB LB_PULA_PAGINA
+
+ [ IMPRIME!] BEGIN
+              OUTPUT BODY
+              INCREMENT RECCOUNT
+             END
+
+ CONSTRAINT_SET 1
+ CONSTRAINED_FIND NEXT
+ END
+CONSTRAINT_SET 1 CLEAR
+
+IF NB_TOTAL_SALDO_INICIAL LT 0 CALC (NB_TOTAL_SALDO_INICIAL * (-1)) TO NB_TOTAL_SALDO_INICIAL
+IF NB_TOTAL_SALDO_FINAL   LT 0 CALC (NB_TOTAL_SALDO_FINAL   * (-1)) TO NB_TOTAL_SALDO_FINAL
+
+PRINT NB_TOTAL_SALDO_INICIAL    TO TOTAL.1
+SUBTOTAL JBD_DEBITO             TO TOTAL.2
+SUBTOTAL JBD_CREDITO            TO TOTAL.3
+PRINT NB_TOTAL_SALDO_FINAL      TO TOTAL.4
+OUTPUT TOTAL
+
+IF RECCOUNT LE 0 BEGIN
+                  SCREENMODE IT_COR_TITULO ON
+                  GOTOXY 22 02
+                  SHOW ' RELAT¢RIO NŽO IMPRESSO ! REGISTRO NŽO ENCONTRADO . TECLE <ENTER> PARA SAIR '
+                  GOTOXY 25 0
+                  INKEY ST_TECLA
+
+                  INDICATE TITULO_R00CONF! TRUE
+                 END
+ELSE BEGIN
+      #INCLUDE R01CONFE.INC
+     END
+
+BUSCA_CAMINHO_MENU 'BSICOM01' ''
+FORMFEED
+GRAVAPAG
+
+[~TITULO_R00CONF!] BEGIN
+                    ADVERTE 'VERIFIQUE, NO FIM DO RELATORIO, RELACAO DA(S) ENTIDADE(S) SEM ARQUIVO(S) XML REFERENTE AO PERIODO SELECIONADO.'
+                   END
+
+ABORT
+
+LB_ROTINA_PARADA:
+ CABEC 'GOSTARIA REALMENTE DE SAIR < S/N >?' CONFIRMA.1
+ PAGE CONFIRMA
+ INKEYCHECK ST_TECLA IN 'SsNn'
+ IF ST_TECLA IN 'Ss' BEGIN
+                      MOVE 0 TO RECCOUNT
+                      LIMPA_PRN
+                     END
+
+ MOVE 0 TO CURRENT_IMAGE
+ PAGE TELA
+ PAGE MSG
+RETURN
+
+LB_PULA_PAGINA:
+ IF LINECOUNT GE 54 BEGIN
+  OUTPUT FOOTER
+  FORMFEED
+  PRINT PAGECOUNT TO HEADER.9
+  OUTPUT HEADER
+  END
+RETURN
+
+KEYPROC KEY.UP
+ BACKFIELD
+RETURN
+
+KEYPROC KEY.FIELD
+IF CURRENT_WINDOW EQ 1 BEGIN
+                        MOVE 'CENTIDAD 1 ' TO ST_JUNTA
+                        APPEND ST_JUNTA ST@USUARIO ' ' ST@OPCAO ' ' ST@PROGRAMA ' ' ST@CODIGO@ENTIDADE ' ' ST@EXERCICIO@FINANCEIRO
+                        CHAIN WAIT ST_JUNTA EXPORT_FILES
+                        MOVE 0 TO CURRENT_IMAGE
+                        PAGE TELA
+                        IF ENTIDADE.CODIGO NE "" BEGIN
+                                                  TRIM ENTIDADE.CODIGO    TO JN_COD_ENTIDADE
+                                                  TRIM ENTIDADE.DESCRICAO TO JN_ENTIDADE
+                                                 END
+                        ELSE ENTAGAIN
+                        RETURN
+                       END
+IF ((CURRENT_WINDOW EQ 8) OR (CURRENT_WINDOW EQ 10)) BEGIN
+                                                      MOVE 'CCONTAS2 1 ' TO ST_JUNTA
+                                                      APPEND ST_JUNTA ST@USUARIO ' ' ST@OPCAO ' ' ST@PROGRAMA ' ' ST@CODIGO@ENTIDADE ' ' ST@EXERCICIO@FINANCEIRO ' ' JN_ANO_INICIAL
+                                                      CHAIN WAIT ST_JUNTA EXPORT_FILES
+                                                      IF PLANO.CODIGO NE '' BEGIN
+                                                                             IF CURRENT_WINDOW EQ 8 MOVE PLANO.CODIGO TO JN_CONTA_INICIAL
+                                                                             ELSE                   MOVE PLANO.CODIGO TO JN_CONTA_FINAL
+                                                                            END
+                                                      MOVE 0 TO CURRENT_IMAGE
+                                                      PAGE TELA
+                                                      RETURN
+                                                     END
+IF CURRENT_WINDOW EQ 14 BEGIN
+                         MOVE 'CTBINFTC 1 ' TO ST_JUNTA
+                         APPEND ST_JUNTA ST@USUARIO ' ' ST@OPCAO ' ' ST@PROGRAMA ' ' ST@CODIGO@ENTIDADE ' ' ST@EXERCICIO@FINANCEIRO ' ' 'RELACAO@DE@CONTAS@CORRENTES'
+                         
+                         CHAIN WAIT ST_JUNTA EXPORT_FILES
+                         MOVE 0 TO CURRENT_IMAGE
+                         PAGE TELA
+                         IF TBINFTCE.CODIGO NE '' MOVE TBINFTCE.CODIGO TO JN_TIPO_CC
+                         ELSE ENTAGAIN
+                         RETURN
+                        END
+ENTAGAIN
+RETURN
+
+ABORT
+
+#INCLUDE INTEGRID.INC
+
+LB_VERIFICA_SOMATORIA:
+ MOVEALL 0 TO NB_TOTAL_D NB_TOTAL_C
+
+ CLEAR PLANO
+ CONSTRAINT_SET 1
+ CONSTRAIN PLANO.UF   EQ PARGERAL.ESTADO
+ CONSTRAIN PLANO.ANO  EQ PARGERAL.EXERCICIO
+ CONSTRAIN PLANO.TIPO EQ 'S'
+ CONSTRAINED_FIND FIRST PLANO BY INDEX.1
+ WHILE [FOUND]
+  CALC (JN_LENDO + 1) TO JN_LENDO
+
+  MOVE PLANO.CODIGO TO ST_PLANO_CODIGO_INICIAL
+  REPEAT
+   REMOVE '.' FROM ST_PLANO_CODIGO_INICIAL
+  UNTIL [~FOUND]
+  TRIM ST_PLANO_CODIGO_INICIAL TO ST_PLANO_CODIGO_INICIAL
+
+  IF PLANO.GRAU LE '5' MOVE (MID(ST_PLANO_CODIGO_INICIAL,PLANO.GRAU,1)) TO ST_PLANO_CODIGO_FINAL
+  ELSE BEGIN
+        IF PLANO.GRAU EQ '6' MOVE (MID(ST_PLANO_CODIGO_INICIAL,7,1)) TO ST_PLANO_CODIGO_FINAL
+   ELSE IF PLANO.GRAU EQ '7' MOVE (MID(ST_PLANO_CODIGO_INICIAL,9,1)) TO ST_PLANO_CODIGO_FINAL
+   END
+  TRIM ST_PLANO_CODIGO_FINAL TO ST_PLANO_CODIGO_FINAL
+
+  APPEND ST_PLANO_CODIGO_FINAL '99999999999999999'
+  MOVE (MID(ST_PLANO_CODIGO_FINAL,11,1)) TO ST_PLANO_CODIGO_FINAL
+
+  INSERT '.' IN ST_PLANO_CODIGO_INICIAL AT 10
+  INSERT '.' IN ST_PLANO_CODIGO_INICIAL AT 8
+  INSERT '.' IN ST_PLANO_CODIGO_INICIAL AT 6
+  INSERT '.' IN ST_PLANO_CODIGO_INICIAL AT 5
+  INSERT '.' IN ST_PLANO_CODIGO_INICIAL AT 4
+  INSERT '.' IN ST_PLANO_CODIGO_INICIAL AT 3
+  INSERT '.' IN ST_PLANO_CODIGO_INICIAL AT 2
+
+  INSERT '.' IN ST_PLANO_CODIGO_FINAL AT 10
+  INSERT '.' IN ST_PLANO_CODIGO_FINAL AT 8
+  INSERT '.' IN ST_PLANO_CODIGO_FINAL AT 6
+  INSERT '.' IN ST_PLANO_CODIGO_FINAL AT 5
+  INSERT '.' IN ST_PLANO_CODIGO_FINAL AT 4
+  INSERT '.' IN ST_PLANO_CODIGO_FINAL AT 3
+  INSERT '.' IN ST_PLANO_CODIGO_FINAL AT 2
+
+  MOVEALL 0 TO NB_TOTAL_DEBITO NB_TOTAL_CREDITO
+
+  MOVE PLANO.RECNUM TO IT_RECNUM
+
+  CLEAR BALANCO
+  CONSTRAINT_SET 2
+  CONSTRAIN BALANCO.COD_ENTIDADE   EQ ST_COD_ENTIDADE
+  CONSTRAIN BALANCO.ANO            EQ JN_ANO_INICIAL
+  CONSTRAIN BALANCO.MES            EQ JN_MES_INICIAL
+  CONSTRAIN BALANCO.CONTA          GT ST_PLANO_CODIGO_INICIAL
+  CONSTRAIN BALANCO.CONTA          LE ST_PLANO_CODIGO_FINAL
+  CONSTRAINED_FIND FIRST BALANCO BY INDEX.1
+  WHILE [FOUND]
+   CALC (JN_LENDO + 1) TO JN_LENDO
+
+   IF PLANO.TIPO EQ 'A' BEGIN
+    CALC (NB_TOTAL_DEBITO  + BALANCO.DEBITO)  TO NB_TOTAL_DEBITO
+    CALC (NB_TOTAL_CREDITO + BALANCO.CREDITO) TO NB_TOTAL_CREDITO
+
+    CALC (NB_TOTAL_D + BALANCO.DEBITO)  TO NB_TOTAL_D
+    CALC (NB_TOTAL_C + BALANCO.CREDITO) TO NB_TOTAL_C
+    END
+
+   CONSTRAINED_FIND NEXT
+   END
+  CONSTRAINT_SET 2 CLEAR
+
+  CLEAR PLANO
+  MOVE IT_RECNUM TO PLANO.RECNUM
+  FIND EQ PLANO BY RECNUM
+
+  CLEAR BALANCO
+  MOVE JN_COD_ENTIDADE TO BALANCO.COD_ENTIDADE
+  MOVE JN_ANO_INICIAL  TO BALANCO.ANO
+  MOVE JN_MES_INICIAL  TO BALANCO.MES
+  MOVE PLANO.CODIGO    TO BALANCO.CONTA
+  FIND EQ BALANCO BY INDEX.1
+
+           INDICATE ERRO! AS BALANCO.DEBITO  NE NB_TOTAL_DEBITO
+  [~ERRO!] INDICATE ERRO! AS BALANCO.CREDITO NE NB_TOTAL_CREDITO
+  [ ERRO!] BEGIN
+//            GOTOXY 1 0
+//            SHOWLN BALANCO.CONTA
+//            SHOWLN BALANCO.DEBITO ' - ' BALANCO.CREDITO
+//            SHOWLN NB_TOTAL_DEBITO  ' - ' NB_TOTAL_CREDITO
+//            PAUSE .
+           END
+
+  CONSTRAINT_SET 1
+  CONSTRAINED_FIND NEXT
+  END
+ CONSTRAINT_SET 1 CLEAR
+
+RETURN
+
+
+
+
+

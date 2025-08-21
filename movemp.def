@@ -1,0 +1,166 @@
+-----------------------------------------------------------------------------
+  DATE: 25/10/2023      TIME: 17:31                                  PAGE:  1
+  FILE DEFINITION FOR FILE: MOVEMP (# 29)
+-----------------------------------------------------------------------------
+  DRIVER NAME               : DATAFLEX
+  FILE ROOT NAME            : MOVEMP
+  USER DISPLAY NAME         : MOVEMP
+  DATAFLEX FILE NAME        : MOVEMP
+-----------------------------------------------------------------------------
+  RECORD LENGTH             : 256       ( USED: 212 )
+  MAX NUMBER OF RECORDS     : 16711679  ( USED: 0 )
+  FILE COMPRESSION          : NONE
+  RE-USE DELETED SPACE      : YES
+  LOCKING TYPE              : FILE
+  HEADER INTEGRITY CHECKING : YES
+  TRANSACTION TYPE          : CLIENT ATOMIC
+  RECORD IDENTITY INDEX     : 0 ( 0 , 0 )
+  FILE LOGIN PARAMETER      : 
+  SYSTEM FILE               : NO 
+-----------------------------------------------------------------------------
+
+NUM  FIELD NAME       TYPE SIZE  OFFST IX   RELATES TO FILE.FIELD
+---  ---------------  ---- ----- ----- --   ---------------------------------
+  1  COD_ENTIDADE     ASC      2     1  1   
+  2  EXERCICIO        ASC      4     3  1   
+  3  N_EMPENHO        ASC      5     7  1   
+  4  N_ORDEM          ASC      5    12  1   
+  5  N_FORNECEDOR     ASC      5    17  1   
+  6  SEQ_FORNECEDOR   ASC      2    22      
+  7  N_DESPESA        ASC      5    24  3   
+  8  DATA             DAT      3    29  1   
+  9  VALOR            NUM   14.2    32      
+ 10  TIPO             ASC      1    40  3   
+ 11  HORA             ASC      8    41  4   
+ 12  SEQUENCIA        ASC      2    49      
+ 13  ENSINO           ASC      1    51  8   
+ 14  N_PROCESSO       ASC      6    52      
+ 15  ANO_PROCESSO     ASC      4    58      
+ 16  TIPO_EMPENHO     ASC      2    62      
+ 17  DESCRICAO        ASC     80    64      
+ 18  N_FONTE          ASC      7   144 10   
+ 19  N_FUNDO          ASC      7   151 12   
+ 20  PESSOAL          ASC      1   158      
+ 21  ECONOMICA        ASC     12   159  5   
+ 22  GRUPO_DESPESA    OVE      3   159  5   
+ 23  ELEMENTO         OVE      2   166  5   
+ 24  ITEM_DESPESA     OVE      5   166  5   
+ 25  ACAO             ASC      4   171      
+ 26  N_CONTRATO       ASC     10   175  9   
+ 27  ANO_CONTRATO     ASC      4   185  9   
+ 28  N_CONVENIO       ASC     10   189      
+ 29  ANO_CONVENIO     ASC      4   199      
+ 30  APL_RECURSOS     ASC      1   203      
+ 31  N_ADITAMENTO     ASC      5   204      
+ 32  ANO_ADITAMENTO   ASC      4   209      
+
+
+INDEX# FIELDS          DES U/C    LENGTH LEVELS SEGMENTS MODE
+------ --------------- --- ---    ------ ------ -------- -------
+  1    COD_ENTIDADE    NO  NO       27     6       7     ON-LINE
+       EXERCICIO       NO  NO 
+       N_FORNECEDOR    NO  NO 
+       DATA            NO  NO 
+       N_EMPENHO       NO  NO 
+       N_ORDEM         NO  NO 
+       RECNUM          NO  NO 
+
+  2    COD_ENTIDADE    NO  NO       17     5       5     ON-LINE
+       EXERCICIO       NO  NO 
+       N_EMPENHO       NO  NO 
+       DATA            NO  NO 
+       RECNUM          NO  NO 
+
+  3    COD_ENTIDADE    NO  NO       18     5       6     ON-LINE
+       EXERCICIO       NO  NO 
+       N_DESPESA       NO  NO 
+       DATA            NO  NO 
+       TIPO            NO  NO 
+       RECNUM          NO  NO 
+
+  4    COD_ENTIDADE    NO  NO       26     6       7     ON-LINE
+       EXERCICIO       NO  NO 
+       TIPO            NO  NO 
+       N_DESPESA       NO  NO 
+       DATA            NO  NO 
+       HORA            NO  NO 
+       RECNUM          NO  NO 
+
+  5    COD_ENTIDADE    NO  NO       30     6       7     ON-LINE
+       EXERCICIO       NO  NO 
+       TIPO            NO  NO 
+       N_DESPESA       NO  NO 
+       ECONOMICA       NO  NO 
+       DATA            NO  NO 
+       RECNUM          NO  NO 
+
+  6    COD_ENTIDADE    NO  NO       13     5       5     ON-LINE
+       EXERCICIO       NO  NO 
+       TIPO            NO  NO 
+       DATA            NO  NO 
+       RECNUM          NO  NO 
+
+  7    COD_ENTIDADE    NO  NO       14     5       4     ON-LINE
+       EXERCICIO       NO  NO 
+       N_ORDEM         NO  NO 
+       RECNUM          NO  NO 
+
+  8    COD_ENTIDADE    NO  NO       19     6       7     ON-LINE
+       EXERCICIO       NO  NO 
+       TIPO            NO  NO 
+       N_DESPESA       NO  NO 
+       ENSINO          NO  NO 
+       DATA            NO  NO 
+       RECNUM          NO  NO 
+
+  9    COD_ENTIDADE    NO  NO       28     6       6     ON-LINE
+       EXERCICIO       NO  NO 
+       N_CONTRATO      NO  NO 
+       ANO_CONTRATO    NO  NO 
+       N_EMPENHO       NO  NO 
+       RECNUM          NO  NO 
+
+  10   COD_ENTIDADE    NO  NO       20     6       6     ON-LINE
+       EXERCICIO       NO  NO 
+       TIPO            NO  NO 
+       N_FONTE         NO  NO 
+       DATA            NO  NO 
+       RECNUM          NO  NO 
+
+  11   COD_ENTIDADE    NO  NO       25     6       7     ON-LINE
+       EXERCICIO       NO  NO 
+       TIPO            NO  NO 
+       N_DESPESA       NO  NO 
+       N_FONTE         NO  NO 
+       DATA            NO  NO 
+       RECNUM          NO  NO 
+
+  12   COD_ENTIDADE    NO  NO       20     6       6     ON-LINE
+       EXERCICIO       NO  NO 
+       TIPO            NO  NO 
+       N_FUNDO         NO  NO 
+       DATA            NO  NO 
+       RECNUM          NO  NO 
+
+  13   COD_ENTIDADE    NO  NO       25     6       7     ON-LINE
+       EXERCICIO       NO  NO 
+       TIPO            NO  NO 
+       N_DESPESA       NO  NO 
+       N_FUNDO         NO  NO 
+       DATA            NO  NO 
+       RECNUM          NO  NO 
+
+  14   COD_ENTIDADE    NO  NO       24     6       6     ON-LINE
+       EXERCICIO       NO  NO 
+       N_FONTE         NO  NO 
+       N_DESPESA       NO  NO 
+       DATA            NO  NO 
+       RECNUM          NO  NO 
+
+  15   COD_ENTIDADE    NO  NO       25     6       6     ON-LINE
+       EXERCICIO       NO  NO 
+       TIPO            NO  NO 
+       ECONOMICA       NO  NO 
+       DATA            NO  NO 
+       RECNUM          NO  NO 
+

@@ -1,0 +1,72 @@
+ USE  ALLENTRY
+ USE  NSELLIST
+ OPEN ENTIDADE
+
+ CLEAR ENTIDADE
+
+/TELA_PESQUISA
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ Consulta de Entidades ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³  Descri‡„o                                            C¢digo  C¢digo TCE ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³  __________________________________________________    ___       ___.    ³
+³  __________________________________________________    ___       ___.    ³
+³  __________________________________________________    ___       ___.    ³
+³  __________________________________________________    ___       ___.    ³
+³  __________________________________________________    ___       ___.    ³
+³  __________________________________________________    ___       ___.    ³
+³  __________________________________________________    ___       ___.    ³
+³  __________________________________________________    ___       ___.    ³
+³  __________________________________________________    ___       ___.    ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³<Enter>Marca <PgDn>Pr¢xima P gina <PgUp>P gina Anterior  <Setas>Move Tarja³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/*
+// CENTIDADE.SRC - CONSULTA DE ENTIDADE
+// LAST ATZ - 14:02 12/04/99
+#INCLUDE CONAM.LIB
+
+  OBJECT CONDICAO_SET IS A DATA_SET NO_IMAGE MAIN_FILE ENTIDADE
+   BEGIN_CONSTRAINTS
+           CONSTRAIN ENTIDADE.EXERCICIO EQ ST@EXERCICIO@FINANCEIRO
+   END_CONSTRAINTS
+  END_OBJECT
+
+  OBJECT  TELA_PESQUISA IS A NSELECTION_LIST;
+          TELA_PESQUISA IS POPUP MAIN_FILE ENTIDADE BY INDEX.2 USING CONDICAO_SET
+            
+          ON_KEY KEY_PGDN      SEND DESCE
+          ON_KEY KEY_PGUP      SEND SOBE
+          ON_KEY KHELP         SEND NONE
+
+          ON_KEY KCANCEL       SEND ABORTAR
+          ON_KEY KPRINT_SCREEN SEND ABORTAR
+          ON_KEY KHELP         SEND NONE
+
+          SET LOCATION                                TO 6 2  ABSOLUTE
+          SET SCROLL_BAR_VISIBLE_STATE                TO FALSE
+          SET OBJECT_COLOR                            TO IT_COR_TARJA IT_COR_MOLDURA
+
+          PROCEDURE ABORTAR
+           CLEAR ENTIDADE
+           ABORT
+          END_PROCEDURE
+
+          PROCEDURE DESCE
+           SEND KEY KSCROLL_FORWARD
+          END_PROCEDURE
+
+          PROCEDURE SOBE
+           SEND KEY KSCROLL_BACK
+          END_PROCEDURE
+
+          BEGIN_ROW
+           ENTRY_ITEM ENTIDADE.DESCRICAO  {AUTOCLEAR,CAPSLOCK}
+           ENTRY_ITEM ENTIDADE.CODIGO     {AUTOCLEAR}
+           ENTRY_ITEM ENTIDADE.ORGAO_TCE  {AUTOCLEAR}
+          END_ROW
+
+  END_OBJECT
+
+  SEND POPUP TO TELA_PESQUISA
+  START_UI
+  ABORT

@@ -1,0 +1,38 @@
+-----------------------------------------------------------------------------
+  DATE: 25/10/2023      TIME: 17:31                                  PAGE:  1
+  FILE DEFINITION FOR FILE: PCA (# 127)
+-----------------------------------------------------------------------------
+  DRIVER NAME               : DATAFLEX
+  FILE ROOT NAME            : PCA
+  USER DISPLAY NAME         : PCA
+  DATAFLEX FILE NAME        : PCA
+-----------------------------------------------------------------------------
+  RECORD LENGTH             : 102       ( USED: 98 )
+  MAX NUMBER OF RECORDS     : 16711679  ( USED: 0 )
+  FILE COMPRESSION          : NONE
+  RE-USE DELETED SPACE      : YES
+  LOCKING TYPE              : FILE
+  HEADER INTEGRITY CHECKING : YES
+  TRANSACTION TYPE          : CLIENT ATOMIC
+  RECORD IDENTITY INDEX     : 0 ( 0 , 0 )
+  FILE LOGIN PARAMETER      : 
+  SYSTEM FILE               : NO 
+-----------------------------------------------------------------------------
+
+NUM  FIELD NAME       TYPE SIZE  OFFST IX   RELATES TO FILE.FIELD
+---  ---------------  ---- ----- ----- --   ---------------------------------
+  1  COD_ENTIDADE     ASC      2     1  1   
+  2  ANO              ASC      4     3  1   
+  3  TIPO_DOCUMENTO   ASC     30     7  1   
+  4  DATA_GERACAO     DAT      3    37      
+  5  DATA_ENVIO       DAT      3    40      
+  6  ID_PACOTE        NUM   12.0    43      
+  7  AUXILIAR_1       ASC     50    49      
+
+
+INDEX# FIELDS          DES U/C    LENGTH LEVELS SEGMENTS MODE
+------ --------------- --- ---    ------ ------ -------- -------
+  1    COD_ENTIDADE    NO  NO       36     7       3     ON-LINE
+       ANO             NO  NO 
+       TIPO_DOCUMENTO  NO  NO 
+

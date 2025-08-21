@@ -1,0 +1,234 @@
+//--
+//-- !1 = ano
+//-- !2 = codigo do orgao
+//-- !3 = codigo da entidade
+//-- !4 = variavel que recebe o orgao
+//-- !5 = variavel que recebe a unidade orcamentaria
+//-- !6 = variavel que recebe a unidade executora
+//-- !7 = tipo de busca 1->gt ou 2->eq
+//--
+#COMMAND BUSCA_ORGAO_AUDESP
+ INDICATE @GERA! FALSE
+
+ MOVEALL '' TO !4 !5 !6
+ 
+ IF (LENGTH(TRIM(!2))) EQ '8' BEGIN
+                               IF !7 EQ '2' BEGIN
+                                             CLEAR REORTCE
+                                             MOVE !1 TO REORTCE.ANO
+                                             MOVE !2 TO REORTCE.CODIGO_CONAM
+                                             MOVE !3 TO REORTCE.COD_ENTIDADE
+                                             FIND EQ REORTCE BY INDEX.1
+                                             [ FOUND] BEGIN
+                                                       MOVE REORTCE.ORGAO TO !4
+                                                       MOVE REORTCE.U_O   TO !5
+                                                       MOVE REORTCE.U_E   TO !6
+                                                       
+                                                                 INDICATE @GERA! AS REORTCE.U_E   NE 0
+                                                       [~@GERA!] INDICATE @GERA! AS REORTCE.U_O   NE 0
+                                                       [~@GERA!] INDICATE @GERA! AS REORTCE.ORGAO NE 0
+                                                      END
+                                            END
+                               ELSE BEGIN
+                                     CLEAR REORTCE
+                                     MOVE !1 TO REORTCE.ANO
+                                     MOVE !2 TO REORTCE.CODIGO_CONAM
+                                     FIND GT REORTCE BY INDEX.1
+                                     [ FOUND] INDICATE FOUND AS REORTCE.ANO          EQ !1
+                                     [ FOUND] INDICATE FOUND AS REORTCE.CODIGO_CONAM EQ !2
+                                     [ FOUND] BEGIN
+                                               MOVE REORTCE.ORGAO TO !4
+                                               MOVE REORTCE.U_O   TO !5
+                                               MOVE REORTCE.U_E   TO !6
+                                                         
+                                                         INDICATE @GERA! AS REORTCE.U_E   NE 0
+                                               [~@GERA!] INDICATE @GERA! AS REORTCE.U_O   NE 0
+                                               [~@GERA!] INDICATE @GERA! AS REORTCE.ORGAO NE 0
+                                              END
+                                    END
+                              END
+ ELSE BEGIN
+       MOVE (MID(!2,5,1))  TO !4
+       MOVE (MID(!2,5,7))  TO !5
+       MOVE (MID(!2,5,13)) TO !6
+      END
+#ENDCOMMAND
+
+//--
+//-- !1 = ano
+//-- !2 = codigo da entidade (conam)
+//-- !3 = codigo do orgao (conam)
+//--
+#COMMAND BUSCA_ORGAO_AUDESP_CONTA_CORRENTE
+#IFDEF     ST@ORGAO
+#ELSE
+   STRING  ST@ORGAO
+#ENDIF
+#IFDEF     ST@UO
+#ELSE
+   STRING  ST@UO
+#ENDIF
+#IFDEF     ST@UE
+#ELSE
+   STRING  ST@UE
+#ENDIF
+
+ MOVEALL '' TO ST@ORGAO ST@UO ST@UE
+ 
+ IF (LENGTH(TRIM(!3))) EQ '8' BEGIN
+                               CLEAR REORTCE
+                               MOVE !1 TO REORTCE.ANO
+                               MOVE !2 TO REORTCE.COD_ENTIDADE
+                               MOVE !3 TO REORTCE.CODIGO_CONAM
+                               FIND EQ REORTCE BY INDEX.2
+                               [ FOUND] BEGIN
+                                         MOVE REORTCE.ORGAO TO ST@ORGAO
+                                         MOVE REORTCE.U_O   TO ST@UO
+                                         MOVE REORTCE.U_E   TO ST@UE
+                                        END
+
+                               TRIM ST@ORGAO TO ST@ORGAO
+                               TRIM ST@UO    TO ST@UO
+                               TRIM ST@UE    TO ST@UE
+                               COMZEROS ST@ORGAO 5
+                               COMZEROS ST@UO    5
+                               COMZEROS ST@UE    5
+                              END
+ ELSE BEGIN
+       MOVE (MID(!3,5,1))  TO ST@ORGAO
+       MOVE (MID(!3,5,7))  TO ST@UO
+       MOVE (MID(!3,5,13)) TO ST@UE
+      END
+#ENDCOMMAND
+
+//--
+//-- !1 = ano
+//-- !2 = codigo do orgao conam
+//-- !3 = codigo da entidade
+//-- !4 = variavel que receber  o codigo do orgao no TCE 
+//-- !5 = variavel que receber  o codigo da unidade no TCE (unidade orcamentaria)
+//-- !6 = variavel que receber  o codigo da subunidade (se houver)
+//-- !7 = identificador da unidade orcamentaria
+//-- !8 = variavel que receber  "1"=tem subunidade "2"=nao tem subunidade
+//-- !9 = variavel que recebera ambos os codigos (unidade ou subunidade orcamentaria)
+//--
+#COMMAND BUSCA_ORGAO_SICOM
+#IFDEF    ST@UNIDADE@ORCAMENTARIA
+#ELSE
+   STRING ST@UNIDADE@ORCAMENTARIA
+#ENDIF
+#IFDEF    ST@SUBUNIDADE@ORCAMENTARIA
+#ELSE
+   STRING ST@SUBUNIDADE@ORCAMENTARIA
+#ENDIF
+#IFDEF    ST@ORGAO
+#ELSE
+   STRING ST@ORGAO
+#ENDIF
+
+ MOVEALL '' TO ST@ORGAO ST@UNIDADE@ORCAMENTARIA ST@SUBUNIDADE@ORCAMENTARIA
+ 
+ MOVEALL '' TO !4 !5 !6 !7 !8 !9
+
+ CLEAR REORTCE
+ MOVE !1 TO REORTCE.ANO
+ MOVE !2 TO REORTCE.CODIGO_CONAM
+ MOVE !3 TO REORTCE.COD_ENTIDADE
+ FIND EQ REORTCE BY INDEX.1
+ [ FOUND] BEGIN
+           MOVE REORTCE.ORGAO TO ST@ORGAO
+           COMZEROS ST@ORGAO 2
+           MOVE ST@ORGAO TO !4
+           
+           // --monta codigo da unidade orcamentaria u-o + u-e
+           MOVE (MID(REORTCE.CODIGO_CONAM,2,1)) TO ST@UNIDADE@ORCAMENTARIA
+           APPEND ST@UNIDADE@ORCAMENTARIA '0' (MID(REORTCE.CODIGO_CONAM,2,4))
+           
+           TRIM ST@UNIDADE@ORCAMENTARIA TO ST@UNIDADE@ORCAMENTARIA
+           PAD  ST@UNIDADE@ORCAMENTARIA TO ST@UNIDADE@ORCAMENTARIA 8
+           MOVE ST@UNIDADE@ORCAMENTARIA TO !5
+           
+           IF (MID(REORTCE.CODIGO_CONAM,2,7)) EQ '00' BEGIN
+                                                       MOVE '2'                     TO !8
+                                                       MOVE ST@UNIDADE@ORCAMENTARIA TO !9
+                                                      END
+           // --monta codigo da unidade orcamentaria e subunidade orcamentaria formado pelo u-o (com subunidade)
+           ELSE BEGIN
+                 IF PARGERAL.EXERCICIO EQ '2013' BEGIN
+                                                  //--aqui envia unidade e subunidade
+                                                  MOVE (MID(REORTCE.CODIGO_CONAM,2,1)) TO ST@SUBUNIDADE@ORCAMENTARIA
+                                                  APPEND ST@SUBUNIDADE@ORCAMENTARIA '0' (MID(REORTCE.CODIGO_CONAM,2,4)) '0' (MID(REORTCE.CODIGO_CONAM,2,7))
+                                                   
+                                                  TRIM ST@SUBUNIDADE@ORCAMENTARIA TO ST@SUBUNIDADE@ORCAMENTARIA
+                                                  PAD  ST@SUBUNIDADE@ORCAMENTARIA TO ST@SUBUNIDADE@ORCAMENTARIA 8
+                                                  MOVE ST@SUBUNIDADE@ORCAMENTARIA TO !6
+                                                   
+                                                  MOVE '1'                        TO !8
+                                                  MOVE ST@SUBUNIDADE@ORCAMENTARIA TO !9
+                                                 END
+                 ELSE IF PARGERAL.EXERCICIO IN '2014-2015' BEGIN
+                                                            // o TCE-MG nao aceita dentro de uma unidade com despesas cadastradas, utilizar a subunidade (Ex: 07.01.00 e 07.01.01)
+                                                            // os restos a pagar ainda devem ir com subunidade (pelo menos ate 2013)
+                                                            IF !1 LE '2013' BEGIN
+                                                                             MOVE (MID(REORTCE.CODIGO_CONAM,2,1)) TO ST@SUBUNIDADE@ORCAMENTARIA
+                                                                             APPEND ST@SUBUNIDADE@ORCAMENTARIA '0' (MID(REORTCE.CODIGO_CONAM,2,4)) '0' (MID(REORTCE.CODIGO_CONAM,2,7))
+                                                                              
+                                                                             TRIM ST@SUBUNIDADE@ORCAMENTARIA TO ST@SUBUNIDADE@ORCAMENTARIA
+                                                                             PAD  ST@SUBUNIDADE@ORCAMENTARIA TO ST@SUBUNIDADE@ORCAMENTARIA 8
+                                                                             MOVE ST@SUBUNIDADE@ORCAMENTARIA TO !6
+                                                                              
+                                                                             MOVE '1'                        TO !8
+                                                                             MOVE ST@SUBUNIDADE@ORCAMENTARIA TO !9
+                                                                            END
+                                                            //--unidade e subunidade no mesmo nivel da unidade
+                                                            ELSE BEGIN
+                                                                  MOVE '2'                     TO !8
+                                                                  MOVE ST@UNIDADE@ORCAMENTARIA TO !9
+                                                                 END
+                                                           END
+                 ELSE IF PARGERAL.EXERCICIO GE '2016' BEGIN
+                                                       //--aqui envia unidade e subunidade
+                                                       IF ((!1 LE '2013') OR (!1 GE '2016')) BEGIN
+                                                                                              MOVE (MID(REORTCE.CODIGO_CONAM,2,1)) TO ST@SUBUNIDADE@ORCAMENTARIA
+                                                                                              APPEND ST@SUBUNIDADE@ORCAMENTARIA '0' (MID(REORTCE.CODIGO_CONAM,2,4)) '0' (MID(REORTCE.CODIGO_CONAM,2,7))
+                                                                                               
+                                                                                              TRIM ST@SUBUNIDADE@ORCAMENTARIA TO ST@SUBUNIDADE@ORCAMENTARIA
+                                                                                              PAD  ST@SUBUNIDADE@ORCAMENTARIA TO ST@SUBUNIDADE@ORCAMENTARIA 8
+                                                                                              MOVE ST@SUBUNIDADE@ORCAMENTARIA TO !6
+                                                                                               
+                                                                                              MOVE '1'                        TO !8
+                                                                                              MOVE ST@SUBUNIDADE@ORCAMENTARIA TO !9
+                                                                                             END
+                                                       //--unidade e subunidade no mesmo nivel da unidade
+                                                       ELSE IF !1 IN '2014-2015' BEGIN
+                                                                                  MOVE '2'                     TO !8
+                                                                                  MOVE ST@UNIDADE@ORCAMENTARIA TO !9
+                                                                                 END
+                                                      END
+                END
+           
+           IF REORTCE.IDENTIFICA_FDO NE '' BEGIN
+                                            MOVE REORTCE.IDENTIFICA_FDO TO !7
+                                            COMZEROS !7 2
+                                           END
+           ELSE IF PARGERAL.EXERCICIO IN '2014-2015' MOVE '99' TO !7
+          END
+#ENDCOMMAND
+
+//--
+//-- !1 = codigo
+//-- !2 = tamanho do codigo para comzeros
+//--
+#COMMAND TRATA_ORGAO_AUDESP
+#IFDEF    IT@AUX
+#ELSE
+   INTEGER IT@AUX
+#ENDIF
+
+  MOVE !1     TO IT@AUX
+  MOVE ''     TO !1
+  MOVE IT@AUX TO !1
+  TRIM !1 TO !1
+  COMZEROS !1 !2
+#ENDCOMMAND
+

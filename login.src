@@ -1,0 +1,358 @@
+/SENHA RESIDENT
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³                                                                            ³
+³                                                                            ³
+³                   INFORME SEU CODIGO E SENHA DE ACESSO                     ³
+³                                                                            ³
+³                                                                            ³
+³                                                                            ³
+³        C¢digo    [_____]                                                   ³
+³                                                                            ³
+³        Entidade  [__ __________________________________________________]   ³
+³                                                                            ³
+³        Exercicio [____]                                                    ³
+³                                                                            ³
+³        Senha     [_____]                                                   ³
+³                                                                            ³
+³                                                                            ³
+³                                                                            ³
+³                                                                            ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ <ESC> Sair ÄÄÄ.
+/TELA_ERRO RESIDENT
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³ ____________________________________________________________________________ ³
+³ ____________________________________________________________________________ ³
+³                                                                              ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/*
+#COMMAND APRESENTA_ERRO
+ SCREENMODE IT_COR_TARJA ON
+ CABEC !1 TELA_ERRO.1
+ CABEC !2 TELA_ERRO.2
+ PAGE TELA_ERRO
+ GOTOXY 25 00
+ INKEY ST_TECLA
+ CLEARSCREEN
+ MOVE '' TO TELA_ERRO.1
+ MOVE '' TO TELA_ERRO.2
+ PAGE SENHA
+#ENDCOMMAND
+
+#COMMAND APRESENTA_ERRO_2
+ SCREENMODE 31 ON
+ MOVE (CENTER(!1,76)) TO TELA_ERRO.1
+ MOVE (CENTER(!2,76)) TO TELA_ERRO.2
+ PAGE TELA_ERRO
+ GOTOXY 25 00
+ INKEY ST_ESPERA
+ CLEARSCREEN
+ MOVE '' TO TELA_ERRO.1
+ MOVE '' TO TELA_ERRO.2
+ PAGE SENHA
+#ENDCOMMAND
+
+STRING  ST@NOVO@TECNICO         ST@SISTEMA         ST@CODIGO@PREF    ST_EXERCICIO
+STRING  ST_DIRETORIO        255 ST_DESTINO     255 ST_CABECALHO
+STRING  ST_VOL                  ST_SENHA           ST_SENHAINC
+STRING  ST_ESPERA
+
+NUMBER  NB_SENHA
+
+INTEGER IT_CONTADOR IT_USUARIOS IT_PARGERAL
+
+DATE    DT_HOJE
+
+SYSDATE4 DT_HOJE
+MOVE (MID(DT_HOJE,4,7)) TO ST_EXERCICIO
+
+OPEN MENUUSER
+MOVE 0             TO IT_USUARIOS
+FILE_SIZE MENUUSER TO IT_USUARIOS
+IF IT_USUARIOS EQ 0 BEGIN
+                     MOVE 'IUSUARIO' TO ST_DESTINO
+                     MOVE 'VOLUME'   TO ST_VOL
+                     MOVE 'TECNICO'  TO ST@NOVO@TECNICO
+                     MOVE 'CLIENTE'  TO ST@CODIGO@PREF
+                     MOVE 'SISTEMA'  TO ST@SISTEMA
+                    
+                     APPEND ST_DESTINO ' . USER X LOGIN XX XXXX'
+                     CHAIN WAIT ST_DESTINO
+                     
+                     MOVE 0             TO IT_USUARIOS
+                     FILE_SIZE MENUUSER TO IT_USUARIOS
+                     
+                     IF IT_USUARIOS EQ 0 BEGIN
+                                          CLEARSCREEN
+                                          PAGE SET TELA_ERRO AT 10 00
+                                          APRESENTA_ERRO_2 'CADASTRE AO MENOS UM USUARIO PARA ACESSAR O SISTEMA' ' '
+                                          ABORT
+                                         END
+                    END
+
+OPEN PARGERAL
+MOVE 0             TO IT_PARGERAL
+FILE_SIZE PARGERAL TO IT_PARGERAL
+IF IT_PARGERAL EQ 0 BEGIN
+                     CLEAR PARGERAL
+                     MOVE '01'         TO PARGERAL.COD_ENTIDADE
+                     MOVE ST_EXERCICIO TO PARGERAL.EXERCICIO
+                     MOVE 'Prefeitura' TO PARGERAL.NOME_ENTIDADE
+                     SAVERECORD PARGERAL
+                    END
+
+#INCLUDE CONAM.LIB
+
+MOVE 15  TO IT_COR_MOLDURA
+     IF (MID(DT_HOJE,2,4)) EQ '01' MOVE 63  TO IT_COR_TARJA
+ELSE IF (MID(DT_HOJE,2,4)) EQ '02' MOVE 47  TO IT_COR_TARJA
+ELSE IF (MID(DT_HOJE,2,4)) EQ '03' MOVE 31  TO IT_COR_TARJA
+ELSE IF (MID(DT_HOJE,2,4)) EQ '04' MOVE 48  TO IT_COR_TARJA
+ELSE IF (MID(DT_HOJE,2,4)) EQ '05' MOVE 112 TO IT_COR_TARJA
+ELSE IF (MID(DT_HOJE,2,4)) EQ '06' MOVE 113 TO IT_COR_TARJA
+ELSE IF (MID(DT_HOJE,2,4)) EQ '07' MOVE 23  TO IT_COR_TARJA
+ELSE IF (MID(DT_HOJE,2,4)) EQ '08' MOVE 16  TO IT_COR_TARJA
+ELSE IF (MID(DT_HOJE,2,4)) EQ '09' MOVE 31  TO IT_COR_TARJA
+ELSE IF (MID(DT_HOJE,2,4)) EQ '10' MOVE 121 TO IT_COR_TARJA
+ELSE IF (MID(DT_HOJE,2,4)) EQ '11' MOVE 122 TO IT_COR_TARJA
+ELSE IF (MID(DT_HOJE,2,4)) EQ '12' MOVE 32  TO IT_COR_TARJA
+MOVE 112 TO IT_COR_TITULO
+
+OPEN PARGERAL
+OPEN ENTIDADE
+
+CLEAR MENUUSER
+
+PAGE SET SENHA     AT 02 01 COLORS IT_COR_TARJA IT_COR_TARJA
+PAGE SET TELA_ERRO AT 10 00 COLORS IT_COR_TARJA IT_COR_TARJA
+
+SCREENMODE IT_COR_TARJA ON
+
+INICIO:
+CLEARSCREEN
+CLEARFORM SENHA
+PAGE SENHA
+
+INICIO_SENHA:
+MOVEALL '' TO ST@CODIGO@ENTIDADE ST@EXERCICIO@FINANCEIRO
+KEYPROC OFF
+PAGE SENHA
+
+//----- pegando codigo ---------------------
+REPEAT
+ SCREENMODE IT_COR_TARJA ON
+ ACCEPT SENHA.1 {CAPSLOCK,AUTORETURN}
+ [KEY.ESCAPE] GOTO SAIDA
+ IF ((SENHA.1 EQ 'CONAM') OR (SENHA.1 EQ 'NOSSA')) BEGIN
+                                                    APRESENTA_ERRO 'C¢DIGO DE ACESSO INV LIDO' ''
+                                                    CLEARSCREEN
+                                                    GOTO INICIO
+                                                   END
+//--main.cop
+ IF SENHA.1 EQ 'CONAM' BEGIN
+                        APRESENTA_ERRO 'C¢DIGO DE ACESSO INV LIDO' ''
+                        CLEARSCREEN
+                        GOTO INICIO
+                       END
+ [KEY.ESCAPE] ABORT
+ COMBRANCOS SENHA.1 5
+ IF SENHA.1 EQ '' BEGIN
+                   APRESENTA_ERRO 'C¢DIGO DE ACESSO INV LIDO' ''
+                   CLEARSCREEN
+                   GOTO INICIO
+                  END
+ 
+ MOVE SENHA.1 TO ST@USUARIO
+ 
+ CLEAR MENUUSER
+ MOVE ST@USUARIO TO MENUUSER.CODIGO
+ FIND EQ MENUUSER BY INDEX.1
+
+ [~FOUND] BEGIN
+           APRESENTA_ERRO 'NŽO EXISTE USU RIO CADASTRADO COM ESTE C¢DIGO' ''
+           CLEARSCREEN
+           GOTO INICIO
+          END
+UNTIL [ FOUND]
+
+INDICATE CONAM! FALSE
+INDICATE   ADM! AS SENHA.1 EQ 'ADMIN'
+
+[~ADM!] BEGIN
+         OPEN SETOR
+         CLEAR SETOR
+         MOVE ST@CODIGO@ENTIDADE      TO SETOR.COD_ENTIDADE
+         MOVE ST@EXERCICIO@FINANCEIRO TO SETOR.EXERCICIO
+         MOVE MENUUSER.N_SETOR        TO SETOR.CODIGO
+         FIND EQ SETOR BY INDEX.1
+         [ FOUND] BEGIN
+                   INDICATE ADM! AS SETOR.ADM EQ SENHA.1
+                  END
+         CLEAR SETOR
+         CLOSE SETOR
+        END
+
+MOVE MENUUSER.CODIGO TO ST@USUARIO
+[~ CONAM!] IF MENUUSER.HABILITADO EQ 'N' BEGIN
+                                          APRESENTA_ERRO 'USU RIO SEM HABILITA€ŽO PARA USAR O SISTEMA' 'PROCURE O ADMINISTRADOR'
+                                          ABORT
+                                         END
+
+SCREENMODE IT_COR_TITULO ON
+OPEN ENTIDADE
+CLEAR ENTIDADE
+MOVE PARGERAL.COD_ENTIDADE TO ENTIDADE.CODIGO
+MOVE '9999'                TO ENTIDADE.EXERCICIO
+FIND LT ENTIDADE BY INDEX.4
+[ FOUND] INDICATE FOUND AS ENTIDADE.CODIGO EQ PARGERAL.COD_ENTIDADE
+[ FOUND] BEGIN
+          MOVE ENTIDADE.CODIGO    TO SENHA.2
+          MOVE ENTIDADE.DESCRICAO TO SENHA.3
+         END
+MOVE PARGERAL.COD_ENTIDADE TO SENHA.2
+MOVE PARGERAL.EXERCICIO    TO SENHA.4
+CLOSE ENTIDADE
+SCREENMODE IT_COR_TARJA ON
+
+//----- pegando senha -----------------
+REPEAT
+ MOVE 0  TO FLEXKEY
+ MOVE '' TO ST_SENHA
+ MOVE '' TO ST_SENHAINC
+ MOVE '' TO SENHA.5
+ MOVE 0  TO NB_SENHA
+ 
+ KEYPROC OFF
+ 
+ FOR IT_CONTADOR FROM 1 TO 5
+  GOTOXY 15 (20 + IT_CONTADOR)
+  REPEAT
+   INKEY ST_TECLA
+   [KEY.ESCAPE] ABORT
+   [KEY.UP] GOTO INICIO_SENHA
+   UPPERCASE ST_TECLA
+  UNTIL ST_TECLA IN '1234567890ABCDEFGHIJKLMNOPQRSTUVXYWZ'
+
+  APPEND ST_SENHA ST_TECLA
+  APPEND ST_SENHAINC 'þ'
+  MOVE ST_SENHAINC TO SENHA.5
+ LOOP
+ 
+ ENCRIPTA_ANTIGO ST_SENHA NB_SENHA
+
+ [~ CONAM!] IF NB_SENHA NE MENUUSER.SENHA BEGIN
+                                           APRESENTA_ERRO 'SENHA INV LIDA !' ''
+                                           CLEARFORM SENHA.5
+                                           PAGE SENHA
+                                          END
+UNTIL SENHA.5 NE ''
+
+MOVE SENHA.2 TO ST@CODIGO@ENTIDADE
+MOVE SENHA.4 TO ST@EXERCICIO@FINANCEIRO
+
+
+//--
+//-- parametros (passando assim pois e para o main - economizando espacos)
+//-- P = prefeitura
+//-- O = opcao
+//--
+MOVE 'SIOP'     TO ST_DESTINO
+MOVE 'VOLUME'   TO ST_VOL
+MOVE 'TECNICO'  TO ST@NOVO@TECNICO
+MOVE 'CLIENTE'  TO ST@CODIGO@PREF
+MOVE 'SISTEMA'  TO ST@SISTEMA
+
+MOVE (TRIM(PARGERAL.NOME_ENTIDADE)) TO ST_CABECALHO
+APPEND ST_DESTINO ' ' ST_CABECALHO  ' ' ST@USUARIO ' ' ST@CODIGO@ENTIDADE ' ' ST@EXERCICIO@FINANCEIRO ' ' ST_CABECALHO ' ' ST@USUARIO ' ' 'X' ' ' 'LOGIN' ' ' ST@CODIGO@ENTIDADE ' ' ST@EXERCICIO@FINANCEIRO
+
+INDICATE ERR FALSE
+ON ERROR GOSUB CHECA_GRAVACAO
+REREAD MENUUSER
+MOVE DT_HOJE TO MENUUSER.ULTIMO_ACESSO
+SAVERECORD MENUUSER
+UNLOCK
+ON ERROR OFF
+
+MOVE '' TO ST@CODIGO@ENTIDADE
+MOVE '' TO ST@EXERCICIO@FINANCEIRO
+
+//--grava userpid sem programa (entrada no main)
+OPEN  USERPID
+LIMPA_PROCESSO_ATIVO_SERVIDOR
+CLEAR USERPID
+MOVE ST@CODIGO@ENTIDADE      TO USERPID.COD_ENTIDADE
+MOVE ST@EXERCICIO@FINANCEIRO TO USERPID.EXERCICIO
+MOVE MENUUSER.CODIGO         TO USERPID.CODIGO_USUARIO
+MOVE (PIDATUAL(''))          TO USERPID.CODIGO_PROCESSO
+MOVE (TERMINALATUAL(''))     TO USERPID.TERMINAL
+FIND EQ USERPID BY INDEX.1
+[~FOUND] BEGIN
+          CLEAR USERPID
+          MOVE ST@CODIGO@ENTIDADE      TO USERPID.COD_ENTIDADE
+          MOVE ST@EXERCICIO@FINANCEIRO TO USERPID.EXERCICIO
+          MOVE MENUUSER.CODIGO         TO USERPID.CODIGO_USUARIO
+          MOVE (PIDATUAL(''))          TO USERPID.CODIGO_PROCESSO
+          MOVE (TERMINALATUAL(''))     TO USERPID.TERMINAL
+          SAVERECORD USERPID
+         END
+CLEAR USERPID
+CLOSE USERPID
+//--
+
+CHAIN ST_DESTINO
+
+//--limpa userpid do usuario - terminal
+OPEN  USERPID
+LIMPA_PROCESSO_ATIVO_SERVIDOR
+CLEAR USERPID
+MOVE ST@CODIGO@ENTIDADE      TO USERPID.COD_ENTIDADE
+MOVE ST@EXERCICIO@FINANCEIRO TO USERPID.EXERCICIO
+MOVE ST@USUARIO              TO USERPID.CODIGO_USUARIO
+REPEAT
+FIND GT USERPID BY INDEX.1
+[ FOUND] INDICATE FOUND AS USERPID.COD_ENTIDADE   EQ ST@CODIGO@ENTIDADE
+[ FOUND] INDICATE FOUND AS USERPID.EXERCICIO      EQ ST@EXERCICIO@FINANCEIRO
+[ FOUND] INDICATE FOUND AS USERPID.CODIGO_USUARIO EQ ST@USUARIO
+[ FOUND] BEGIN
+          IF USERPID.TERMINAL EQ (TERMINALATUAL('')) BEGIN
+                                                      INDICATE ERR FALSE
+                                                      ON ERROR GOSUB CHECA_GRAVACAO
+                                                      REREAD USERPID
+                                                      DELETE USERPID
+                                                      UNLOCK
+                                                      ON ERROR OFF
+                                                     END
+         END
+UNTIL [~FOUND]
+CLOSE USERPID
+
+GOTO INICIO
+
+SAIDA:
+//--limpa userpid do usuario - terminal
+OPEN  USERPID
+CLEAR USERPID
+MOVE ST@CODIGO@ENTIDADE      TO USERPID.COD_ENTIDADE
+MOVE ST@EXERCICIO@FINANCEIRO TO USERPID.EXERCICIO
+MOVE ST@USUARIO              TO USERPID.CODIGO_USUARIO
+REPEAT
+FIND GT USERPID BY INDEX.1
+[ FOUND] INDICATE FOUND AS USERPID.COD_ENTIDADE   EQ ST@CODIGO@ENTIDADE
+[ FOUND] INDICATE FOUND AS USERPID.EXERCICIO      EQ ST@EXERCICIO@FINANCEIRO
+[ FOUND] INDICATE FOUND AS USERPID.CODIGO_USUARIO EQ ST@USUARIO
+[ FOUND] BEGIN
+          IF USERPID.TERMINAL EQ (TERMINALATUAL('')) BEGIN
+                                                      INDICATE ERR FALSE
+                                                      ON ERROR GOSUB CHECA_GRAVACAO
+                                                      REREAD USERPID
+                                                      DELETE USERPID
+                                                      UNLOCK
+                                                      ON ERROR OFF
+                                                     END
+         END
+UNTIL [~FOUND]
+CLOSE USERPID
+
+ABORT
+
+#INCLUDE INTEGRID.INC
+

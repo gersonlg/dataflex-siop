@@ -1,0 +1,33 @@
+-----------------------------------------------------------------------------
+  DATE: 27/05/2024      TIME: 15:53                                  PAGE:  1
+  FILE DEFINITION FOR FILE: XSD (# 279)
+-----------------------------------------------------------------------------
+  DRIVER NAME               : DATAFLEX
+  FILE ROOT NAME            : XSD
+  USER DISPLAY NAME         : XSD
+  DATAFLEX FILE NAME        : XSD
+-----------------------------------------------------------------------------
+  RECORD LENGTH             : 85        ( USED: 84 )
+  MAX NUMBER OF RECORDS     : 16711679  ( USED: 344 )
+  FILE COMPRESSION          : NONE
+  RE-USE DELETED SPACE      : YES
+  LOCKING TYPE              : FILE
+  HEADER INTEGRITY CHECKING : YES
+  TRANSACTION TYPE          : CLIENT ATOMIC
+  RECORD IDENTITY INDEX     : 0 ( 0 , 0 )
+  FILE LOGIN PARAMETER      : 
+  SYSTEM FILE               : NO 
+-----------------------------------------------------------------------------
+
+NUM  FIELD NAME       TYPE SIZE  OFFST IX   RELATES TO FILE.FIELD
+---  ---------------  ---- ----- ----- --   ---------------------------------
+  1  ANO              ASC      4     1  1   
+  2  TIPO             ASC     20     5  1   
+  3  DESCRICAO        ASC     60    25      
+
+
+INDEX# FIELDS          DES U/C    LENGTH LEVELS SEGMENTS MODE
+------ --------------- --- ---    ------ ------ -------- -------
+  1    ANO             NO  NO       24     6       2     ON-LINE
+       TIPO            NO  NO 
+

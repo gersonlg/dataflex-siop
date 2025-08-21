@@ -1,0 +1,45 @@
+-----------------------------------------------------------------------------
+  DATE: 25/10/2023      TIME: 17:31                                  PAGE:  1
+  FILE DEFINITION FOR FILE: USERPID (# 902)
+-----------------------------------------------------------------------------
+  DRIVER NAME               : DATAFLEX
+  FILE ROOT NAME            : USERPID
+  USER DISPLAY NAME         : USERPID
+  DATAFLEX FILE NAME        : USERPID
+-----------------------------------------------------------------------------
+  RECORD LENGTH             : 64        ( USED: 61 )
+  MAX NUMBER OF RECORDS     : 16711679  ( USED: 0 )
+  FILE COMPRESSION          : NONE
+  RE-USE DELETED SPACE      : YES
+  LOCKING TYPE              : FILE
+  HEADER INTEGRITY CHECKING : YES
+  TRANSACTION TYPE          : CLIENT ATOMIC
+  RECORD IDENTITY INDEX     : 0 ( 0 , 0 )
+  FILE LOGIN PARAMETER      : 
+  SYSTEM FILE               : NO 
+-----------------------------------------------------------------------------
+
+NUM  FIELD NAME       TYPE SIZE  OFFST IX   RELATES TO FILE.FIELD
+---  ---------------  ---- ----- ----- --   ---------------------------------
+  1  COD_ENTIDADE     ASC      2     1  1   
+  2  EXERCICIO        ASC      4     3  1   
+  3  CODIGO_USUARIO   ASC      5     7  1   
+  4  CODIGO_PROCESSO  ASC     10    12  1   
+  5  TERMINAL         ASC     20    22  1   
+  6  PROGRAMA         ASC     20    42  2   
+
+
+INDEX# FIELDS          DES U/C    LENGTH LEVELS SEGMENTS MODE
+------ --------------- --- ---    ------ ------ -------- -------
+  1    COD_ENTIDADE    NO  NO       41     7       5     ON-LINE
+       EXERCICIO       NO  NO 
+       CODIGO_USUARIO  NO  NO 
+       CODIGO_PROCESSO NO  NO 
+       TERMINAL        NO  NO 
+
+  2    COD_ENTIDADE    NO  NO       34     7       5     ON-LINE
+       EXERCICIO       NO  NO 
+       CODIGO_USUARIO  NO  NO 
+       PROGRAMA        NO  NO 
+       RECNUM          NO  NO 
+

@@ -1,0 +1,74 @@
+-----------------------------------------------------------------------------
+  DATE: 25/10/2023      TIME: 17:31                                  PAGE:  1
+  FILE DEFINITION FOR FILE: CADSIOP (# 82)
+-----------------------------------------------------------------------------
+  DRIVER NAME               : DATAFLEX
+  FILE ROOT NAME            : CADSIOP
+  USER DISPLAY NAME         : CADSIOP
+  DATAFLEX FILE NAME        : CADSIOP
+-----------------------------------------------------------------------------
+  RECORD LENGTH             : 640       ( USED: 618 )
+  MAX NUMBER OF RECORDS     : 16711679  ( USED: 37434 )
+  FILE COMPRESSION          : NONE
+  RE-USE DELETED SPACE      : YES
+  LOCKING TYPE              : FILE
+  HEADER INTEGRITY CHECKING : YES
+  TRANSACTION TYPE          : CLIENT ATOMIC
+  RECORD IDENTITY INDEX     : 0 ( 0 , 0 )
+  FILE LOGIN PARAMETER      : 
+  SYSTEM FILE               : NO 
+-----------------------------------------------------------------------------
+
+NUM  FIELD NAME       TYPE SIZE  OFFST IX   RELATES TO FILE.FIELD
+---  ---------------  ---- ----- ----- --   ---------------------------------
+  1  SISTEMA          ASC     10     1  1   
+  2  ANO              ASC      4    11  1   
+  3  NATUREZA         ASC     15    15  1   
+  4  CODIGO           ASC     20    30  1   
+  5  TIPO             ASC      1    50      
+  6  GRAU             ASC      1    51      
+  7  DESCRICAO        ASC    200    52  2   
+  8  L_ADM_D          ASC     10   252      
+  9  C_ADM_D          ASC     10   262      
+ 10  L_ADM_I          ASC     10   272      
+ 11  C_ADM_I          ASC     10   282      
+ 12  CODIGO_ITEM      ASC      5   292  3   
+ 13  PASTA_RESP       ASC      5   297  3   
+ 14  PASTA_SUPERIOR   ASC      5   302  4   
+ 15  CODIGO_INTERNO   ASC      5   307  4   
+ 16  CODIGO_COLUNA    ASC      5   312  3   
+ 17  TITULO_SAIDA     ASC    150   317      
+ 18  DADOS            ASC    150   467      
+ 19  N_ORDEM          ASC      2   617  3   
+
+
+INDEX# FIELDS          DES U/C    LENGTH LEVELS SEGMENTS MODE
+------ --------------- --- ---    ------ ------ -------- -------
+  1    SISTEMA         NO  NO       49     8       4     ON-LINE
+       ANO             NO  NO 
+       NATUREZA        NO  NO 
+       CODIGO          NO  NO 
+
+  2    SISTEMA         NO  NO       249    24      5     ON-LINE
+       ANO             NO  NO 
+       NATUREZA        NO  NO 
+       DESCRICAO       NO  NO 
+       CODIGO          NO  NO 
+
+  3    SISTEMA         NO  NO       49     8       8     ON-LINE
+       ANO             NO  NO 
+       NATUREZA        NO  NO 
+       CODIGO_COLUNA   NO  NO 
+       CODIGO_ITEM     NO  NO 
+       PASTA_RESP      NO  NO 
+       N_ORDEM         NO  NO 
+       RECNUM          NO  NO 
+
+  4    SISTEMA         NO  NO       47     8       7     ON-LINE
+       ANO             NO  NO 
+       NATUREZA        NO  NO 
+       CODIGO_INTERNO  NO  NO 
+       PASTA_SUPERIOR  NO  NO 
+       CODIGO_COLUNA   NO  NO 
+       RECNUM          NO  NO 
+

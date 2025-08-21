@@ -1,0 +1,32 @@
+-----------------------------------------------------------------------------
+  DATE: 25/10/2023      TIME: 17:31                                  PAGE:  1
+  FILE DEFINITION FOR FILE: MENUTITU (# 206)
+-----------------------------------------------------------------------------
+  DRIVER NAME               : DATAFLEX
+  FILE ROOT NAME            : MENUTITU
+  USER DISPLAY NAME         : MENUTITU
+  DATAFLEX FILE NAME        : MENUTITU
+-----------------------------------------------------------------------------
+  RECORD LENGTH             : 64        ( USED: 59 )
+  MAX NUMBER OF RECORDS     : 16711679  ( USED: 878 )
+  FILE COMPRESSION          : NONE
+  RE-USE DELETED SPACE      : YES
+  LOCKING TYPE              : FILE
+  HEADER INTEGRITY CHECKING : YES
+  TRANSACTION TYPE          : CLIENT ATOMIC
+  RECORD IDENTITY INDEX     : 0 ( 0 , 0 )
+  FILE LOGIN PARAMETER      : 
+  SYSTEM FILE               : NO 
+-----------------------------------------------------------------------------
+
+NUM  FIELD NAME       TYPE SIZE  OFFST IX   RELATES TO FILE.FIELD
+---  ---------------  ---- ----- ----- --   ---------------------------------
+  1  NOME             ASC     12     1  1   
+  2  TITULO           ASC     46    13      
+  3  QTDE_OPCOES      NUM    2.0    59      
+
+
+INDEX# FIELDS          DES U/C    LENGTH LEVELS SEGMENTS MODE
+------ --------------- --- ---    ------ ------ -------- -------
+  1    NOME            NO  NO       12     5       1     ON-LINE
+

@@ -1,0 +1,131 @@
+-----------------------------------------------------------------------------
+  DATE: 25/10/2023      TIME: 17:31                                  PAGE:  1
+  FILE DEFINITION FOR FILE: MOVDREC (# 11)
+-----------------------------------------------------------------------------
+  DRIVER NAME               : DATAFLEX
+  FILE ROOT NAME            : MOVDREC
+  USER DISPLAY NAME         : MOVDREC
+  DATAFLEX FILE NAME        : MOVDREC
+-----------------------------------------------------------------------------
+  RECORD LENGTH             : 384       ( USED: 303 )
+  MAX NUMBER OF RECORDS     : 16711679  ( USED: 0 )
+  FILE COMPRESSION          : NONE
+  RE-USE DELETED SPACE      : YES
+  LOCKING TYPE              : FILE
+  HEADER INTEGRITY CHECKING : YES
+  TRANSACTION TYPE          : CLIENT ATOMIC
+  RECORD IDENTITY INDEX     : 0 ( 0 , 0 )
+  FILE LOGIN PARAMETER      : 
+  SYSTEM FILE               : NO 
+-----------------------------------------------------------------------------
+
+NUM  FIELD NAME       TYPE SIZE  OFFST IX   RELATES TO FILE.FIELD
+---  ---------------  ---- ----- ----- --   ---------------------------------
+  1  COD_ENTIDADE     ASC      2     1  2   
+  2  EXERCICIO        ASC      4     3  2   
+  3  DATA             DAT      3     7  1   
+  4  N_RECEITA        ASC      5    10  2   
+  5  VALOR            NUM   14.2    15      
+  6  N_CHAPA          ASC     10    23      
+  7  N_BEM            ASC     10    33      
+  8  HISTORICO        ASC     50    43      
+  9  N_ARRECADACAO    ASC     10    93  4   
+ 10  IMPORTACAO       ASC      1   103      
+ 11  DADOS_IMPORTA    ASC     20   104      
+ 12  COD_DIV_ATIVA    ASC     20   124  5   
+ 13  COMPETENCIA      ASC      7   144  6   
+ 14  ID_CONVENIO      NUM    8.0   151  8   
+ 15  VALOR_ESTORNADO  NUM   14.2   155      
+ 16  MES_13           ASC      1   163      
+ 17  CONTRAPARTIDA    ASC      1   164      
+ 18  DT_CAD_CONVENIO  DAT      3   165      
+ 19  ID_ORIGINAL      NUM    8.0   168      
+ 20  ID_DESCONTO      NUM    8.0   172 11   
+ 21  TP_LANCTO        NUM    4.0   176      
+ 22  GRUPO_LANCTO     NUM    4.0   178      
+ 23  SUBGRUPO_LANCTO  NUM    4.0   180      
+ 24  COD_LANCTO       ASC     15   182      
+ 25  TP_MOVIMENTO     NUM    2.0   197      
+ 26  LANCADO          ASC      1   198      
+ 27  N_FOLHA          ASC     15   199      
+ 28  SEQ_TRIBUTOS     NUM    8.0   214      
+ 29  ID_MOVDREC       NUM    8.0   218  9   
+ 30  DEVOLUCAO_CONV   ASC      1   222      
+ 31  ANO_REG_REPASSE  ASC      4   223      
+ 32  TIPO_EMENDA      ASC      1   227      
+ 33  VALOR_DEDUCAO    NUM   14.2   228      
+ 34  DT_CREDITO_TRIB  DAT      3   236 10   
+ 35  DT_MOVTO_TRIB    DAT      3   239      
+ 36  EMPRESA_ENVIO    ASC     50   242      
+ 37  ID_PACOTE        NUM   12.0   292      
+ 38  ID_TRIBUTOS      NUM   12.0   298 12   
+
+
+INDEX# FIELDS          DES U/C    LENGTH LEVELS SEGMENTS MODE
+------ --------------- --- ---    ------ ------ -------- -------
+  1    COD_ENTIDADE    NO  NO       17     5       5     ON-LINE
+       EXERCICIO       NO  NO 
+       DATA            NO  NO 
+       N_RECEITA       NO  NO 
+       RECNUM          NO  NO 
+
+  2    COD_ENTIDADE    NO  NO       17     5       5     ON-LINE
+       EXERCICIO       NO  NO 
+       N_RECEITA       NO  NO 
+       DATA            NO  NO 
+       RECNUM          NO  NO 
+
+  3    COD_ENTIDADE    NO  NO       14     5       4     ON-LINE
+       EXERCICIO       NO  NO 
+       N_RECEITA       NO  NO 
+       RECNUM          NO  NO 
+
+  4    COD_ENTIDADE    NO  NO       24     6       5     ON-LINE
+       EXERCICIO       NO  NO 
+       N_ARRECADACAO   NO  NO 
+       N_RECEITA       NO  NO 
+       RECNUM          NO  NO 
+
+  5    COD_ENTIDADE    NO  NO       32     7       5     ON-LINE
+       EXERCICIO       NO  NO 
+       COD_DIV_ATIVA   NO  NO 
+       DATA            NO  NO 
+       RECNUM          NO  NO 
+
+  6    COD_ENTIDADE    NO  NO       21     6       5     ON-LINE
+       EXERCICIO       NO  NO 
+       N_RECEITA       NO  NO 
+       COMPETENCIA     NO  NO 
+       RECNUM          NO  NO 
+
+  7    COD_ENTIDADE    NO  NO       21     6       5     ON-LINE
+       EXERCICIO       NO  NO 
+       COMPETENCIA     NO  NO 
+       N_RECEITA       NO  NO 
+       RECNUM          NO  NO 
+
+  8    COD_ENTIDADE    NO  NO       13     5       4     ON-LINE
+       EXERCICIO       NO  NO 
+       ID_CONVENIO     NO  NO 
+       RECNUM          NO  NO 
+
+  9    COD_ENTIDADE    NO  NO       10     5       3     ON-LINE
+       EXERCICIO       NO  NO 
+       ID_MOVDREC      NO  NO 
+
+  10   COD_ENTIDADE    NO  NO       17     5       5     ON-LINE
+       EXERCICIO       NO  NO 
+       DT_CREDITO_TRIB NO  NO 
+       N_RECEITA       NO  NO 
+       RECNUM          NO  NO 
+
+  11   COD_ENTIDADE    NO  NO       13     5       4     ON-LINE
+       EXERCICIO       NO  NO 
+       ID_DESCONTO     NO  NO 
+       RECNUM          NO  NO 
+
+  12   COD_ENTIDADE    NO  NO       15     5       4     ON-LINE
+       EXERCICIO       NO  NO 
+       ID_TRIBUTOS     NO  NO 
+       RECNUM          NO  NO 
+

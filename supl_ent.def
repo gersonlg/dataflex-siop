@@ -1,0 +1,74 @@
+-----------------------------------------------------------------------------
+  DATE: 25/10/2023      TIME: 17:31                                  PAGE:  1
+  FILE DEFINITION FOR FILE: SUPL_ENT (# 268)
+-----------------------------------------------------------------------------
+  DRIVER NAME               : DATAFLEX
+  FILE ROOT NAME            : SUPL_ENT
+  USER DISPLAY NAME         : SUPL_ENT
+  DATAFLEX FILE NAME        : SUPL_ENT
+-----------------------------------------------------------------------------
+  RECORD LENGTH             : 64        ( USED: 47 )
+  MAX NUMBER OF RECORDS     : 16711679  ( USED: 0 )
+  FILE COMPRESSION          : NONE
+  RE-USE DELETED SPACE      : YES
+  LOCKING TYPE              : FILE
+  HEADER INTEGRITY CHECKING : YES
+  TRANSACTION TYPE          : CLIENT ATOMIC
+  RECORD IDENTITY INDEX     : 0 ( 0 , 0 )
+  FILE LOGIN PARAMETER      : 
+  SYSTEM FILE               : NO 
+-----------------------------------------------------------------------------
+
+NUM  FIELD NAME       TYPE SIZE  OFFST IX   RELATES TO FILE.FIELD
+---  ---------------  ---- ----- ----- --   ---------------------------------
+  1  EXERCICIO        ASC      4     1  2   
+  2  COD_ENTIDADE     ASC      2     5  2   
+  3  N_DESPESA        ASC      5     7  2   
+  4  VALOR            NUM   14.2    12      
+  5  TIPO_INSTRUM     ASC      2    20  2   
+  6  COD_INSTRUM      ASC      5    22  2   
+  7  ANO_INSTRUM      ASC      4    27      
+  8  DATA             DAT      3    31  3   
+  9  TIPO_CREDITO     ASC      2    34  2   
+ 10  TIPO_SUPLEMEN    ASC      2    36      
+ 11  HORA             ASC      8    38  5   
+ 12  TIPO_RECURSO     ASC      2    46  2   
+
+
+INDEX# FIELDS          DES U/C    LENGTH LEVELS SEGMENTS MODE
+------ --------------- --- ---    ------ ------ -------- -------
+  1    COD_ENTIDADE    NO  NO       9      5       3     ON-LINE
+       EXERCICIO       NO  NO 
+       RECNUM          NO  NO 
+
+  2    EXERCICIO       NO  NO       22     6       7     ON-LINE
+       COD_ENTIDADE    NO  NO 
+       N_DESPESA       NO  NO 
+       TIPO_INSTRUM    NO  NO 
+       COD_INSTRUM     NO  NO 
+       TIPO_CREDITO    NO  NO 
+       TIPO_RECURSO    NO  NO 
+
+  3    EXERCICIO       NO  NO       21     6       7     ON-LINE
+       COD_ENTIDADE    NO  NO 
+       DATA            NO  NO 
+       TIPO_INSTRUM    NO  NO 
+       COD_INSTRUM     NO  NO 
+       TIPO_CREDITO    NO  NO 
+       RECNUM          NO  NO 
+
+  4    EXERCICIO       NO  NO       22     6       7     ON-LINE
+       COD_ENTIDADE    NO  NO 
+       TIPO_INSTRUM    NO  NO 
+       COD_INSTRUM     NO  NO 
+       TIPO_CREDITO    NO  NO 
+       N_DESPESA       NO  NO 
+       TIPO_RECURSO    NO  NO 
+
+  5    EXERCICIO       NO  NO       25     6       6     ON-LINE
+       COD_ENTIDADE    NO  NO 
+       N_DESPESA       NO  NO 
+       DATA            NO  NO 
+       HORA            NO  NO 
+       RECNUM          NO  NO 
+

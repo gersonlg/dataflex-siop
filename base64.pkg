@@ -1,0 +1,138 @@
+//TH-Header
+// *****************************************************************************
+// * Copyright (c) 2006 Excellent Software Ltd                                 
+// * All rights reserved.                                                      
+// *                                                                           
+// * Name    : Base64.pkg
+// * Title   : Base64 Encoding/Decoding Routines
+// * Version : 570                                                      
+// *                                                                           
+// *****************************************************************************
+//TH-RevisionStart
+// ********************
+// MODIFICATION SUMMARY
+// ********************
+// #### DD/MM/YYYY  WHO COMMENT
+//      01/03/2006  RRS Created                                                 
+//TH-RevisionEnd  
+// *****************************************************************************
+
+Function BitRightShift Global Integer iVal Integer iBitShift Returns Integer
+    Function_Return (Integer(iVal/(2^iBitShift)))
+End_Function
+
+Function BitLeftShift Global Integer iVal Integer iBitShift Returns Integer
+    Local Integer iRet
+    Move (Integer(iVal*(2^iBitShift))) To iRet
+    If iRet Ge 256 Move (iVal-(BitRightShift(iVal,(8-iBitShift))*(2^(8-iBitShift)))) To iRet
+    Function_Return iRet 
+End_Function
+
+Function IsBase64 Global Integer c Returns Integer
+    If (c >= Ascii('A') And c <= Ascii('Z')) Function_Return True
+    Else If (c >= Ascii('a') And c <= Ascii('z')) Function_Return True
+    Else If (c >= Ascii('0') And c <= Ascii('9')) Function_Return True
+    Else If (c = Ascii('+')) Function_Return True
+    Else If (c = Ascii('/')) Function_Return True
+    Else If (c = Ascii('=')) Function_Return True
+    Else Function_Return False
+End_Function
+
+Function IntEncode64 Global Integer uc Returns Integer
+    If (uc < 26) Function_Return (Ascii('A')+uc)
+    Else If (uc < 52) Function_Return (Ascii('a')+(uc-26))
+    Else If (uc < 62) Function_Return (Ascii('0')+(uc-52))
+    Else If (uc = 62) Function_Return (Ascii('+'))
+    Else Function_Return (Ascii('/'))
+End_Function
+
+Function IntDecode64 Global Integer c Returns Integer
+    If (c >= Ascii('A') And c <= Ascii('Z')) Function_Return (c - Ascii('A'))
+    Else If (c >= Ascii('a') And c <= Ascii('z')) Function_Return (c - Ascii('a') + 26)
+    Else If (c >= Ascii('0') And c <= Ascii('9')) Function_Return (c - Ascii('0') + 52)
+    Else If (c = Ascii('+')) Function_Return 62
+    Else Function_Return 63
+End_Function
+
+Function Encode64 Global String sText Returns String
+    Local Integer iLen iPos iChar
+    Local Integer by1 by2 by3 
+    Local Integer by4 by5 by6 by7
+    Local String  sRet
+    
+    Move (Length(sText)) To iLen
+    Move 1 To iPos
+    
+    If iPos Lt 1 Function_Return 
+    
+    While (iPos<=iLen)            
+       Move 0 To by1
+       Move 0 To by2
+       Move 0 To by3
+       
+       Move 0 To by4
+       Move 0 To by5
+       Move 0 To by6
+       Move 0 To by7
+       
+       If (iPos+0<=iLen) Move (Ascii(Mid(sText,1,iPos+0))) To by1 
+       If (iPos+1<=iLen) Move (Ascii(Mid(sText,1,iPos+1))) To by2
+       If (iPos+2<=iLen) Move (Ascii(Mid(sText,1,iPos+2))) To by3
+       
+       Move (BitRightShift(by1,2)) To by4
+       Move (BitLeftShift((by1 Iand 3),4)  Ior BitRightShift(by2,4)) To by5  
+       Move (BitLeftShift((by2 Iand 15),2) Ior BitRightShift(by3,6)) To by6 
+       Move (by3 Iand 63) To by7
+       
+       Append sRet (Character(IntEncode64(by4)))
+       Append sRet (Character(IntEncode64(by5)))
+       
+       If (iPos+1<=iLen) Append sRet (Character(IntEncode64(by6)))
+       Else Append sRet "=" 
+       
+       If (iPos+2<=iLen) Append sRet (Character(IntEncode64(by7)))  
+       Else Append sRet "="
+       
+       Move (iPos+3) To iPos
+    End
+    Function_Return sRet
+End_Function
+
+Function Decode64 Global String sText Returns String
+    Local Integer iLen iPos iChar
+    Local Integer iBase256
+    Local Integer c1  c2  c3  c4 
+    Local Integer cc1 cc2 cc3
+    Local Integer by1 by2 by3 by4
+    Local String  sRet
+    
+    Move (Length(sText)) To iLen
+    Move 1 To iPos
+    
+    While (iPos<=iLen)
+       Move (Ascii('A')) To c1
+       Move (Ascii('A')) To c2
+       Move (Ascii('A')) To c3
+       Move (Ascii('A')) To c4
+       
+       If (iPos+0<=iLen) Move (Ascii(Mid(sText,1,iPos+0))) To c1 
+       If (iPos+1<=iLen) Move (Ascii(Mid(sText,1,iPos+1))) To c2
+       If (iPos+2<=iLen) Move (Ascii(Mid(sText,1,iPos+2))) To c3
+       If (iPos+3<=iLen) Move (Ascii(Mid(sText,1,iPos+3))) To c4
+       
+       Move (IntDecode64(c1)) To by1
+       Move (IntDecode64(c2)) To by2
+       Move (IntDecode64(c3)) To by3
+       Move (IntDecode64(c4)) To by4
+       
+       Append sRet (Character(BitLeftShift(by1,2) Ior BitRightShift(by2,4)))
+       If (c3<>Ascii('=')) Append sRet (Character(BitLeftShift((by2 Iand 15),4) Ior BitRightShift(by3,2)))
+       If (c4<>Ascii('=')) Append sRet (Character(BitLeftShift((by3 Iand 3) ,6) Ior by4))
+                                                                          
+       Move (iPos+4) To iPos
+    End
+
+    Function_Return sRet
+End_Function
+
+

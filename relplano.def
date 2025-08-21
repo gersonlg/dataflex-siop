@@ -1,0 +1,43 @@
+-----------------------------------------------------------------------------
+  DATE: 27/05/2024      TIME: 15:53                                  PAGE:  1
+  FILE DEFINITION FOR FILE: RELPLANO (# 333)
+-----------------------------------------------------------------------------
+  DRIVER NAME               : DATAFLEX
+  FILE ROOT NAME            : RELPLANO
+  USER DISPLAY NAME         : RELPLANO
+  DATAFLEX FILE NAME        : RELPLANO
+-----------------------------------------------------------------------------
+  RECORD LENGTH             : 85        ( USED: 66 )
+  MAX NUMBER OF RECORDS     : 16711679  ( USED: 33101 )
+  FILE COMPRESSION          : NONE
+  RE-USE DELETED SPACE      : YES
+  LOCKING TYPE              : FILE
+  HEADER INTEGRITY CHECKING : YES
+  TRANSACTION TYPE          : CLIENT ATOMIC
+  RECORD IDENTITY INDEX     : 0 ( 0 , 0 )
+  FILE LOGIN PARAMETER      : 
+  SYSTEM FILE               : NO 
+-----------------------------------------------------------------------------
+
+NUM  FIELD NAME       TYPE SIZE  OFFST IX   RELATES TO FILE.FIELD
+---  ---------------  ---- ----- ----- --   ---------------------------------
+  1  ANO              ASC      4     1  1   
+  2  NATUREZA         ASC     10     5  1   
+  3  CODIGO_ORIGEM    ASC     20    15  1   
+  4  CODIGO_DESTINO   ASC     20    35  1   
+  5  AUXILIAR         ASC     10    55      
+  6  MES              ASC      2    65      
+
+
+INDEX# FIELDS          DES U/C    LENGTH LEVELS SEGMENTS MODE
+------ --------------- --- ---    ------ ------ -------- -------
+  1    ANO             NO  NO       54     8       4     ON-LINE
+       NATUREZA        NO  NO 
+       CODIGO_ORIGEM   NO  NO 
+       CODIGO_DESTINO  NO  NO 
+
+  2    ANO             NO  NO       54     8       4     ON-LINE
+       NATUREZA        NO  NO 
+       CODIGO_DESTINO  NO  NO 
+       CODIGO_ORIGEM   NO  NO 
+

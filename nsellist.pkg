@@ -1,0 +1,154 @@
+USE UI
+USE SELLIST  // Classe Padrao do DataFlex
+
+// *** Baseado na nova Classe do DataFlex Application Framework
+
+class NSelection_List is a Selection_List STARTMAC SlStart
+
+  procedure construct_object integer img
+    forward send construct_object img
+     on_key kEnter SEND Pesquisa_ou_Captura   PRIVATE
+     Property Integer Modo_Pesquisa           PUBLIC   TRUE
+  end_procedure
+
+  // Procedure Pesquisa_ou_Captura  - enviada pela tecla kEnter.
+  // Se o item estiver mudado vamos fazer uma pesquisa (request_pesquisa)
+  // senao (sem mudancas) nos selecionamos e retornamos um valor.
+
+  Procedure Pesquisa_ou_Captura
+    Local Integer VarRet                               // variavel de retorno
+    If (Modo_Pesquisa(Current_Object) AND ;            // Se houve mudanca
+        item_changed_state(Current_Object,Current)) ;  // faca mascara e
+          send Request_Pesquisa (Current_Item(Current_Object)) // pesquisa
+    else Begin               // se nao houve mudanca proceda normalmente a
+       Get MSG_OK to VarRet  // funcao da tecla kenter. 
+       Procedure_Return VarRet
+    end                      
+  End_procedure     
+  
+  // Procedure Request_Pesquisa     (public)
+  //
+  Procedure Request_Pesquisa Integer Item#
+    send Request_Find GE TRUE
+  End_Procedure
+  
+  // Esta funcao carrega dados da tela para o buffer de arquivo e pesquisa
+  // o registro pelo indice principal do campo corrente. 
+
+  procedure Request_Find integer mode integer entUpdtFlag
+    local integer dataFile ser# Dfrd oldCol
+
+    // Guarda a coluna em que estamos para podermos mais tarde voltar.
+
+    move (current_item(current_object) - base_item(current_object)) to oldCol
+    get Data_File to dataFile
+    if (DataFile<1 OR DataFile<>Main_file(Current_Object)) Procedure_Return
+    get Server to ser#
+    if ser# ne 0 Begin                          // Se este usa um data_set faz
+       Get Deferred_state to Dfrd               // o data_set fazer a pesquisa
+       send Item_Find to ser# mode dataFile ;   // pela procedure Item_find.
+          (Data_Field(current_object,CURRENT)) entUpdtFlag FALSE  Dfrd
+       [Not found] Procedure_Return
+       if Dfrd send display       // Se deferred_state nos devemos manualmente
+                                  // atualizar a lista
+    end      
+    else begin                     // Se nao houver data_set usaremos a
+      send entry_find mode         // procedure entry_find.
+      [Not found] Procedure_Return
+      Send Display
+    end
+    Set New_Item to (oldCol+top_item(current_object)) // fique na coluna
+    Indicate Found TRUE                               // corrente
+  end_procedure
+  
+  procedure entry_update integer mfile# integer flag
+    local integer item# file# selMode
+    local string astr
+    If (Modo_Pesquisa(Current_Object)) ;
+        Forward Send Entry_Update mFile# Flag
+    Else Begin    
+
+        // O comportamento aqui e o mesmo da classe Selection_List.
+
+        get target_file to file#
+        get select_mode to selMode
+        if ((SelMode = SINGLE_SELECT OR SelMode = AUTO_SELECT) AND ;
+            Select_Count(current_object) > 0 AND ;
+            (mfile# = 0 OR mfile# = file#)) begin
+          if (Batch_State(current_object)) begin
+            get first_selected_item to item#
+            get value item item# to astr
+            move file# to filenumber
+            if file# gt 0 begin
+              get target_field to fieldindex
+              move astr to Indirect_File.RECNUM
+            end
+          end
+        end
+    end
+  end_procedure
+
+  // Altera o procedimento normal da Entry_Update na Selection_List
+
+  procedure entry_update FOR SELECTION_LIST integer mfile# integer flag
+    Forward Send Entry_Update mFile# Flag
+  end_procedure
+
+  //  Alteramos as procedure abaixo para a entry_state dos itens ser TRUE
+  //  se a propriedade Modo_Pesquisa for true.
+  //
+  
+  procedure insert_item integer msg# string value integer item#
+    forward send insert_item msg# value item#
+    If (Modo_Pesquisa(Current_Object)) ;
+       set entry_state item item# to TRUE
+  end_procedure
+  
+  procedure add_item integer msg# string val
+    forward send add_item msg# val
+    If (Modo_Pesquisa(Current_Object)) ;
+       set entry_state item (Item_Count(Current_Object)-1) to TRUE
+  end_procedure
+  
+  procedure Flag_Items
+    local integer count maxx obj#
+    Forward Send Flag_Items
+    If (Modo_Pesquisa(Current_Object)) Begin
+       move (Prototype_Object(current_object)) to obj#
+       calc (Item_Count(obj#) - 1) to maxx
+       for count from 0 to maxx
+         set Entry_State of obj# item count to TRUE
+       loop
+    End  
+  end_procedure
+
+  // Alteramos a procedure item_Change para restituir a janela do item
+  // digitado na pesquisa, antes do procedimento normal da Item_Change.
+
+  procedure item_change integer from# integer to# returns integer
+    local integer retval OldDisp
+    If (Modo_Pesquisa(Current_Object) AND ;
+        Changing_State(Current_Object)=0) Begin
+      If ( Item_Changed_State(Current_Object,from#) ) Begin // MUDOU?
+         get line_display_State to oldDisp
+         set line_display_State to true                     // APENAS ATUALIZE
+         Send Display                                       // A LINHA
+         set line_display_State to oldDisp
+      End
+    End       
+    forward get msg_item_change from# to# retval
+    procedure_Return retval
+  end_procedure
+
+  procedure Initialize_List
+    local integer rowCount retval topRow
+    if (server(current_object)=0) begin   // Se nao houver Data_Set
+       get main_file to filenumber
+       move 0 to fieldnumber
+       if status Indirect_File Relate Indirect_File // Se tiver faca relate
+    end
+    forward send initialize_list
+  end_procedure
+
+end_class
+

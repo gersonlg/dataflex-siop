@@ -1,0 +1,1211 @@
+/TELA RESIDENT
+ÚÄ CN-SIFPM ÄÄÄÄÄ Sistema Integrado de Finan‡as P£blicas Municipais ÄÄÄÄÄ ____ ¿
+³______________________________________________________________________________³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ __/__/____  ________________________________________________________  CONAM  ³
+ÆÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍµ
+³                                                                              ³
+³                                                                              ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ IMPORTA€ŽO DO BALANCETE CONT BIL - SICOM ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                                                                              ³
+³                                                                              ³
+³                                                                              ³
+³                                                                              ³
+³    Informe a Entidade <F2> : __ _________________________________________    ³
+³                                                                              ³
+³                                                                              ³
+³                                                                              ³
+³    Mˆs / Ano desejado      : __ / ____                                       ³
+³                                                                              ³
+³                                                                              ³
+³                                                                              ³
+³                                                                              ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                               <ESC>  Retorna                                 ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/CONFIRMA RESIDENT
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³______________________________________________________________________________³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/MSG RESIDENT
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ IMPORTA€ŽO DO BALANCETE CONT BIL - SICOM ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³                                                                            ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ SOLICITADO ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                                                                            ³
+³                                                                            ³
+³                        Entidade __  Mes __ / ____                          ³
+³                                                                            ³
+³                                                                            ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ PROCESSANDO ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                                                                            ³
+³                                                                            ³
+³          Lendo : ______________.        Gravando : ______________.         ³
+³                                                                            ³
+³                                                                            ³
+³                                                                            ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/MENSAGEM RESIDENT
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ A T E N € Ž O !!! ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³                                                           ³
+³     Problemas na importa‡„o do arquivo : ________         ³
+³                                                           ³
+³                                                           ³
+³     C¢digo da Entidade n„o confere com o cadastro         ³
+³                      deste arquivo.                       ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/*
+#INCLUDE CONAM.LIB
+#INCLUDE SICOM.LIB
+#INCLUDE CAMINHO.LIB
+
+SET_ARGUMENT_SIZE 17000
+
+#COMMAND LER
+ READLN !1
+ TRIM !1 TO !1
+ CALC (JN_LENDO +1) TO JN_LENDO
+#ENDCOMMAND
+
+#COMMAND PEGA_DADO
+#IFDEF    IT@POS@INICIO
+#ELSE
+   INTEGER IT@POS@INICIO
+#ENDIF
+#IFDEF    IT@POS@FINAL
+#ELSE
+   INTEGER IT@POS@FINAL
+#ENDIF
+#IFDEF    IT@AUX
+#ELSE
+   INTEGER IT@AUX
+#ENDIF
+#IFDEF    IT@TAMANHO
+#ELSE
+   INTEGER IT@TAMANHO
+#ENDIF
+#IFDEF    ST@STRING
+#ELSE
+   STRING  ST@STRING 255
+#ENDIF
+
+ IF !1 IN !3 BEGIN
+  POS !1 IN !3 TO IT@POS@INICIO
+  POS !2 IN !3 TO IT@POS@FINAL
+ 
+  LENGTH !1                               TO IT@AUX
+  CALC (IT@POS@INICIO + IT@AUX)           TO IT@POS@INICIO
+  CALC (IT@POS@FINAL  - IT@POS@INICIO)    TO IT@TAMANHO
+  MOVE (MID(!3,IT@TAMANHO,IT@POS@INICIO)) TO ST@STRING
+  TRIM ST@STRING TO ST@STRING
+ 
+  MOVE (TRIM(ST@STRING)) TO !4
+  END
+#ENDCOMMAND
+
+STRING ST_JUNTA              ST_ARQUIVO          255 ST_AUX             255 ST_LINHA       255 ST_IDE_SAIDA          255
+STRING ST_NOME_USUARIO       ST_DIRETORIO        255 ST_SAIDA           255 ST_CAMINHO     255 ST_BALANCETE_SAIDA    255
+STRING ST_DATA_INICIAL    10 ST_DATA_FINAL        10 ST_DATA_INICIAL_ANO 10 ST_ADVERTE     255 ST_CABECALHO           80
+STRING ST_ULTIMO_MES       2 ST_IDE              255 ST_BALANCETE       255 ST_CODIGO      255 ST_DIVIDA_CONSOLIDADA
+STRING ST_PLANO_CODIGO_FINAL ST_PLANO_CODIGO_INICIAL ST_NATUREZA_AUX        ST_NAT_FIN_AUX     ST_NAT_INI_AUX
+STRING ST_TIPO_DESPESA_RPPS  ST_EMENDA_PARLAMENTAR
+
+STRING ST_CAMPO_01
+STRING ST_CAMPO_02
+STRING ST_CAMPO_03
+STRING ST_CAMPO_04
+STRING ST_CAMPO_05
+STRING ST_CAMPO_06
+STRING ST_CAMPO_07
+
+STRING ST_CONTA_CONTABIL
+STRING ST_CODIGO_FUNDO
+STRING ST_NATUREZA_FINAL
+STRING ST_NATUREZA_INICIAL
+STRING ST_SALDO_FINAL
+STRING ST_SALDO_INICIAL
+STRING ST_DEBITO
+STRING ST_CREDITO
+
+STRING ST_COD_ORGAO
+STRING ST_COD_UNIDADE
+STRING ST_COD_UNIDADE_ORIGINAL
+STRING ST_FUNCAO
+STRING ST_SUBFUNCAO
+STRING ST_PROGRAMA
+STRING ST_ACAO
+STRING ST_SUBACAO
+STRING ST_ECONOMICA
+STRING ST_ELEMENTO
+STRING ST_ITEM
+STRING ST_FONTE_RECURSO
+STRING ST_CO_FONTE
+STRING ST_COD_RECEITA
+STRING ST_CNR
+STRING ST_ATRIBUTO_SF
+STRING ST_N_EMPENHO
+STRING ST_ANO_EMPENHO
+STRING ST_CONTA_BANCARIA
+
+STRING ST_N_CONTRATO
+STRING ST_DATA_ASSINATURA
+
+STRING ST_C1 ST_C2 ST_C3 ST_C4 ST_C5 ST_C6 ST_C7
+
+DATE DT_DATA_INICIAL DT_DATA_FINAL DT_DATA_INICIAL_ANO DT_DATA_LANCAMENTO
+
+NUMBER NB_CREDITO NB_DEBITO NB_SALDO_FINAL NB_SALDO_INICIAL
+
+INTEGER IT_COD_MUNICIPIO IT_COD_ENTIDADE IT_RECNUM IT_SEQUENCIA
+
+AUTOPAGE TELA
+NAME JN_EXERCICIO
+NAME JN_TARJA
+NAME JN_TARJA_DATA   JN_TARJA_TITULO
+NAME JN_COD_ENTIDADE JN_ENTIDADE
+NAME JN_MES          JN_ANO
+
+AUTOPAGE MSG
+NAME JN_MSG_ENTIDADE JN_MSG_MES JN_MSG_ANO
+NAME JN_LENDO
+NAME JN_GRAVANDO
+
+OPEN ENTIDADE
+OPEN BALANCO
+OPEN PLANO
+ABRE_CONTACOR ST@EXERCICIO@FINANCEIRO CONTACOR
+
+INDICATE PREFEITURA! AS PARGERAL.COD_ENTIDADE EQ '01'
+
+MOVE '13' TO ST_ULTIMO_MES
+
+PAGE SET MSG              AT 05 01 COLORS IT_COR_TITULO IT_COR_TITULO
+PAGE SET TELA             AT  0  0 COLORS IT_COR_TARJA  IT_COR_MOLDURA
+PAGE SET CONFIRMA         AT 21  0 COLORS IT_COR_TARJA  IT_COR_MOLDURA
+PAGE SET MENSAGEM         AT 10 10 COLORS IT_COR_TARJA  IT_COR_TITULO
+PAGE SET OPCOES_CAMINHO   AT 09 01 COLORS IT_COR_TARJA  IT_COR_TARJA
+PAGE SET RODAPE_CAMINHO   AT 21 00 COLORS IT_COR_TARJA  IT_COR_MOLDURA
+
+MOVE ST@PREFEITURA TO ST_CABECALHO
+REPEAT
+ REPLACE '@' IN ST_CABECALHO WITH ' '
+UNTIL [~FOUND]
+
+SCREENMODE IT_COR_MOLDURA ON
+MOVE PARGERAL.EXERCICIO TO JN_EXERCICIO
+SYSDATA JN_TARJA_DATA
+SCREENMODE IT_COR_TITULO ON
+CABEC 'M¢DULO DE IMPORTA€ŽO DE DADOS - SICOM' JN_TARJA_TITULO
+SCREENMODE IT_COR_TARJA ON
+CABEC ST_CABECALHO JN_TARJA
+
+INICIO:
+SCREENMODE IT_COR_TARJA ON
+
+MOVE PARGERAL.EXERCICIO TO JN_ANO
+
+MOVEALL 0 TO IT_COD_MUNICIPIO IT_COD_ENTIDADE
+
+[ PREFEITURA!] BEGIN
+                REPEAT
+                 ACCEPT JN_COD_ENTIDADE {AUTOCLEAR}
+                 [KEY.ESCAPE] ABORT
+                 IF JN_COD_ENTIDADE EQ '' MENSAGEM 1
+                 ELSE BEGIN
+                       COMZEROS JN_COD_ENTIDADE 2
+                       CLEAR ENTIDADE
+                       MOVE ST@EXERCICIO@FINANCEIRO TO ENTIDADE.EXERCICIO
+                       MOVE JN_COD_ENTIDADE         TO ENTIDADE.CODIGO
+                       FIND EQ ENTIDADE BY INDEX.1
+                       [~FOUND] BEGIN
+                                 ADVERTE 'ENTIDADE NŽO CADASTRADA'
+                                 CLEARFORM JN_COD_ENTIDADE THRU JN_ENTIDADE
+                                END
+                      END
+                UNTIL JN_COD_ENTIDADE NE ''
+                MOVE ENTIDADE.DESCRICAO TO JN_ENTIDADE
+
+                IF ENTIDADE.ORGAO_TCE EQ '' BEGIN
+                                             ADVERTE 'ATUALIZAR O CADASTRO DE ENTIDADES, CAMPO ORGAO-SICOM'
+                                             GOTO INICIO
+                                            END
+               END
+
+[~PREFEITURA!] BEGIN
+                MOVE PARGERAL.COD_ENTIDADE TO JN_COD_ENTIDADE
+                
+                CLEAR ENTIDADE
+                MOVE ST@EXERCICIO@FINANCEIRO TO ENTIDADE.EXERCICIO
+                MOVE JN_COD_ENTIDADE         TO ENTIDADE.CODIGO
+                FIND EQ ENTIDADE BY INDEX.1
+                [~FOUND] CLEAR ENTIDADE
+                
+                MOVE ENTIDADE.DESCRICAO TO JN_ENTIDADE
+               END
+
+ACCEPT JN_MES {AUTOCLEAR}
+[KEY.ESCAPE] ABORT
+IF JN_MES EQ '' GOTO INICIO
+COMZEROS JN_MES 2
+IF ((JN_MES LT '01') OR (JN_MES GT '13')) BEGIN
+ ADVERTE 'MˆS INV LIDO. TENTE NOVAMENTE.'
+ CLEARFORM JN_MES
+ GOTO INICIO
+ END
+
+REPEAT
+ ANO_2000 JN_ANO {AUTOCLEAR}
+UNTIL JN_ANO NE ''
+
+MOVE '01/'    TO ST_DATA_INICIAL
+MOVE '01/'    TO ST_DATA_FINAL
+MOVE '01/01/' TO ST_DATA_INICIAL_ANO
+
+APPEND ST_DATA_INICIAL_ANO JN_ANO
+IF JN_MES LT '12' BEGIN
+                   APPEND ST_DATA_INICIAL JN_MES '/' JN_ANO
+                   APPEND ST_DATA_FINAL (JN_MES + 1) '/' JN_ANO
+                  END
+ELSE              BEGIN
+                   APPEND ST_DATA_INICIAL '12' '/' JN_ANO
+                   APPEND ST_DATA_FINAL '01/' (JN_ANO + 1)
+                  END
+
+MOVE ST_DATA_INICIAL     TO DT_DATA_INICIAL
+MOVE ST_DATA_FINAL       TO DT_DATA_FINAL
+MOVE ST_DATA_INICIAL_ANO TO DT_DATA_INICIAL_ANO
+
+CALC (DT_DATA_FINAL - 1) TO DT_DATA_LANCAMENTO
+
+//-------------verifica se esta em linux
+VERSAO
+
+LB_ARQUIVO:
+MOVE '/sicom/entidades/' TO ST_CAMINHO
+PASTA_CAMINHO ST_ARQUIVO 'TEXTOS' ST_CAMINHO ST@CODIGO@ENTIDADE
+TRIM ST_ARQUIVO TO ST_ARQUIVO
+
+//--trocando para minusculas e espacos por '_'
+STRING ST_COPIA 255 ST_DE 255 ST_PARA 255 ST_COMANDO 255 ST_DESTINO 255
+MOVE (TRIM(ST@USUARIO)) TO ST_COPIA
+APPEND ST_COPIA '_minusculas.sh'
+LOWERCASE ST_COPIA TO ST_COPIA
+
+MOVE 'A-Z ' to ST_DE
+MOVE 'a-z_' to ST_PARA
+MOVE 'find ' TO ST_COMANDO
+APPEND ST_COMANDO ST_ARQUIVO ' -name ' '"*.*"'  ' | while read i; do novo=`echo $i | tr ' "'" ST_DE "'" ' ' "'" ST_PARA "'" '`; mv ' '"' '$i' '"' ' $novo &>> /dev/null; done'
+
+MOVE ST_ARQUIVO TO ST_DESTINO
+APPEND ST_DESTINO  ST_COPIA
+DIRECT_OUTPUT CHANNEL 4  ST_DESTINO
+WRITELN ST_COMANDO
+CLOSE_OUTPUT CHANNEL 4
+
+MOVE '.' TO ST_COMANDO
+APPEND ST_COMANDO ' ' ST_ARQUIVO  ST_COPIA
+RUNPROGRAM WAIT ST_COMANDO
+ERASEFILE ST_COPIA
+//--
+
+
+MOVE ST_ARQUIVO TO ST_IDE
+MOVE ST_ARQUIVO TO ST_BALANCETE
+
+APPEND ST_IDE       'ide.csv'
+APPEND ST_BALANCETE 'balancete.csv'
+
+DIRECT_INPUT ST_IDE
+[ SEQEOF] BEGIN
+           ADVERTE 'ARQUIVO ide.csv INEXISTENTE'
+           GOTO INICIO
+          END
+CLOSE_INPUT
+
+DIRECT_INPUT ST_BALANCETE
+[ SEQEOF] BEGIN
+           ADVERTE 'ARQUIVO ide.csv INEXISTENTE'
+           GOTO INICIO
+          END
+CLOSE_INPUT
+
+SCREENMODE IT_COR_TARJA ON
+MOVE JN_COD_ENTIDADE TO JN_MSG_ENTIDADE
+MOVE JN_MES          TO JN_MSG_MES
+MOVE JN_ANO          TO JN_MSG_ANO
+PAGE MSG
+
+CONFIRMACAO 'IMPORTA€ŽO'
+
+PAGE TELA
+PAGE MSG
+GOTOXY 25 0
+
+CALL PREPARA_ARQUIVO
+
+//---------leitura do  arquivo ide
+//--
+MOVE ST_ARQUIVO TO ST_IDE
+APPEND ST_IDE 'ide.txt'
+
+DIRECT_INPUT ST_IDE
+MOVEALL '' TO ST_CAMPO_01 ST_CAMPO_02 ST_CAMPO_03 ST_CAMPO_04 ST_CAMPO_05 ST_CAMPO_06 ST_CAMPO_07
+READ ST_CAMPO_01
+READ ST_CAMPO_02
+READ ST_CAMPO_03
+READ ST_CAMPO_04
+READ ST_CAMPO_05
+READ ST_CAMPO_06
+READ ST_CAMPO_07
+
+MOVE ST_CAMPO_01 TO IT_COD_MUNICIPIO
+
+MOVE '' TO ST_ADVERTE
+IF IT_COD_MUNICIPIO NE PARGERAL.COD_SIAFI BEGIN
+                                           MOVE 'CODIGO DO MUNICIPIO DO ARQUIVO ide.csv DIFERENTE DOS PARAMETROS DO SISTEMA' TO ST_ADVERTE
+                                           ADVERTE ST_ADVERTE
+                                          END
+IF ST_CAMPO_05 NE JN_ANO BEGIN
+                          MOVE 'ANO INFORMADO PARA IMPORTACAO DIFERENTE DO ANO NO ARQUIVO ide.csv' TO ST_ADVERTE
+                          ADVERTE ST_ADVERTE
+                         END
+IF ST_CAMPO_06 NE JN_MES BEGIN
+                          MOVE 'MES INFORMADO PARA IMPORTACAO DIFERENTE DO MES NO ARQUIVO ide.csv' TO ST_ADVERTE
+                          ADVERTE ST_ADVERTE
+                         END
+
+IF ST_ADVERTE NE '' BEGIN
+                     CLOSE_INPUT
+                     GOTO INICIO
+                    END
+
+GOSUB LB_LIMPA_ARQUIVOS
+
+//---------leitura do  arquivo balancete
+//--
+MOVE ST_ARQUIVO TO ST_BALANCETE
+APPEND ST_BALANCETE 'balancete.txt'
+DIRECT_INPUT ST_BALANCETE
+
+PAGE TELA
+PAGE MSG
+GOTOXY 25 0
+
+MOVE 1 TO IT_SEQUENCIA
+
+REPEAT
+ READ ST_CAMPO_01
+ IF ST_CAMPO_01 EQ '10' BEGIN
+                         READ ST_CONTA_CONTABIL
+                         READ ST_CODIGO_FUNDO
+                         
+                         READ ST_SALDO_INICIAL
+                         READ ST_NATUREZA_INICIAL
+                         READ ST_DEBITO
+                         READ ST_CREDITO
+                         READ ST_SALDO_FINAL
+                         READ ST_NATUREZA_FINAL
+                         
+                         PONTUA_CONTA_CONTABIL ST_CONTA_CONTABIL
+                         
+                         CLEAR BALANCO
+                         MOVE JN_COD_ENTIDADE     TO BALANCO.COD_ENTIDADE
+                         MOVE JN_ANO              TO BALANCO.ANO
+                         MOVE JN_MES              TO BALANCO.MES
+                         MOVE ST_CONTA_CONTABIL   TO BALANCO.CONTA
+                         MOVE ST_NATUREZA_INICIAL TO BALANCO.NAT_INICIAL
+                         MOVE ST_SALDO_INICIAL    TO BALANCO.SALDO_INICIAL
+                         MOVE ST_DEBITO           TO BALANCO.DEBITO
+                         MOVE ST_CREDITO          TO BALANCO.CREDITO
+                         MOVE ST_SALDO_FINAL      TO BALANCO.SALDO_FINAL
+                         MOVE ST_NATUREZA_FINAL   TO BALANCO.NAT_FINAL
+                         SAVERECORD BALANCO
+                         CALC (JN_GRAVANDO + 1) TO JN_GRAVANDO
+                        END
+ IF ST_CAMPO_01 EQ '11' BEGIN
+                         READ ST_CONTA_CONTABIL
+                         READ ST_CODIGO_FUNDO
+                         
+                         READ ST_COD_ORGAO
+                         READ ST_COD_UNIDADE
+                         READ ST_FUNCAO
+                         READ ST_SUBFUNCAO
+                         READ ST_PROGRAMA
+                         READ ST_ACAO
+                         READ ST_SUBACAO
+                         READ ST_ECONOMICA
+                         
+                         IF JN_ANO LE '2020' READ ST_ITEM
+                         
+                         READ ST_FONTE_RECURSO
+                         
+                         READ ST_SALDO_INICIAL
+                         READ ST_NATUREZA_INICIAL
+                         READ ST_DEBITO
+                         READ ST_CREDITO
+                         READ ST_SALDO_FINAL
+                         READ ST_NATUREZA_FINAL
+                         
+                         PONTUA_CONTA_CONTABIL ST_CONTA_CONTABIL
+                         
+                         PONTUA_ECONOMICA      ST_ECONOMICA
+                         MOVE (MID(ST_ECONOMICA,9,1)) TO ST_ELEMENTO
+                         
+                         IF JN_ANO GE '2021' MOVE '00' TO ST_ITEM
+                         
+                         IF JN_ANO GE '2023' PAD ST_FONTE_RECURSO TO ST_FONTE_RECURSO 7
+                         
+                         MOVE ST_CONTA_CONTABIL TO ST_CODIGO
+                         APPEND ST_CODIGO ' ' ST_COD_ORGAO ' ' (PAD(ST_COD_UNIDADE,8)) ' ' ST_FUNCAO ' ' ST_SUBFUNCAO ' ' ST_PROGRAMA ' ' ST_ACAO ' ' (PAD(ST_SUBACAO,4)) ' ' ST_ELEMENTO '.' ST_ITEM ' ' ST_FONTE_RECURSO
+                         GOSUB LB_SALVA_CONTACOR
+                        END
+ IF ST_CAMPO_01 EQ '12' BEGIN
+                         READ ST_CONTA_CONTABIL
+                         READ ST_CODIGO_FUNDO
+                         
+                         READ ST_COD_RECEITA
+                         READ ST_FONTE_RECURSO
+                         
+                         READ ST_SALDO_INICIAL
+                         READ ST_NATUREZA_INICIAL
+                         READ ST_DEBITO
+                         READ ST_CREDITO
+                         READ ST_SALDO_FINAL
+                         READ ST_NATUREZA_FINAL
+                         
+                         PONTUA_CONTA_CONTABIL ST_CONTA_CONTABIL
+                         PONTUA_RECEITA        ST_COD_RECEITA     JN_ANO
+                         
+                         MOVE (MID(ST_COD_RECEITA,14,1)) TO ST_CNR
+                         
+                         IF JN_ANO GE '2023' PAD ST_FONTE_RECURSO TO ST_FONTE_RECURSO 7
+                         
+                         MOVE ST_CONTA_CONTABIL TO ST_CODIGO
+                         APPEND ST_CODIGO ' ' ST_CNR '    ' ST_FONTE_RECURSO
+                         GOSUB LB_SALVA_CONTACOR
+                        END
+ IF ST_CAMPO_01 EQ '13' BEGIN
+                         READ ST_CONTA_CONTABIL
+                         READ ST_CODIGO_FUNDO
+                         
+                         READ ST_PROGRAMA
+                         READ ST_ACAO
+                         READ ST_SUBACAO
+                         
+                         READ ST_SALDO_INICIAL
+                         READ ST_NATUREZA_INICIAL
+                         READ ST_DEBITO
+                         READ ST_CREDITO
+                         READ ST_SALDO_FINAL
+                         READ ST_NATUREZA_FINAL
+                         
+                         PONTUA_CONTA_CONTABIL ST_CONTA_CONTABIL
+                         
+                         MOVE ST_CONTA_CONTABIL TO ST_CODIGO
+                         APPEND ST_CODIGO ' ' (PAD(ST_PROGRAMA,4)) ' ' (PAD(ST_ACAO,4)) ' ' (PAD(ST_SUBACAO,4))
+                         GOSUB LB_SALVA_CONTACOR
+                        END
+ IF ST_CAMPO_01 EQ '14' BEGIN
+                         READ ST_CONTA_CONTABIL
+                         READ ST_CODIGO_FUNDO
+                         
+                         READ ST_COD_ORGAO
+                         READ ST_COD_UNIDADE
+                         READ ST_COD_UNIDADE_ORIGINAL
+                         READ ST_FUNCAO
+                         READ ST_SUBFUNCAO
+                         READ ST_PROGRAMA
+                         READ ST_ACAO
+                         READ ST_SUBACAO
+                         READ ST_ECONOMICA
+                         READ ST_ITEM
+                         READ ST_FONTE_RECURSO
+                         
+                         IF PARGERAL.EXERCICIO GE '2023' READ ST_CO_FONTE
+                         
+                         READ ST_N_EMPENHO
+                         READ ST_ANO_EMPENHO
+                         
+                         READ ST_SALDO_INICIAL
+                         READ ST_NATUREZA_INICIAL
+                         READ ST_DEBITO
+                         READ ST_CREDITO
+                         READ ST_SALDO_FINAL
+                         READ ST_NATUREZA_FINAL
+                         
+                         PONTUA_CONTA_CONTABIL ST_CONTA_CONTABIL
+                         
+                         PONTUA_ECONOMICA      ST_ECONOMICA
+                         MOVE (MID(ST_ECONOMICA,9,1)) TO ST_ELEMENTO
+                         
+                         //-- se sistema conam
+                         TRIM ST_N_EMPENHO TO ST_N_EMPENHO
+                         COMZEROS ST_N_EMPENHO 5
+                         
+                         IF JN_ANO GE '2023' PAD ST_FONTE_RECURSO TO ST_FONTE_RECURSO 7
+                         
+                         MOVE ST_CONTA_CONTABIL TO ST_CODIGO
+                         APPEND ST_CODIGO ' ' ST_COD_ORGAO ' ' (PAD(ST_COD_UNIDADE,8)) ' ' ST_FUNCAO ' ' ST_SUBFUNCAO ' ' ST_PROGRAMA ' ' ST_ACAO ' ' (PAD(ST_SUBACAO,4)) ' ' ST_ELEMENTO '.' ST_ITEM
+                         APPEND ST_CODIGO ' ' ST_FONTE_RECURSO ' ' (PAD(ST_N_EMPENHO,22)) ' ' ST_ANO_EMPENHO ' ' ST_COD_UNIDADE_ORIGINAL ' '  ST_CO_FONTE
+                         GOSUB LB_SALVA_CONTACOR
+                        END
+ IF ST_CAMPO_01 EQ '15' BEGIN
+                         READ ST_CONTA_CONTABIL
+                         READ ST_CODIGO_FUNDO
+                         
+                         READ ST_ATRIBUTO_SF
+                         
+                         READ ST_SALDO_INICIAL
+                         READ ST_NATUREZA_INICIAL
+                         READ ST_DEBITO
+                         READ ST_CREDITO
+                         READ ST_SALDO_FINAL
+                         READ ST_NATUREZA_FINAL
+                         
+                         PONTUA_CONTA_CONTABIL ST_CONTA_CONTABIL
+                         
+                         MOVE ST_CONTA_CONTABIL TO ST_CODIGO
+                         APPEND ST_CODIGO ' ' ST_ATRIBUTO_SF
+                         GOSUB LB_SALVA_CONTACOR
+                        END
+ IF ST_CAMPO_01 EQ '16' BEGIN
+                         READ ST_CONTA_CONTABIL
+                         READ ST_CODIGO_FUNDO
+                         READ ST_ATRIBUTO_SF
+                         READ ST_FONTE_RECURSO
+                         
+                         MOVEALL '' TO ST_C1 ST_C2 ST_C3 ST_C4 ST_C5 ST_C6 ST_C7
+                         MOVEALL '' TO ST_CO_FONTE
+                         
+                         IF PARGERAL.EXERCICIO GE '2023' BEGIN
+                                                          READ ST_C1
+                                                          READ ST_C2
+                                                          READ ST_C3
+                                                          READ ST_C4
+                                                          READ ST_C5
+                                                          READ ST_C6
+                                                          READ ST_C7
+                                                          
+                                                          IF ST_C2 IN 'DC' BEGIN
+                                                                            MOVE ST_C1 TO ST_SALDO_INICIAL
+                                                                            MOVE ST_C2 TO ST_NATUREZA_INICIAL
+                                                                            MOVE ST_C3 TO ST_DEBITO
+                                                                            MOVE ST_C4 TO ST_CREDITO
+                                                                            MOVE ST_C5 TO ST_SALDO_FINAL
+                                                                            MOVE ST_C6 TO ST_NATUREZA_FINAL
+                                                                           END
+                                                          ELSE BEGIN
+                                                                MOVE ST_C1 TO ST_CO_FONTE
+                                                                MOVE ST_C2 TO ST_SALDO_INICIAL
+                                                                MOVE ST_C3 TO ST_NATUREZA_INICIAL
+                                                                MOVE ST_C4 TO ST_DEBITO
+                                                                MOVE ST_C5 TO ST_CREDITO
+                                                                MOVE ST_C6 TO ST_SALDO_FINAL
+                                                                MOVE ST_C7 TO ST_NATUREZA_FINAL
+                                                               END
+                                                         END
+                         ELSE BEGIN
+                               READ ST_SALDO_INICIAL
+                               READ ST_NATUREZA_INICIAL
+                               READ ST_DEBITO
+                               READ ST_CREDITO
+                               READ ST_SALDO_FINAL
+                               READ ST_NATUREZA_FINAL
+                              END
+                         
+                         PONTUA_CONTA_CONTABIL ST_CONTA_CONTABIL
+                         
+                         IF ST_ATRIBUTO_SF EQ 'F' IF ST_CO_FONTE EQ '' MOVE '0000' TO ST_CO_FONTE
+                         
+                         IF JN_ANO GE '2023' PAD ST_FONTE_RECURSO TO ST_FONTE_RECURSO 7
+                         
+                         MOVE ST_CONTA_CONTABIL TO ST_CODIGO
+                         APPEND ST_CODIGO ' ' ST_ATRIBUTO_SF ' ' ST_FONTE_RECURSO ' ' ST_CO_FONTE
+                         GOSUB LB_SALVA_CONTACOR
+                        END
+ IF ST_CAMPO_01 EQ '17' BEGIN
+                         READ ST_CONTA_CONTABIL
+                         READ ST_CODIGO_FUNDO
+                         
+                         READ ST_ATRIBUTO_SF
+                         READ ST_CONTA_BANCARIA
+                         READ ST_FONTE_RECURSO
+                         
+                         IF PARGERAL.EXERCICIO GE '2023' READ ST_CO_FONTE
+                         
+                         READ ST_SALDO_INICIAL
+                         READ ST_NATUREZA_INICIAL
+                         READ ST_DEBITO
+                         READ ST_CREDITO
+                         READ ST_SALDO_FINAL
+                         READ ST_NATUREZA_FINAL
+                         
+                         //-- se sistema conam
+                         TRIM ST_CONTA_BANCARIA TO ST_CONTA_BANCARIA
+                         
+                         PONTUA_CONTA_CONTABIL ST_CONTA_CONTABIL
+                         
+                         IF JN_ANO GE '2023' PAD ST_FONTE_RECURSO TO ST_FONTE_RECURSO 7
+                         
+                         MOVE ST_CONTA_CONTABIL TO ST_CODIGO
+                         APPEND ST_CODIGO ' ' ST_ATRIBUTO_SF ' ' (PAD(ST_CONTA_BANCARIA,20)) ' ' ST_FONTE_RECURSO ' ' ST_CO_FONTE
+                         GOSUB LB_SALVA_CONTACOR
+                        END
+ IF ST_CAMPO_01 EQ '18' BEGIN
+                         READ ST_CONTA_CONTABIL
+                         READ ST_CODIGO_FUNDO
+                         
+                         READ ST_FONTE_RECURSO
+                         
+                         READ ST_SALDO_INICIAL
+                         READ ST_NATUREZA_INICIAL
+                         READ ST_DEBITO
+                         READ ST_CREDITO
+                         READ ST_SALDO_FINAL
+                         READ ST_NATUREZA_FINAL
+                         
+                         PONTUA_CONTA_CONTABIL ST_CONTA_CONTABIL
+                         
+                         IF JN_ANO GE '2023' PAD ST_FONTE_RECURSO TO ST_FONTE_RECURSO 7
+                         
+                         MOVE ST_CONTA_CONTABIL TO ST_CODIGO
+                         APPEND ST_CODIGO ' ' ST_FONTE_RECURSO
+                         GOSUB LB_SALVA_CONTACOR
+                        END
+ 
+//--controle de consorcios - ainda nao utilizamos tal controle
+//  IF ST_CAMPO_01 EQ '19' BEGIN
+//                         END
+//  IF ST_CAMPO_01 EQ '20' BEGIN
+//                         END
+//  IF ST_CAMPO_01 EQ '21' BEGIN
+//                         END
+ 
+ IF ST_CAMPO_01 EQ '22' BEGIN
+                         READ ST_CONTA_CONTABIL
+                         READ ST_CODIGO_FUNDO
+                         
+                         READ ST_ATRIBUTO_SF
+                         READ ST_CONTA_BANCARIA
+                         
+                         READ ST_SALDO_INICIAL
+                         READ ST_NATUREZA_INICIAL
+                         READ ST_DEBITO
+                         READ ST_CREDITO
+                         READ ST_SALDO_FINAL
+                         READ ST_NATUREZA_FINAL
+                         
+                         PONTUA_CONTA_CONTABIL ST_CONTA_CONTABIL
+                         
+                         MOVE ST_CONTA_CONTABIL TO ST_CODIGO
+                         APPEND ST_CODIGO ' ' ST_ATRIBUTO_SF ' ' (PAD(ST_CONTA_BANCARIA,20))
+                         GOSUB LB_SALVA_CONTACOR
+                        END
+ IF ST_CAMPO_01 EQ '23' BEGIN
+                         READ ST_CONTA_CONTABIL
+                         READ ST_CODIGO_FUNDO
+                         
+                         READ ST_COD_RECEITA
+                         
+                         READ ST_SALDO_INICIAL
+                         READ ST_NATUREZA_INICIAL
+                         READ ST_DEBITO
+                         READ ST_CREDITO
+                         READ ST_SALDO_FINAL
+                         READ ST_NATUREZA_FINAL
+                         
+                         PONTUA_CONTA_CONTABIL ST_CONTA_CONTABIL
+                         PONTUA_RECEITA        ST_COD_RECEITA     JN_ANO
+                         
+                         MOVE ST_CONTA_CONTABIL TO ST_CODIGO
+                         APPEND ST_CODIGO ' ' ST_COD_RECEITA
+                         GOSUB LB_SALVA_CONTACOR
+                        END
+ IF ST_CAMPO_01 EQ '24' BEGIN
+                         READ ST_CONTA_CONTABIL
+                         READ ST_CODIGO_FUNDO
+                         
+                         READ ST_COD_ORGAO
+                         READ ST_COD_UNIDADE
+                         
+                         READ ST_SALDO_INICIAL
+                         READ ST_NATUREZA_INICIAL
+                         READ ST_DEBITO
+                         READ ST_CREDITO
+                         READ ST_SALDO_FINAL
+                         READ ST_NATUREZA_FINAL
+                         
+                         PONTUA_CONTA_CONTABIL ST_CONTA_CONTABIL
+                         
+                         MOVE ST_CONTA_CONTABIL TO ST_CODIGO
+                         APPEND ST_CODIGO ' ' ST_COD_ORGAO ' ' (PAD(ST_COD_UNIDADE,8))
+                         GOSUB LB_SALVA_CONTACOR
+                        END
+ IF ST_CAMPO_01 EQ '25' BEGIN
+                         READ ST_CONTA_CONTABIL
+                         READ ST_CODIGO_FUNDO
+                         
+                         READ ST_ATRIBUTO_SF
+                         READ ST_COD_RECEITA
+                         
+                         READ ST_SALDO_INICIAL
+                         READ ST_NATUREZA_INICIAL
+                         READ ST_DEBITO
+                         READ ST_CREDITO
+                         READ ST_SALDO_FINAL
+                         READ ST_NATUREZA_FINAL
+                         
+                         PONTUA_CONTA_CONTABIL ST_CONTA_CONTABIL
+                         PONTUA_RECEITA        ST_COD_RECEITA     JN_ANO
+                         
+                         MOVE ST_CONTA_CONTABIL TO ST_CODIGO
+                         IF JN_ANO LE '2017' APPEND ST_CODIGO ' ' (MID(ST_COD_RECEITA,13,1)) ' ' ST_ATRIBUTO_SF
+                         ELSE                APPEND ST_CODIGO ' ' (MID(ST_COD_RECEITA,14,1)) ' ' ST_ATRIBUTO_SF
+                         GOSUB LB_SALVA_CONTACOR
+                        END
+ IF ST_CAMPO_01 EQ '29' BEGIN
+                         READ ST_CONTA_CONTABIL
+                         READ ST_CODIGO_FUNDO
+                         
+                         READ ST_ATRIBUTO_SF
+                         READ ST_FONTE_RECURSO
+                         READ ST_DIVIDA_CONSOLIDADA
+                         
+                         READ ST_SALDO_INICIAL
+                         READ ST_NATUREZA_INICIAL
+                         READ ST_DEBITO
+                         READ ST_CREDITO
+                         READ ST_SALDO_FINAL
+                         READ ST_NATUREZA_FINAL
+                         
+                         PONTUA_CONTA_CONTABIL ST_CONTA_CONTABIL
+                         PONTUA_RECEITA        ST_COD_RECEITA     JN_ANO
+                         
+                         IF JN_ANO GE '2023' PAD ST_FONTE_RECURSO TO ST_FONTE_RECURSO 7
+                         
+                         MOVE ST_CONTA_CONTABIL TO ST_CODIGO
+                         APPEND ST_CODIGO ' ' ST_ATRIBUTO_SF ' ' ST_FONTE_RECURSO ' ' ST_DIVIDA_CONSOLIDADA
+                         GOSUB LB_SALVA_CONTACOR
+                        END
+ IF ST_CAMPO_01 EQ '30' BEGIN
+                         READ ST_CONTA_CONTABIL
+                         READ ST_CODIGO_FUNDO
+                         
+                         READ ST_COD_ORGAO
+                         READ ST_COD_UNIDADE
+                         READ ST_FUNCAO
+                         READ ST_SUBFUNCAO
+                         READ ST_PROGRAMA
+                         READ ST_ACAO
+                         READ ST_SUBACAO
+                         READ ST_ECONOMICA
+                         READ ST_ITEM
+                         READ ST_FONTE_RECURSO
+                         
+                         IF PARGERAL.EXERCICIO GE '2023' READ ST_CO_FONTE
+                         
+                         IF PARGERAL.EXERCICIO LE '2022' READ ST_TIPO_DESPESA_RPPS
+                         
+                         READ ST_SALDO_INICIAL
+                         READ ST_NATUREZA_INICIAL
+                         READ ST_DEBITO
+                         READ ST_CREDITO
+                         READ ST_SALDO_FINAL
+                         READ ST_NATUREZA_FINAL
+                         
+                         PONTUA_CONTA_CONTABIL ST_CONTA_CONTABIL
+                         
+                         PONTUA_ECONOMICA      ST_ECONOMICA
+                         MOVE (MID(ST_ECONOMICA,9,1)) TO ST_ELEMENTO
+                         
+                         IF PARGERAL.EXERCICIO LE '2022' PAD ST_FONTE_RECURSO TO ST_FONTE_RECURSO 3
+                         ELSE                            PAD ST_FONTE_RECURSO TO ST_FONTE_RECURSO 7
+                         
+                         IF ST_CO_FONTE EQ '' MOVE '0000' TO ST_CO_FONTE
+                         
+                         PAD ST_TIPO_DESPESA_RPPS TO ST_TIPO_DESPESA_RPPS 1
+                         
+                         IF JN_ANO GE '2023' PAD ST_FONTE_RECURSO TO ST_FONTE_RECURSO 7
+                         
+                         MOVE ST_CONTA_CONTABIL TO ST_CODIGO
+                         
+                         APPEND ST_CODIGO ' ' ST_COD_ORGAO ' ' (PAD(ST_COD_UNIDADE,8)) ' ' ST_FUNCAO ' ' ST_SUBFUNCAO ' ' ST_PROGRAMA ' ' ST_ACAO ' ' (PAD(ST_SUBACAO,4)) ' ' ST_ELEMENTO '.' ST_ITEM ' ' ST_FONTE_RECURSO ' ' ST_TIPO_DESPESA_RPPS ' ' ST_CO_FONTE
+                         
+                         GOSUB LB_SALVA_CONTACOR
+                        END
+ IF ST_CAMPO_01 EQ '31' BEGIN
+                         MOVEALL '' TO ST_N_CONTRATO ST_DATA_ASSINATURA
+                         
+                         READ ST_CONTA_CONTABIL
+                         READ ST_CODIGO_FUNDO
+                         
+                         READ ST_COD_RECEITA
+                         READ ST_FONTE_RECURSO
+                         
+                         IF PARGERAL.EXERCICIO GE '2023' READ ST_CO_FONTE
+                         
+                         IF PARGERAL.EXERCICIO LE '2022' READ ST_EMENDA_PARLAMENTAR
+                         
+                         IF PARGERAL.EXERCICIO GE '2022' BEGIN
+                                                          READ ST_N_CONTRATO
+                                                          READ ST_DATA_ASSINATURA
+                                                          
+                                                          TRIM ST_N_CONTRATO      TO ST_N_CONTRATO
+                                                          TRIM ST_DATA_ASSINATURA TO ST_DATA_ASSINATURA
+                                                          
+                                                          IF ST_DATA_ASSINATURA NE '' BEGIN
+                                                                                       INSERT '/' IN ST_DATA_ASSINATURA AT 5
+                                                                                       INSERT '/' IN ST_DATA_ASSINATURA AT 3
+                                                                                      END
+                                                                                      
+                                                         END
+                         
+                         READ ST_SALDO_INICIAL
+                         READ ST_NATUREZA_INICIAL
+                         READ ST_DEBITO
+                         READ ST_CREDITO
+                         READ ST_SALDO_FINAL
+                         READ ST_NATUREZA_FINAL
+                         
+                         PONTUA_CONTA_CONTABIL ST_CONTA_CONTABIL
+                         PONTUA_RECEITA        ST_COD_RECEITA     JN_ANO
+                         
+                         MOVE (MID(ST_COD_RECEITA,14,1)) TO ST_CNR
+                         
+                         IF PARGERAL.EXERCICIO LE '2022' PAD ST_FONTE_RECURSO TO ST_FONTE_RECURSO 3
+                         ELSE                            PAD ST_FONTE_RECURSO TO ST_FONTE_RECURSO 7
+                         
+                         IF ST_CO_FONTE EQ '' MOVE '0000' TO ST_CO_FONTE
+                         
+                         PAD ST_EMENDA_PARLAMENTAR TO ST_EMENDA_PARLAMENTAR 1
+                         
+                         IF JN_ANO GE '2023' PAD ST_FONTE_RECURSO TO ST_FONTE_RECURSO 7
+                         
+                         MOVE ST_CONTA_CONTABIL TO ST_CODIGO
+                         
+                         IF PARGERAL.EXERCICIO LE '2022' APPEND ST_CODIGO ' ' ST_CNR '    ' ST_FONTE_RECURSO ' '                  ST_EMENDA_PARLAMENTAR ' ' (PAD(ST_N_CONTRATO,30)) ' ' ST_DATA_ASSINATURA
+                         ELSE                            APPEND ST_CODIGO ' ' ST_CNR '    ' ST_FONTE_RECURSO ' ' ST_CO_FONTE ' '  ST_EMENDA_PARLAMENTAR ' ' (PAD(ST_N_CONTRATO,30)) ' ' ST_DATA_ASSINATURA
+                         
+                         GOSUB LB_SALVA_CONTACOR
+                        END
+ READLN ST_LINHA
+ CALC (JN_LENDO + 1) TO JN_LENDO
+UNTIL [ SEQEOF]
+
+CLOSE_INPUT
+
+GOSUB LB_ACERTA_SINTETICAS
+
+MOVE 'IMPORTACAO BALANCETE ENTIDADE: ' TO ST_AUX
+APPEND ST_AUX JN_COD_ENTIDADE ' MES: ' JN_MES '/' JN_ANO
+GRAVAINCLUSAO 'BALANCO' ST_AUX 'I'
+ 
+ABORT
+
+LB_ROTINA_PARADA:
+ CABEC 'GOSTARIA REALMENTE DE SAIR < S/N >?' CONFIRMA.1
+ PAGE CONFIRMA
+ INKEYCHECK ST_TECLA IN 'SsNn'
+ IF ST_TECLA IN 'Ss' ABORT
+ MOVE 0 TO CURRENT_IMAGE
+ PAGE TELA
+ PAGE MSG
+RETURN
+
+LB_LIMPA_ARQUIVOS:
+ CLEAR BALANCO
+ CONSTRAINT_SET 1
+ CONSTRAIN BALANCO.COD_ENTIDADE EQ JN_COD_ENTIDADE
+ CONSTRAIN BALANCO.ANO          EQ JN_ANO
+ CONSTRAIN BALANCO.MES          EQ JN_MES
+ CONSTRAINED_FIND FIRST BALANCO BY INDEX.1
+ WHILE [FOUND]
+  CALC (JN_LENDO + 1) TO JN_LENDO
+  INDICATE ERR FALSE
+  ON ERROR GOSUB CHECA_GRAVACAO
+  REREAD
+  DELETE BALANCO
+  UNLOCK
+  ON ERROR OFF
+  CONSTRAINED_FIND NEXT
+  END
+ CONSTRAINT_SET 1 CLEAR
+
+ CLEAR CONTACOR
+ CONSTRAINT_SET 1
+ CONSTRAIN CONTACOR.ANO          EQ JN_ANO
+ CONSTRAIN CONTACOR.MES          EQ JN_MES
+ CONSTRAIN CONTACOR.COD_ENTIDADE EQ JN_COD_ENTIDADE
+ CONSTRAINED_FIND FIRST CONTACOR BY INDEX.1
+ WHILE [FOUND]
+  CALC (JN_LENDO + 1) TO JN_LENDO
+  INDICATE ERR FALSE
+  ON ERROR GOSUB CHECA_GRAVACAO
+  REREAD
+  DELETE CONTACOR
+  UNLOCK
+  ON ERROR OFF
+  CONSTRAINED_FIND NEXT
+  END
+ CONSTRAINT_SET 1 CLEAR
+RETURN
+
+KEYPROC KEY.UP
+ BACKFIELD
+RETURN
+
+KEYPROC KEY.FIELD
+IF CURRENT_WINDOW EQ 5 BEGIN
+                        MOVE 'CENTIDAD 1 ' TO ST_JUNTA
+                        APPEND ST_JUNTA ST@USUARIO ' ' ST@OPCAO ' ' ST@PROGRAMA ' ' ST@CODIGO@ENTIDADE ' ' ST@EXERCICIO@FINANCEIRO
+                        CHAIN WAIT ST_JUNTA EXPORT_FILES
+                        MOVE 0 TO CURRENT_IMAGE
+                        PAGE TELA
+                        IF ENTIDADE.CODIGO NE "" BEGIN
+                                                  TRIM ENTIDADE.CODIGO    TO JN_COD_ENTIDADE
+                                                  TRIM ENTIDADE.DESCRICAO TO JN_ENTIDADE
+                                                 END
+                        ELSE ENTAGAIN
+                        RETURN
+                       END
+ELSE ENTAGAIN
+RETURN
+
+LB_ACERTA_SINTETICAS:
+ //--saldo d-c = X sao contas que o TCE exclui do plano mas deve haver um lancamento de transferencia no exercicio
+
+ CLEAR PLANO
+ MOVE PARGERAL.ESTADO TO PLANO.UF
+ MOVE JN_ANO          TO PLANO.ANO
+ REPEAT
+  FIND GT PLANO BY INDEX.1
+  [ FOUND] INDICATE FOUND AS PLANO.UF  EQ PARGERAL.ESTADO
+  [ FOUND] INDICATE FOUND AS PLANO.ANO EQ JN_ANO
+  [ FOUND] IF PLANO.TIPO EQ 'S' BEGIN
+                                 CALC (JN_LENDO + 1) TO JN_LENDO
+                                 
+                                 MOVE PLANO.CODIGO TO ST_PLANO_CODIGO_INICIAL
+
+                                 IF PLANO.SALDO_DC IN 'DC' MOVE PLANO.SALDO_DC TO ST_NATUREZA_AUX
+                                 ELSE BEGIN
+                                       IF (LEFT(PLANO.CODIGO,1)) IN '1357' MOVE 'D' TO ST_NATUREZA_AUX
+                                       ELSE                                MOVE 'C' TO ST_NATUREZA_AUX
+                                      END
+                                
+                                 REPEAT
+                                  REMOVE '.' FROM ST_PLANO_CODIGO_INICIAL
+                                 UNTIL [~FOUND]
+                                
+                                 IF PLANO.GRAU LE '5' MOVE (MID(ST_PLANO_CODIGO_INICIAL,PLANO.GRAU,1)) TO ST_PLANO_CODIGO_FINAL
+                                 ELSE BEGIN
+                                       IF PLANO.GRAU EQ '6' MOVE (MID(ST_PLANO_CODIGO_INICIAL,7,1)) TO ST_PLANO_CODIGO_FINAL
+                                       IF PLANO.GRAU EQ '7' MOVE (MID(ST_PLANO_CODIGO_INICIAL,9,1)) TO ST_PLANO_CODIGO_FINAL
+                                      END
+                                 TRIM ST_PLANO_CODIGO_FINAL TO ST_PLANO_CODIGO_FINAL
+
+                                 REPEAT
+                                  REMOVE '.' FROM ST_PLANO_CODIGO_FINAL
+                                 UNTIL [~FOUND]
+                                
+                                 TRIM ST_PLANO_CODIGO_INICIAL TO ST_PLANO_CODIGO_INICIAL
+                                 TRIM ST_PLANO_CODIGO_FINAL   TO ST_PLANO_CODIGO_FINAL
+                                
+                                 APPEND ST_PLANO_CODIGO_FINAL '99999999999999999'
+                                 MOVE (MID(ST_PLANO_CODIGO_FINAL,11,1)) TO ST_PLANO_CODIGO_FINAL
+                                
+                                 INSERT '.' IN ST_PLANO_CODIGO_INICIAL AT 10
+                                 INSERT '.' IN ST_PLANO_CODIGO_INICIAL AT 8
+                                 INSERT '.' IN ST_PLANO_CODIGO_INICIAL AT 6
+                                 INSERT '.' IN ST_PLANO_CODIGO_INICIAL AT 5
+                                 INSERT '.' IN ST_PLANO_CODIGO_INICIAL AT 4
+                                 INSERT '.' IN ST_PLANO_CODIGO_INICIAL AT 3
+                                 INSERT '.' IN ST_PLANO_CODIGO_INICIAL AT 2
+                                
+                                 INSERT '.' IN ST_PLANO_CODIGO_FINAL   AT 10
+                                 INSERT '.' IN ST_PLANO_CODIGO_FINAL   AT 8
+                                 INSERT '.' IN ST_PLANO_CODIGO_FINAL   AT 6
+                                 INSERT '.' IN ST_PLANO_CODIGO_FINAL   AT 5
+                                 INSERT '.' IN ST_PLANO_CODIGO_FINAL   AT 4
+                                 INSERT '.' IN ST_PLANO_CODIGO_FINAL   AT 3
+                                 INSERT '.' IN ST_PLANO_CODIGO_FINAL   AT 2
+                                
+                                 MOVEALL 0 TO NB_SALDO_INICIAL NB_DEBITO NB_CREDITO NB_SALDO_FINAL
+                                 
+                                 MOVE PLANO.RECNUM TO IT_RECNUM
+
+                                 CLEAR PLANO
+                                 CONSTRAINT_SET 2
+                                 CONSTRAIN PLANO.UF     EQ PARGERAL.ESTADO
+                                 CONSTRAIN PLANO.ANO    EQ JN_ANO
+                                 CONSTRAIN PLANO.CODIGO GE ST_PLANO_CODIGO_INICIAL
+                                 CONSTRAIN PLANO.CODIGO LE ST_PLANO_CODIGO_FINAL
+                                 CONSTRAIN PLANO.TIPO   EQ 'A'
+                                 CONSTRAINED_FIND FIRST PLANO BY INDEX.1
+                                 WHILE [FOUND]
+                                  CALC (JN_LENDO + 1) TO JN_LENDO
+                                
+                                  CLEAR BALANCO
+                                  MOVE JN_COD_ENTIDADE TO BALANCO.COD_ENTIDADE
+                                  MOVE JN_ANO          TO BALANCO.ANO
+                                  MOVE JN_MES          TO BALANCO.MES
+                                  MOVE PLANO.CODIGO    TO BALANCO.CONTA
+                                  FIND EQ BALANCO BY INDEX.1
+                                  [ FOUND] BEGIN
+                                            IF ST_NATUREZA_AUX EQ 'D' BEGIN
+                                                                       IF BALANCO.NAT_INICIAL EQ 'D' CALC (NB_SALDO_INICIAL + BALANCO.SALDO_INICIAL) TO NB_SALDO_INICIAL
+                                                                       ELSE                          CALC (NB_SALDO_INICIAL - BALANCO.SALDO_INICIAL) TO NB_SALDO_INICIAL
+
+                                                                       IF BALANCO.NAT_FINAL   EQ 'D' CALC (NB_SALDO_FINAL   + BALANCO.SALDO_FINAL)   TO NB_SALDO_FINAL
+                                                                       ELSE                          CALC (NB_SALDO_FINAL   - BALANCO.SALDO_FINAL)   TO NB_SALDO_FINAL
+                                                                      END
+
+                                            IF ST_NATUREZA_AUX EQ 'C' BEGIN
+                                                                       IF BALANCO.NAT_INICIAL EQ 'C' CALC (NB_SALDO_INICIAL + BALANCO.SALDO_INICIAL) TO NB_SALDO_INICIAL
+                                                                       ELSE                          CALC (NB_SALDO_INICIAL - BALANCO.SALDO_INICIAL) TO NB_SALDO_INICIAL
+
+                                                                       IF BALANCO.NAT_FINAL   EQ 'C' CALC (NB_SALDO_FINAL   + BALANCO.SALDO_FINAL)   TO NB_SALDO_FINAL
+                                                                       ELSE                          CALC (NB_SALDO_FINAL   - BALANCO.SALDO_FINAL)   TO NB_SALDO_FINAL
+                                                                      END
+
+                                            CALC (NB_DEBITO  + BALANCO.DEBITO)  TO NB_DEBITO
+                                            CALC (NB_CREDITO + BALANCO.CREDITO) TO NB_CREDITO
+                                           END
+                                  CONSTRAINT_SET 2
+                                  CONSTRAINED_FIND NEXT
+                                  END
+                                 CONSTRAINT_SET 2 CLEAR
+
+                                 MOVE ST_NATUREZA_AUX TO ST_NAT_INI_AUX
+                                 MOVE ST_NATUREZA_AUX TO ST_NAT_FIN_AUX
+                                 
+                                 IF NB_SALDO_INICIAL LT 0 BEGIN
+                                                           CALC (NB_SALDO_INICIAL * (-1)) TO NB_SALDO_INICIAL
+                                                           
+                                                           IF ST_NAT_INI_AUX EQ 'D' MOVE 'C' TO ST_NAT_INI_AUX
+                                                           ELSE                     MOVE 'D' TO ST_NAT_INI_AUX
+                                                           
+                                                          END
+                                 IF NB_SALDO_FINAL   LT 0 BEGIN
+                                                           CALC (NB_SALDO_FINAL   * (-1)) TO NB_SALDO_FINAL
+                                                           
+                                                           IF ST_NAT_FIN_AUX EQ 'D' MOVE 'C' TO ST_NAT_FIN_AUX
+                                                           ELSE                     MOVE 'D' TO ST_NAT_FIN_AUX
+                                                          END
+                                 
+                                 CLEAR PLANO
+                                 MOVE IT_RECNUM TO PLANO.RECNUM
+                                 FIND EQ PLANO BY RECNUM
+                                 
+                                           INDICATE GRAVA! AS NB_SALDO_INICIAL NE 0
+                                 [~GRAVA!] INDICATE GRAVA! AS NB_SALDO_FINAL   NE 0
+                                 [~GRAVA!] INDICATE GRAVA! AS NB_DEBITO        NE 0
+                                 [~GRAVA!] INDICATE GRAVA! AS NB_CREDITO       NE 0
+                                 [ GRAVA!] BEGIN
+                                            IF PLANO.SALDO_DC EQ 'X' BEGIN
+                                                                      MOVEALL 0 TO NB_SALDO_INICIAL NB_SALDO_FINAL 
+                                                                     END
+                                            
+                                            CLEAR BALANCO
+                                            MOVE JN_COD_ENTIDADE TO BALANCO.COD_ENTIDADE
+                                            MOVE JN_ANO          TO BALANCO.ANO
+                                            MOVE JN_MES          TO BALANCO.MES
+                                            MOVE PLANO.CODIGO    TO BALANCO.CONTA
+                                            FIND EQ BALANCO BY INDEX.1
+                                            INDICATE ERR FALSE
+                                            ON ERROR GOSUB CHECA_GRAVACAO
+                                            [ FOUND] REREAD BALANCO
+                                            MOVE ST_NAT_INI_AUX   TO BALANCO.NAT_INICIAL
+                                            MOVE NB_SALDO_INICIAL TO BALANCO.SALDO_INICIAL
+                                            MOVE NB_DEBITO        TO BALANCO.DEBITO
+                                            MOVE NB_CREDITO       TO BALANCO.CREDITO
+                                            MOVE NB_SALDO_FINAL   TO BALANCO.SALDO_FINAL
+                                            MOVE ST_NAT_FIN_AUX   TO BALANCO.NAT_FINAL
+                                            SAVERECORD BALANCO
+                                            UNLOCK
+                                            ON ERROR OFF
+                                           END
+                                 
+                                 INDICATE FOUND TRUE
+                                END
+ UNTIL [~FOUND]
+RETURN
+
+LB_SALVA_CONTACOR:
+//  clearxy 0 0
+//  showln  jn_ano
+//  showln  jn_mes
+//  showln  jn_cod_entidade
+//  showln  st_campo_01
+//  showln  st_codigo
+//  showln  st_conta_contabil
+//  showln  st_natureza_inicial
+//  showln  st_saldo_inicial
+//  showln  st_debito
+//  showln  st_credito
+//  showln  st_saldo_final
+//  showln  st_natureza_final
+// //  pause .
+//  keycheck abort
+ 
+ CLEAR CONTACOR
+ MOVE JN_ANO              TO CONTACOR.ANO
+ MOVE JN_MES              TO CONTACOR.MES
+ MOVE JN_COD_ENTIDADE     TO CONTACOR.COD_ENTIDADE
+ MOVE ST_CAMPO_01         TO CONTACOR.XML
+ MOVE ST_CODIGO           TO CONTACOR.DADOS
+ MOVE IT_SEQUENCIA        TO CONTACOR.SEQUENCIA
+ FIND EQ CONTACOR BY INDEX.1
+ INDICATE ERR FALSE
+ ON ERROR GOSUB CHECA_GRAVACAO
+ [ FOUND] REREAD CONTACOR
+ 
+ MOVE ST_CONTA_CONTABIL   TO CONTACOR.CONTA
+ MOVE ST_NATUREZA_INICIAL TO CONTACOR.NAT_INICIAL
+ MOVE ST_SALDO_INICIAL    TO CONTACOR.VALOR
+ MOVE ST_DEBITO           TO CONTACOR.VALOR_1
+ MOVE ST_CREDITO          TO CONTACOR.VALOR_2
+ MOVE ST_SALDO_FINAL      TO CONTACOR.VALOR_3
+ MOVE ST_NATUREZA_FINAL   TO CONTACOR.NAT_FINAL
+ 
+ SAVERECORD CONTACOR
+ UNLOCK
+ ON ERROR OFF
+ 
+ CALC (IT_SEQUENCIA + 1) TO IT_SEQUENCIA
+ CALC (JN_GRAVANDO  + 1) TO JN_GRAVANDO
+RETURN
+
+PROCEDURE PREPARA_ARQUIVO
+ LOCAL STRING ST_LINHA_SAIDA
+
+ MOVE ST_ARQUIVO TO ST_IDE_SAIDA
+ MOVE ST_ARQUIVO TO ST_BALANCETE_SAIDA
+ 
+ APPEND ST_IDE_SAIDA       'ide.txt'
+ APPEND ST_BALANCETE_SAIDA 'balancete.txt'
+ 
+ DIRECT_INPUT  ST_IDE
+ DIRECT_OUTPUT ST_IDE_SAIDA
+ 
+ REPEAT
+  READLN ST_LINHA_SAIDA
+  MOVE (REPLACES(';',(TRIM(ST_LINHA_SAIDA)),'","')) TO ST_LINHA_SAIDA
+  IF ST_LINHA_SAIDA NE ''  WRITELN '"' ST_LINHA_SAIDA '"'
+ UNTIL [ SEQEOF]
+ 
+ CLOSE_INPUT
+ CLOSE_OUTPUT
+ 
+ DIRECT_INPUT  ST_BALANCETE
+ DIRECT_OUTPUT ST_BALANCETE_SAIDA
+ 
+ REPEAT
+  READLN ST_LINHA_SAIDA
+  MOVE (REPLACES(';',(TRIM(ST_LINHA_SAIDA)),'","')) TO ST_LINHA_SAIDA
+  IF ST_LINHA_SAIDA NE ''  WRITELN '"' ST_LINHA_SAIDA '"'
+ UNTIL [ SEQEOF]
+ 
+ CLOSE_INPUT
+ CLOSE_OUTPUT
+END_PROCEDURE
+
+#INCLUDE INTEGRID.INC

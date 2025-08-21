@@ -1,0 +1,33 @@
+-----------------------------------------------------------------------------
+  DATE: 25/10/2023      TIME: 17:31                                  PAGE:  1
+  FILE DEFINITION FOR FILE: COLUNREL (# 356)
+-----------------------------------------------------------------------------
+  DRIVER NAME               : DATAFLEX
+  FILE ROOT NAME            : COLUNREL
+  USER DISPLAY NAME         : COLUNREL
+  DATAFLEX FILE NAME        : COLUNREL
+-----------------------------------------------------------------------------
+  RECORD LENGTH             : 32        ( USED: 7 )
+  MAX NUMBER OF RECORDS     : 16711679  ( USED: 15 )
+  FILE COMPRESSION          : NONE
+  RE-USE DELETED SPACE      : YES
+  LOCKING TYPE              : FILE
+  HEADER INTEGRITY CHECKING : YES
+  TRANSACTION TYPE          : CLIENT ATOMIC
+  RECORD IDENTITY INDEX     : 0 ( 0 , 0 )
+  FILE LOGIN PARAMETER      : 
+  SYSTEM FILE               : NO 
+-----------------------------------------------------------------------------
+
+NUM  FIELD NAME       TYPE SIZE  OFFST IX   RELATES TO FILE.FIELD
+---  ---------------  ---- ----- ----- --   ---------------------------------
+  1  QTD_COLUNAS      NUM    4.0     1  1   
+  2  ORIENTACAO       ASC      2     3      
+  3  FONTE            NUM    4.2     5      
+
+
+INDEX# FIELDS          DES U/C    LENGTH LEVELS SEGMENTS MODE
+------ --------------- --- ---    ------ ------ -------- -------
+  1    QTD_COLUNAS     NO  NO       5      4       2     ON-LINE
+       RECNUM          NO  NO 
+

@@ -1,0 +1,121 @@
+/LIMPA_TELA RESIDENT
+Ё                                                                              Ё
+Ё                                                                              Ё
+Ё                                                                              Ё
+Ё                                                                              Ё
+Ё                                                                              Ё
+Ё                                                                              Ё
+Ё                                                                              Ё
+Ё                                                                              Ё
+/ESCOLHA RESIDENT
+здддддддддддддддддддддддддддддддддддддддддддддддд©
+Ё                                                Ё
+Ё                                                Ё
+Ё       PROGRAMA N▌O ENCONTRADO : ________       Ё
+Ё                                                Ё
+Ё                                                Ё
+Ё    Pressione qualquer tecla para continuar.    Ё
+юдддддддддддддддддддддддддддддддддддддддддддддддды
+/MOLD1 RESIDENT
+здддддддддддддддддддддддддддддддддддддддддддддд©
+Ё                                              Ё
+Ё                                              Ё
+Ё                                              Ё
+Ё                                              Ё
+Ё                                              Ё
+юдддддддддддддддддддддддддддддддддддддддддддддды
+/MOLD2 RESIDENT
+здддддддддддддддддддддддддддддддддд©
+Ё                                  Ё
+Ё                                  Ё
+Ё                                  Ё
+Ё                                  Ё
+юдддддддддддддддддддддддддддддддддды
+/MOLD3 RESIDENT
+зддддддддддддддддддддддддд©
+Ё                         Ё
+Ё                         Ё
+Ё                         Ё
+юддддддддддддддддддддддддды
+/MOLD4 RESIDENT
+зддддддддддддддддддд©
+Ё                   Ё
+Ё                   Ё
+юддддддддддддддддддды
+/MOLD5 RESIDENT
+зддддддддддддд©
+Ё             Ё
+юддддддддддддды
+/MOLD6 RESIDENT
+зддддддд©
+юддддддды
+/CONFIRMA RESIDENT
+цдддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддддд╢
+Ё______________________________________________________________________________Ё
+юддддддддддддддддддддддддддддддддддд Pressione qualquer tecla para continuarддды
+/TELA_TARJA
+______________________________________________________________________________
+/*
+#INCLUDE CONAM.LIB
+STRING TECLA ST_PROGRAMA
+INTEGER NUMERO VALOR
+
+AUTOPAGE TELA_TARJA
+
+PAGE SET CONFIRMA   AT  21 00 COLORS IT_COR_TARJA  IT_COR_MOLDURA
+PAGE SET LIMPA_TELA AT  8   0 COLORS IT_COR_TARJA  IT_COR_MOLDURA
+PAGE SET ESCOLHA    AT  8  15 COLORS IT_COR_TITULO IT_COR_TITULO
+PAGE SET MOLD1      AT  8  15 COLORS IT_COR_TITULO IT_COR_TITULO
+PAGE SET MOLD2      AT  8  15 COLORS IT_COR_TITULO IT_COR_TITULO
+PAGE SET MOLD3      AT  8  15 COLORS IT_COR_TITULO IT_COR_TITULO
+PAGE SET MOLD4      AT  8  15 COLORS IT_COR_TITULO IT_COR_TITULO
+PAGE SET MOLD5      AT  8  15 COLORS IT_COR_TITULO IT_COR_TITULO
+PAGE SET MOLD6      AT  8  15 COLORS IT_COR_TITULO IT_COR_TITULO
+
+INICIO:
+
+CMDLINE ST_PROGRAMA
+
+MOVE 800 TO VALOR
+gosub looptela
+page mold6
+gotoxy 25 0
+
+gosub looptela
+page mold5
+gotoxy 25 0
+
+gosub looptela
+page mold4
+gotoxy 25 0
+
+gosub looptela
+page mold3
+gotoxy 25 0
+
+gosub looptela
+page mold2
+gotoxy 25 0
+
+gosub looptela
+page mold1
+gotoxy 25 0
+
+gosub looptela
+move st_programa to escolha.1
+page escolha
+gotoxy 25 0
+inkey tecla
+
+ABORT
+
+looptela:
+MOVE 0 TO NUMERO
+FOR NUMERO FROM 1 TO VALOR
+LOOP
+return
+
+KEYPROC KEY.HELP
+AJUDA
+RETURN
+

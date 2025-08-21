@@ -1,0 +1,1626 @@
+/TELA RESIDENT
+ÆÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍµ
+³                                                                              ³
+ÃÄ RELATORIO AUXILIAR SIOPE-SIOPS Ä DESPESA POR FUNCAO, SUBFUNCAO E ELEMENTO ÄÄ´
+³                                                                              ³
+³ C¢d. da Entidade  <F2>: __  ________________________________________________ ³
+³                                                                              ³
+³ Funcao    Inicial <F2>: __  ________________________________________________ ³
+³           Final   <F2>: __  ________________________________________________ ³
+³ Subfuncao Inicial <F2>: ___ ________________________________________________ ³
+³           Final   <F2>: ___ ________________________________________________ ³
+³                                                                              ³
+³ Fte Rec   Inicial <F2>: ___ ________________________________________________ ³
+³           Final   <F2>: ___ ________________________________________________ ³
+³ Cod Aplic.Inicial <F2>: _______ ____________________________________________ ³
+³           Final   <F2>: _______ ____________________________________________ ³
+³                                                                              ³
+³ Elemento ou Item      : _ <E/I>                    Posicao ate o mes    : __ ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                               <ESC>  Retorna                                 ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/CONFIRMA RESIDENT
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³______________________________________________________________________________³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/MSG RESIDENT
+Ú RELATORIO AUXILIAR SIOPE-SIOPS Ä DESPESA POR FUNCAO, SUBFUNCAO E ELEMENTO Ä¿
+³                                                                            ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ SOLICITADO ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                                                                            ³
+³                    Mes  : _____________________________                    ³
+³                                                                            ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ PROCESSANDO ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                                                                            ³
+³                                                                            ³
+³        Despesa  :  _____  ________ ____________ __ ___ ____  ____          ³
+³                                                                            ³
+³                                                                            ³
+³        Lendo    :  ____.     Imprimindo : ____.      P gs.: ____.          ³
+³                                                                            ³
+³                                                                            ³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/HEADER RESIDENT
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+|                                                                           ____________________________________________________________                                                                                  |
+|                                                                                                                                                                                                                         |
+|                                                                        DESPESAS POR FUNCAO, SUBFUNCAO E ELEMENTO DE DESPESA (SIOPE/SIOPS)                                                                               |
+|                                                                           ____________________________________________________________                                                                                  |
+|                                                                           ____________________________________________________________                                                                                  |
+|                                                                                                                                                                                                                         |
+|                                       Funcao inicial __ final __   Subfuncao inicial ___ final ___ Fonte Inicial ___ Final ___  Codigo de aplicacao inicial _______ final _______                                       |
+| __/__/____                                                                                                                                                                                                  Pagina ___. |
+|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|        SUB   FONTE DE  CODIGO DE                                                                                 DOTACAO            DOTACAO            DESPESA            DESPESA           DESPESA      ORCADO P/ PROX |
+|FUNCAO FUNCAO RECURSO   APLICACAO   CLASSIFICACAO ECONOMICA                                                       INICIAL         ATUALIZADA          EMPENHADA          LIQUIDADA              PAGA           EXERCICIO |
+|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+/BODY RESIDENT
+|  __    ___     ___      _______    ____________   __________________________________________________  ___________,___.__ ___________,___.__ ___________,___.__ ___________,___.__ ___________,___.__ ___________,___.__ |
+/TOTAL RESIDENT
+|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|  ___________________________________________________________________________________________________  ___________,___.__ ___________,___.__ ___________,___.__ ___________,___.__ ___________,___.__ ___________,___.__ |
+ -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/LINHA RESIDENT
+|                                                                                                                                                                                                                         |
+/FOOTER RESIDENT
+ -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/*
+#INCLUDE CONAM.LIB
+#INCLUDE ZERAARQ.LIB
+#INCLUDE SICOM.LIB
+
+//--!1 st_codigo = A ou B + funcao, subfuncao, fonte, cod aplicacao, cat economica
+//--A=subfuncoes tipicas B=subfuncoes atipicas
+#COMMAND GRAVA_TEMPORARIO
+ CLEAR TEMPCALC
+ MOVE ST@CODIGO@ENTIDADE      TO TEMPCALC.COD_ENTIDADE
+ MOVE ST@EXERCICIO@FINANCEIRO TO TEMPCALC.EXERCICIO
+ MOVE ST@USUARIO              TO TEMPCALC.USUARIO
+ MOVE !1                      TO TEMPCALC.CODIGO
+ MOVE !4                      TO TEMPCALC.NUMERO
+ FIND EQ TEMPCALC BY INDEX.1
+ [ FOUND] BEGIN
+           INDICATE ERR FALSE
+           ON ERROR GOSUB CHECA_GRAVACAO
+           REREAD TEMPCALC
+          END
+      IF !2 EQ 'I' CALC (TEMPCALC.VALOR_1 + !3) TO TEMPCALC.VALOR_1
+ ELSE IF !2 EQ 'F' CALC (TEMPCALC.VALOR_2 + !3) TO TEMPCALC.VALOR_2
+ ELSE IF !2 EQ 'E' CALC (TEMPCALC.VALOR_3 + !3) TO TEMPCALC.VALOR_3
+ ELSE IF !2 EQ 'L' CALC (TEMPCALC.VALOR_4 + !3) TO TEMPCALC.VALOR_4
+ ELSE IF !2 EQ 'P' CALC (TEMPCALC.VALOR_5 + !3) TO TEMPCALC.VALOR_5
+ ELSE IF !2 EQ 'O' CALC (TEMPCALC.VALOR_6 + !3) TO TEMPCALC.VALOR_6
+ SAVERECORD TEMPCALC
+ UNLOCK
+ ON ERROR OFF
+#ENDCOMMAND
+
+STRING  ST_JUNTA     255 ST_DATA           10 ST_PROPRIA_ENTIDADE 2 ST_ENTIDADE_SELECAO 2  ST_MES              2 ST_NOME_MES        ST_JUNTANDO            ST_EXERCICIO 4
+STRING  ST_FUNCAO        ST_SUBFUNCAO         ST_FONTE              ST_COD_APLICACAO       ST_ECONOMICA          ST_AUX             ST_MES_BUSCA           ST_DESTINO
+STRING  ST_CODIGO    255 ST_CHAVE         255 ST_CHAVE_FUNCAO   255 ST_CHAVE_SUBFUNCAO 255 ST_QUEBRA_ECONOMICA 1 ST_CHAVE_FONTE 255 ST_CHAVE_APLICACAO 255 ST_FONTE_AUX
+STRING  ST_FONTE_AUDESP  ST_COD_APLICACAO_AUX ST_CODIGO_ITEM        ST_CO_FONTE_MG
+
+DATE    DT_INICIO_ANO DT_FINAL
+
+INTEGER IT_MES_FINAL IT_MES RECCOUNT
+
+OPEN ENTIDADE
+OPEN MOVDES
+OPEN SUPLEMEN
+OPEN PLANDES
+OPEN EMPENHO
+OPEN MOVEMP
+OPEN LIQUIDA
+OPEN ESTLIQUI
+OPEN FUNCNEW
+OPEN SUBFUNC
+OPEN ECONORCA
+OPEN TEMPCALC
+OPEN FONTES
+OPEN FUNDOS
+OPEN VERSAO
+OPEN PLANDES
+OPEN DESP_ENT
+OPEN SUPL_ENT
+ABRE_CONTACOR ST@EXERCICIO@FINANCEIRO CONTACOR
+
+AUTOPAGE TELA
+NAME JN_COD_ENTIDADE        JN_ENTIDADE
+NAME JN_N_FUNCAO_INICIAL    JN_FUNCAO_INICIAL
+NAME JN_N_FUNCAO_FINAL      JN_FUNCAO_FINAL
+NAME JN_N_SUBFUNCAO_INICIAL JN_SUBFUNCAO_INICIAL
+NAME JN_N_SUBFUNCAO_FINAL   JN_SUBFUNCAO_FINAL
+NAME JN_N_FONTE_INICIAL     JN_FONTE_INICIAL
+NAME JN_N_FONTE_FINAL       JN_FONTE_FINAL
+NAME JN_N_APLICACAO_INICIAL JN_APLICACAO_INICIAL
+NAME JN_N_APLICACAO_FINAL   JN_APLICACAO_FINAL
+NAME JN_ELEMENTO_ITEM
+NAME JN_MES
+
+AUTOPAGE HEADER
+NAME JHD_PREFEITURA     JHD_ENTIDADE     JHD_PERIODO 
+NAME JHD_FUNCAO_INICIAL JHD_FUNCAO_FINAL JHD_SUBFUNCAO_INICIAL JHD_SUBFUNCAO_FINAL 
+NAME JHD_FONTE_INICIAL   JHD_FONTE_FINAL  JHD_APLICACAO_INICIAL JHD_APLICACAO_FINAL
+NAME JHD_DATA 
+NAME JHD_PAGINA
+
+AUTOPAGE BODY
+NAME JBD_FUNCAO          JBD_SUBFUNCAO     JBD_FONTE     JBD_COD_APLICACAO JBD_N_ECONOMICA JBD_DESCRICAO 
+NAME JBD_DOTACAO_INICIAL JBD_DOTACAO_ATUAL JBD_EMPENHADO JBD_LIQUIDADO     JBD_PAGO        JBD_ORCADO
+
+AUTOPAGE TOTAL
+NAME JT_DESCRICAO JT_DOTACAO_INICIAL JT_DOTACAO_ATUAL JT_EMPENHADO JT_LIQUIDADO JT_PAGO JT_ORCADO
+
+AUTOPAGE MSG
+NAME JN_INICIAL
+NAME JN_N_DESPESA JN_ORGAO          JN_ECONOMICA   JN_FUNCAO JN_SUBFUNCAO JN_PROGRAMA
+NAME JN_ACAO
+NAME JN_LENDO     JN_IMPRIMINDO     JN_PAGINA
+
+PAGE SET MSG       AT 05 01 COLORS IT_COR_TITULO IT_COR_TITULO
+PAGE SET TELA      AT  4  0 COLORS IT_COR_TARJA  IT_COR_MOLDURA
+PAGE SET CONFIRMA  AT 21 00 COLORS IT_COR_TARJA  IT_COR_MOLDURA
+
+INDICATE TCEMG! AS PARGERAL.ESTADO       EQ 'MG'
+INDICATE PREFE! AS PARGERAL.COD_ENTIDADE EQ '01'
+
+MOVE PARGERAL.COD_ENTIDADE TO ST_PROPRIA_ENTIDADE
+
+INICIO:
+PAGE TELA
+MOVE 'E' TO JN_ELEMENTO_ITEM
+[~PREFE!] BEGIN
+           MOVE PARGERAL.COD_ENTIDADE TO JN_COD_ENTIDADE
+
+           CLEAR ENTIDADE
+           MOVE ST@EXERCICIO@FINANCEIRO TO ENTIDADE.EXERCICIO
+           MOVE JN_COD_ENTIDADE         TO ENTIDADE.CODIGO
+           FIND EQ ENTIDADE BY INDEX.1
+           [~FOUND] BEGIN
+                     ADVERTE 'FAVOR ATUALIZAR ARQUIVO DE PARAMETROS'
+                     ABORT
+                    END
+
+           MOVE PARGERAL.COD_ENTIDADE TO JN_COD_ENTIDADE
+           MOVE ENTIDADE.DESCRICAO    TO JN_ENTIDADE
+          END
+[ PREFE!] BEGIN
+           ACCEPT JN_COD_ENTIDADE {AUTOCLEAR}
+           [KEY.ESCAPE] ABORT
+           IF JN_COD_ENTIDADE NE '' BEGIN
+                                     COMZEROS JN_COD_ENTIDADE 2
+                                     CLEAR ENTIDADE
+                                     MOVE ST@EXERCICIO@FINANCEIRO TO ENTIDADE.EXERCICIO
+                                     MOVE JN_COD_ENTIDADE         TO ENTIDADE.CODIGO
+                                     FIND EQ ENTIDADE BY INDEX.1
+                                     [~FOUND] BEGIN
+                                               ADVERTE 'ENTIDADE NŽO CADASTRADA'
+                                               GOTO INICIO
+                                              END
+                                     MOVE ENTIDADE.DESCRICAO TO JN_ENTIDADE
+                                    END
+           ELSE MOVE 'CONSOLIDADO' TO JN_ENTIDADE
+          END
+
+INDICATE TODAS! AS JN_COD_ENTIDADE EQ ''
+MOVE JN_COD_ENTIDADE TO ST_ENTIDADE_SELECAO
+
+LB_FUNCAO_INICIAL:
+ACCEPT JN_N_FUNCAO_INICIAL {AUTOCLEAR}
+[KEY.ESCAPE] ABORT
+IF JN_N_FUNCAO_INICIAL EQ '' MOVE '00' TO JN_N_FUNCAO_INICIAL
+COMZEROS JN_N_FUNCAO_INICIAL 2
+IF JN_N_FUNCAO_INICIAL NE '00' BEGIN
+                                CLEAR FUNCNEW
+                                MOVE ST@EXERCICIO@FINANCEIRO TO FUNCNEW.EXERCICIO
+                                MOVE JN_N_FUNCAO_INICIAL     TO FUNCNEW.CODIGO
+                                FIND EQ FUNCNEW BY INDEX.1
+                                [~FOUND] BEGIN
+                                          ADVERTE 'FUNCAO INEXISTENTE'
+                                          GOTO LB_FUNCAO_INICIAL
+                                         END
+                                MOVE FUNCNEW.DESCRICAO TO JN_FUNCAO_INICIAL
+                               END
+
+LB_FUNCAO_FINAL:
+ACCEPT JN_N_FUNCAO_FINAL {AUTOCLEAR}
+[KEY.ESCAPE] ABORT
+IF JN_N_FUNCAO_FINAL EQ '' MOVE '99' TO JN_N_FUNCAO_FINAL
+IF JN_N_FUNCAO_FINAL NE '99' BEGIN
+                              COMZEROS JN_N_FUNCAO_FINAL 2
+                              CLEAR FUNCNEW
+                              MOVE ST@EXERCICIO@FINANCEIRO TO FUNCNEW.EXERCICIO
+                              MOVE JN_N_FUNCAO_FINAL       TO FUNCNEW.CODIGO
+                              FIND EQ FUNCNEW BY INDEX.1
+                              [~FOUND] BEGIN
+                                        ADVERTE 'FUNCAO INEXISTENTE'
+                                        GOTO LB_FUNCAO_FINAL
+                                       END
+                              MOVE FUNCNEW.DESCRICAO TO JN_FUNCAO_FINAL
+                             END
+
+LB_SUBFUNCAO_INICIAL:
+ACCEPT JN_N_SUBFUNCAO_INICIAL {AUTOCLEAR}
+[KEY.ESCAPE] ABORT
+COMZEROS JN_N_SUBFUNCAO_INICIAL 3
+IF JN_N_SUBFUNCAO_INICIAL NE '000' BEGIN
+                                    CLEAR SUBFUNC
+                                    MOVE ST@EXERCICIO@FINANCEIRO TO SUBFUNC.EXERCICIO
+                                    MOVE JN_N_SUBFUNCAO_INICIAL  TO SUBFUNC.CODIGO
+                                    FIND EQ SUBFUNC BY INDEX.1
+                                    [~FOUND] BEGIN
+                                              ADVERTE 'SUBFUNCAO INEXISTENTE'
+                                              GOTO LB_SUBFUNCAO_INICIAL
+                                             END
+                                    MOVE SUBFUNC.DESCRICAO TO JN_SUBFUNCAO_INICIAL
+                                   END
+
+LB_SUBFUNCAO_FINAL:
+ACCEPT JN_N_SUBFUNCAO_FINAL {AUTOCLEAR}
+[KEY.ESCAPE] ABORT
+IF JN_N_SUBFUNCAO_FINAL EQ '' MOVE '999' TO JN_N_SUBFUNCAO_FINAL
+IF JN_N_SUBFUNCAO_FINAL NE '999' BEGIN
+                                  COMZEROS JN_N_SUBFUNCAO_FINAL 3
+                                  
+                                  CLEAR SUBFUNC
+                                  MOVE ST@EXERCICIO@FINANCEIRO TO SUBFUNC.EXERCICIO
+                                  MOVE JN_N_SUBFUNCAO_FINAL    TO SUBFUNC.CODIGO
+                                  FIND EQ SUBFUNC BY INDEX.1
+                                  [~FOUND] BEGIN
+                                            ADVERTE 'SUBFUNCAO INEXISTENTE'
+                                            GOTO LB_SUBFUNCAO_FINAL
+                                           END
+                                  MOVE SUBFUNC.DESCRICAO TO JN_SUBFUNCAO_FINAL
+                                 END
+
+LB_FONTE_INICIAL:
+ACCEPT JN_N_FONTE_INICIAL {AUTOCLEAR}
+[KEY.ESCAPE] ABORT
+IF JN_N_FONTE_INICIAL NE '' BEGIN
+                             CLEAR FONTES
+                             MOVE ST@EXERCICIO@FINANCEIRO TO FONTES.EXERCICIO
+                             MOVE ST@TIPO@FONTE           TO FONTES.TIPO
+                             MOVE JN_N_FONTE_INICIAL      TO FONTES.CODIGO
+                             FIND EQ FONTES BY INDEX.1
+                             [~FOUND] CLEAR FONTES
+                             MOVE FONTES.DESCRICAO TO JN_FONTE_INICIAL
+                            END
+
+LB_FONTE_FINAL:
+ACCEPT JN_N_FONTE_FINAL {AUTOCLEAR}
+[KEY.ESCAPE] ABORT
+IF JN_N_FONTE_FINAL EQ '' MOVE '99' TO JN_N_FONTE_FINAL
+IF JN_N_FONTE_FINAL NE '99' BEGIN
+                             CLEAR FONTES
+                             MOVE ST@EXERCICIO@FINANCEIRO TO FONTES.EXERCICIO
+                             MOVE ST@TIPO@FONTE           TO FONTES.TIPO
+                             MOVE JN_N_FONTE_FINAL        TO FONTES.CODIGO
+                             FIND EQ FONTES BY INDEX.1
+                             [~FOUND] CLEAR FONTES
+                             MOVE FONTES.DESCRICAO TO JN_FONTE_FINAL
+                            END
+
+LB_APLICACAO_INICIAL:
+ACCEPT JN_N_APLICACAO_INICIAL {AUTOCLEAR}
+[KEY.ESCAPE] ABORT
+IF JN_N_APLICACAO_INICIAL NE '' BEGIN
+                                 CLEAR FUNDOS
+                                 MOVE ST@CODIGO@ENTIDADE      TO FUNDOS.COD_ENTIDADE
+                                 MOVE ST@EXERCICIO@FINANCEIRO TO FUNDOS.EXERCICIO
+                                 MOVE ST@TIPO@FONTE           TO FUNDOS.TIPO
+                                 MOVE JN_N_APLICACAO_INICIAL  TO FUNDOS.CODIGO
+                                 FIND EQ FUNDOS BY INDEX.1
+                                 [~FOUND] CLEAR FUNDOS
+                                 MOVE FUNDOS.DESCRICAO TO JN_APLICACAO_INICIAL
+                                END
+
+LB_APLICACAO_FINAL:
+ACCEPT JN_N_APLICACAO_FINAL {AUTOCLEAR}
+[KEY.ESCAPE] ABORT
+IF JN_N_APLICACAO_FINAL EQ '' MOVE '9999999' TO JN_N_APLICACAO_FINAL
+IF JN_N_APLICACAO_FINAL NE '9999999' BEGIN
+                                      CLEAR FUNDOS
+                                      MOVE ST@CODIGO@ENTIDADE      TO FUNDOS.COD_ENTIDADE
+                                      MOVE ST@EXERCICIO@FINANCEIRO TO FUNDOS.EXERCICIO
+                                      MOVE ST@TIPO@FONTE           TO FUNDOS.TIPO
+                                      MOVE JN_N_APLICACAO_FINAL    TO FUNDOS.CODIGO
+                                      FIND EQ FUNDOS BY INDEX.1
+                                      [~FOUND] CLEAR FUNDOS
+                                      MOVE FUNDOS.DESCRICAO TO JN_APLICACAO_FINAL
+                                     END
+
+REPEAT
+ ACCEPT JN_ELEMENTO_ITEM {AUTOCLEAR, CAPSLOCK}
+ [KEY.ESCAPE] ABORT
+ IF NOT JN_ELEMENTO_ITEM IN 'EI' MOVE '' TO JN_ELEMENTO_ITEM
+UNTIL JN_ELEMENTO_ITEM NE ''
+INDICATE ELEMENTO! AS JN_ELEMENTO_ITEM EQ 'E'
+
+REPEAT
+ ACCEPT JN_MES
+ [KEY.ESCAPE] ABORT
+ COMZEROS JN_MES 2
+ IF NOT JN_MES IN '01a02a03a04a05a06a07a08a09a10a11a12' BEGIN
+                                                         MENSAGEM 353
+                                                         CLEARFORM JN_MES
+                                                        END
+UNTIL JN_MES NE ''
+
+INDICATE LINHA_COMPLETA! TRUE
+
+
+INDICATE LE_MOV! AS ((JN_COD_ENTIDADE       LE '01')  OR (PARGERAL.COD_ENTIDADE GT '01')) //--ler movimento da propria entidade
+INDICATE LE_XML! AS ((PARGERAL.COD_ENTIDADE EQ '01') AND (ST_ENTIDADE_SELECAO   NE '01')) //--ler movimento de outra entidade
+
+INDICATE MFC! FALSE
+IF ((PARGERAL.COD_SIAFI EQ 3061) AND (PARGERAL.COD_ENTIDADE EQ '01')) BEGIN    //--PM Nova campina... ler tudo do XML
+                                                                       INDICATE LE_MOV! FALSE
+                                                                       INDICATE LE_XML! TRUE
+                                                                       INDICATE    MFC! TRUE
+                                                                      END
+
+
+MOVE JN_MES             TO ST_MES
+MOVE PARGERAL.EXERCICIO TO ST_JUNTANDO
+MOVE PARGERAL.EXERCICIO TO ST_EXERCICIO
+
+MOVE '' TO ST_NOME_MES
+APPEND ST_NOME_MES 'JANEIRO A '
+MONTH JN_MES ST_AUX
+APPEND ST_NOME_MES ST_AUX ST_JUNTANDO
+
+MOVE '01/01/' TO ST_DATA
+APPEND ST_DATA PARGERAL.EXERCICIO
+MOVE ST_DATA  TO DT_INICIO_ANO
+
+MOVE '01/'    TO ST_DATA
+IF ST_MES LT '12' APPEND ST_DATA (ST_MES + 1) '/' PARGERAL.EXERCICIO
+IF ST_MES EQ '12' APPEND ST_DATA  '01' '/' (PARGERAL.EXERCICIO + 1)
+MOVE ST_DATA TO DT_FINAL
+CALC (DT_FINAL - 1) TO DT_FINAL
+
+[ TODAS!] MOVE 'DESP ORCA SIOPE/SIOPS - CONSOLIDADO ' TO ST_JUNTA
+[~TODAS!] MOVE 'DESP ORCA SIOPE/SIOPS - ISOLADO '     TO ST_JUNTA
+APPEND ST_JUNTA ST_NOME_MES
+ABREREL ST_JUNTA '132C+'
+MOVE ST_NOME_MES TO JN_INICIAL
+
+CLEAR MOVDES
+MOVE ST@CODIGO@ENTIDADE      TO MOVDES.COD_ENTIDADE
+MOVE ST@EXERCICIO@FINANCEIRO TO MOVDES.EXERCICIO
+FIND GT MOVDES BY INDEX.1
+[ FOUND] INDICATE FOUND AS MOVDES.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+[ FOUND] INDICATE FOUND AS MOVDES.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+[~FOUND] CLEAR MOVDES
+
+INDICATE COD_APL! AS MOVDES.COD_APLICACAO NE ''
+CLEAR MOVDES
+
+PAGE TELA
+PAGE MSG
+GOTOXY 25 0
+
+APAGA_TEMPCALC JN_LENDO
+
+[ LE_MOV!] BEGIN
+            //--despesas
+            CLEAR MOVDES
+            CONSTRAINT_SET 1
+            CONSTRAIN MOVDES.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+            CONSTRAIN MOVDES.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+            CONSTRAIN MOVDES.FUNCAO       GE JN_N_FUNCAO_INICIAL
+            CONSTRAIN MOVDES.FUNCAO       LE JN_N_FUNCAO_FINAL
+            CONSTRAIN MOVDES.SUBFUNCAO    GE JN_N_SUBFUNCAO_INICIAL
+            CONSTRAIN MOVDES.SUBFUNCAO    LE JN_N_SUBFUNCAO_FINAL
+            CONSTRAIN MOVDES.DATA         LE DT_FINAL
+            CONSTRAIN MOVDES.N_FONTE      GE JN_N_FONTE_INICIAL
+            CONSTRAIN MOVDES.N_FONTE      LE JN_N_FONTE_FINAL
+            [ COD_APL!] BEGIN
+                         CONSTRAIN MOVDES.COD_APLICACAO GE JN_N_APLICACAO_INICIAL
+                         CONSTRAIN MOVDES.COD_APLICACAO LE JN_N_APLICACAO_FINAL
+                        END
+            CONSTRAINED_FIND FIRST MOVDES BY INDEX.6
+            WHILE [FOUND]
+             CALC (JN_LENDO + 1)        TO JN_LENDO
+             MOVE MOVDES.NUMERO         TO JN_N_DESPESA
+             MOVE MOVDES.ORGAO          TO JN_ORGAO
+             MOVE MOVDES.ECONOMICA      TO JN_ECONOMICA
+             MOVE MOVDES.FUNCAO         TO JN_FUNCAO
+             MOVE MOVDES.SUBFUNCAO      TO JN_SUBFUNCAO
+             MOVE MOVDES.PROGRAMA       TO JN_PROGRAMA
+             MOVE MOVDES.TIPO_CODIGO_PA TO JN_ACAO
+             KEYCHECK GOSUB LB_ROTINA_PARADA
+             
+             //--guarda chave para totais
+             MOVEALL MOVDES.FUNCAO TO ST_CHAVE_FUNCAO ST_CHAVE_SUBFUNCAO ST_CHAVE_FONTE ST_CHAVE_APLICACAO
+             
+             MOVE MOVDES.N_FONTE       TO ST_FONTE_AUX
+             MOVE MOVDES.COD_APLICACAO TO ST_COD_APLICACAO_AUX
+             
+             [ @SICOM!] BEGIN
+                         //--fontes sicom
+                         MOVE (TRIM(MOVDES.N_FONTE)) TO ST_FONTE_AUDESP
+                         APPEND ST_FONTE_AUDESP ' ' MOVDES.COD_APLICACAO
+                         BUSCA_FONTE_RECURSO_MG PARGERAL.EXERCICIO MOVDES.COD_ENTIDADE ST_FONTE_AUDESP ST_FONTE_AUX ST_CO_FONTE_MG 'CONAM'
+                         
+                         PAD ST_FONTE_AUX TO ST_FONTE_AUX 5
+                         MOVE '       ' TO ST_COD_APLICACAO_AUX
+                        END
+             
+             APPEND ST_CHAVE_SUBFUNCAO ' ' MOVDES.SUBFUNCAO
+             APPEND ST_CHAVE_FONTE     ' ' MOVDES.SUBFUNCAO ' ' ST_FONTE_AUX
+             
+             [ COD_APL!] APPEND ST_CHAVE_APLICACAO ' ' MOVDES.SUBFUNCAO ' ' ST_FONTE_AUX ' ' ST_COD_APLICACAO_AUX
+             [~COD_APL!] APPEND ST_CHAVE_APLICACAO ' ' MOVDES.SUBFUNCAO ' ' ST_FONTE_AUX ' ' '       '
+                         
+             //--guarda chave por funcao, subfuncao, fonte, cod aplicacao e economica
+             MOVE ST_CHAVE_APLICACAO TO ST_CODIGO
+             APPEND ST_CODIGO ' ' MOVDES.ECONOMICA
+
+             IF ((MOVDES.TIPO_DESPESA EQ 'OR') AND (MOVDES.TIPO_INSTRUM EQ '')) BEGIN
+                                                                                 GRAVA_TEMPORARIO ST_CODIGO          'I' MOVDES.FIXADO_INICIAL 'ELEMENTO'
+                                                                                 //--grava total por funcao
+                                                                                 GRAVA_TEMPORARIO ST_CHAVE_FUNCAO    'I' MOVDES.FIXADO_INICIAL 'FUNCAO'
+                                                                                 //--grava total por subfuncao
+                                                                                 GRAVA_TEMPORARIO ST_CHAVE_SUBFUNCAO 'I' MOVDES.FIXADO_INICIAL 'SUBFUNCAO'
+                                                                                 //--grava total por fonte
+                                                                                 GRAVA_TEMPORARIO ST_CHAVE_FONTE     'I' MOVDES.FIXADO_INICIAL 'FONTE'
+                                                                                 //--grava total por cod aplicacao
+                                                                                 [ COD_APL!] GRAVA_TEMPORARIO ST_CHAVE_APLICACAO 'I' MOVDES.FIXADO_INICIAL 'APLICACAO'
+                                                                                 //--grava total geral
+                                                                                 GRAVA_TEMPORARIO 'XX' 'I' MOVDES.FIXADO_INICIAL 'TOTAL'
+                                                                                END
+
+             //--fixado final
+             GRAVA_TEMPORARIO ST_CODIGO          'F' MOVDES.FIXADO_INICIAL 'ELEMENTO'
+             //--grava total por funcao
+             GRAVA_TEMPORARIO ST_CHAVE_FUNCAO    'F' MOVDES.FIXADO_INICIAL 'FUNCAO'
+             //--grava total por subfuncao
+             GRAVA_TEMPORARIO ST_CHAVE_SUBFUNCAO 'F' MOVDES.FIXADO_INICIAL 'SUBFUNCAO'
+             //--grava total por fonte
+             GRAVA_TEMPORARIO ST_CHAVE_FONTE     'F' MOVDES.FIXADO_INICIAL 'FONTE'
+             //--grava total por cod aplicacao
+             [ COD_APL!] GRAVA_TEMPORARIO ST_CHAVE_APLICACAO 'F' MOVDES.FIXADO_INICIAL 'APLICACAO'
+             //--grava total geral
+             GRAVA_TEMPORARIO 'XX' 'F' MOVDES.FIXADO_INICIAL 'TOTAL'
+             
+             //--guarda posicao mais analitica para listas elementos ou itens
+             [ COD_APL!] MOVE ST_CHAVE_APLICACAO TO ST_CHAVE
+
+             CLEAR EMPENHO
+             CONSTRAINT_SET 2
+             CONSTRAIN EMPENHO.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+             CONSTRAIN EMPENHO.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+             CONSTRAIN EMPENHO.N_DESPESA    EQ JN_N_DESPESA
+             CONSTRAIN EMPENHO.DATA         GE DT_INICIO_ANO
+             CONSTRAIN EMPENHO.DATA         LE DT_FINAL
+             [~COD_APL!] BEGIN
+                          CONSTRAIN EMPENHO.N_FUNDO GE JN_N_APLICACAO_INICIAL
+                          CONSTRAIN EMPENHO.N_FUNDO LE JN_N_APLICACAO_FINAL
+                         END
+             CONSTRAINED_FIND FIRST EMPENHO BY INDEX.9
+             WHILE [FOUND]
+              CALC (JN_LENDO + 1)    TO JN_LENDO
+              KEYCHECK GOSUB LB_ROTINA_PARADA
+              
+              [~COD_APL!] BEGIN
+                           MOVE MOVDES.FUNCAO TO ST_CHAVE_APLICACAO
+                           APPEND ST_CHAVE_APLICACAO ' ' MOVDES.SUBFUNCAO ' ' ST_FONTE_AUX ' ' EMPENHO.N_FUNDO
+                           MOVE ST_CHAVE_APLICACAO TO ST_CODIGO
+                          END
+              [ COD_APL!] BEGIN
+                           MOVE ST_CHAVE TO ST_CODIGO
+                          END
+              //--guarda chave por funcao, subfuncao, fonte, cod aplicacao e economica
+              APPEND ST_CODIGO ' ' MOVDES.ECONOMICA
+              
+              //--grava total por elemento
+              GRAVA_TEMPORARIO ST_CODIGO           'E' EMPENHO.V_EMPENHO 'ELEMENTO'
+              //--grava total por funcao
+              GRAVA_TEMPORARIO ST_CHAVE_FUNCAO     'E' EMPENHO.V_EMPENHO 'FUNCAO'
+              //--grava total por subfuncao
+              GRAVA_TEMPORARIO ST_CHAVE_SUBFUNCAO  'E' EMPENHO.V_EMPENHO 'SUBFUNCAO'
+              //--grava total por fonte
+              GRAVA_TEMPORARIO ST_CHAVE_FONTE      'E' EMPENHO.V_EMPENHO 'FONTE'
+              //--grava total por cod aplicacao
+              GRAVA_TEMPORARIO ST_CHAVE_APLICACAO  'E' EMPENHO.V_EMPENHO 'APLICACAO'
+              //--grava total geral
+              GRAVA_TEMPORARIO 'XX' 'E' EMPENHO.V_EMPENHO 'TOTAL'
+              
+              [~ELEMENTO!] IF (MID(EMPENHO.ECONOMICA,2,11)) NE '00' BEGIN 
+                                                                     MOVE ST_CHAVE TO ST_CODIGO
+                                                                     APPEND ST_CODIGO ' ' EMPENHO.ECONOMICA
+                                                                     GRAVA_TEMPORARIO ST_CODIGO   'E' EMPENHO.V_EMPENHO 'ITEM'
+                                                                    END
+              CONSTRAINED_FIND NEXT
+              END
+             CONSTRAINT_SET 2 CLEAR
+
+             CLEAR LIQUIDA
+             CONSTRAINT_SET 3
+             CONSTRAIN LIQUIDA.COD_ENTIDADE    EQ ST@CODIGO@ENTIDADE
+             CONSTRAIN LIQUIDA.EXERCICIO       EQ ST@EXERCICIO@FINANCEIRO
+             CONSTRAIN LIQUIDA.N_DESPESA       EQ JN_N_DESPESA
+             CONSTRAIN LIQUIDA.DATA_LIQUIDACAO GE DT_INICIO_ANO
+             CONSTRAIN LIQUIDA.DATA_LIQUIDACAO LE DT_FINAL
+             [~COD_APL!] BEGIN
+                          CONSTRAIN LIQUIDA.N_FUNDO GE JN_N_APLICACAO_INICIAL
+                          CONSTRAIN LIQUIDA.N_FUNDO LE JN_N_APLICACAO_FINAL
+                         END
+             CONSTRAINED_FIND FIRST LIQUIDA BY INDEX.13
+             WHILE [FOUND]
+              CALC (JN_LENDO + 1)    TO JN_LENDO
+              KEYCHECK GOSUB LB_ROTINA_PARADA
+
+              [~COD_APL!] BEGIN
+                           MOVE MOVDES.FUNCAO TO ST_CHAVE_APLICACAO
+                           APPEND ST_CHAVE_APLICACAO ' ' MOVDES.SUBFUNCAO ' ' ST_FONTE_AUX ' ' LIQUIDA.N_FUNDO
+                           MOVE ST_CHAVE_APLICACAO TO ST_CODIGO
+                          END
+              [ COD_APL!] BEGIN
+                           MOVE ST_CHAVE TO ST_CODIGO
+                          END
+              //--guarda chave por funcao, subfuncao, fonte, cod aplicacao e economica
+              APPEND ST_CODIGO ' ' MOVDES.ECONOMICA
+              
+              //--grava total por elemento
+              GRAVA_TEMPORARIO ST_CODIGO           'L' LIQUIDA.VALOR_LIQUIDADO 'ELEMENTO'
+              //--grava total por funcao
+              GRAVA_TEMPORARIO ST_CHAVE_FUNCAO     'L' LIQUIDA.VALOR_LIQUIDADO 'FUNCAO'
+              //--grava total por subfuncao
+              GRAVA_TEMPORARIO ST_CHAVE_SUBFUNCAO  'L' LIQUIDA.VALOR_LIQUIDADO 'SUBFUNCAO'
+              //--grava total por fonte
+              GRAVA_TEMPORARIO ST_CHAVE_FONTE      'L' LIQUIDA.VALOR_LIQUIDADO 'FONTE'
+              //--grava total por cod aplicacao
+              GRAVA_TEMPORARIO ST_CHAVE_APLICACAO  'L' LIQUIDA.VALOR_LIQUIDADO 'APLICACAO'
+              //--grava total geral
+              GRAVA_TEMPORARIO 'XX' 'L' LIQUIDA.VALOR_LIQUIDADO 'TOTAL'
+
+              [~ELEMENTO!] IF (MID(LIQUIDA.ECONOMICA,2,11)) NE '00' BEGIN 
+                                                                     MOVE ST_CHAVE TO ST_CODIGO
+                                                                     APPEND ST_CODIGO ' ' LIQUIDA.ECONOMICA
+                                                                     GRAVA_TEMPORARIO ST_CODIGO   'L' LIQUIDA.VALOR_LIQUIDADO 'ITEM'
+                                                                    END
+
+              CONSTRAINED_FIND NEXT
+              END
+             CONSTRAINT_SET 3 CLEAR
+                          
+             CLEAR ESTLIQUI
+             CONSTRAINT_SET 4
+             CONSTRAIN ESTLIQUI.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+             CONSTRAIN ESTLIQUI.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+             CONSTRAIN ESTLIQUI.N_DESPESA    EQ JN_N_DESPESA
+             CONSTRAIN ESTLIQUI.DATA         GE DT_INICIO_ANO
+             CONSTRAIN ESTLIQUI.DATA         LE DT_FINAL
+             CONSTRAINED_FIND FIRST ESTLIQUI BY INDEX.2
+             WHILE [FOUND]
+              CALC (JN_LENDO + 1)     TO JN_LENDO
+              KEYCHECK GOSUB LB_ROTINA_PARADA
+              
+              CLEAR LIQUIDA
+              MOVE ST@CODIGO@ENTIDADE       TO LIQUIDA.COD_ENTIDADE
+              MOVE ST@EXERCICIO@FINANCEIRO  TO LIQUIDA.EXERCICIO
+              MOVE ESTLIQUI.N_EMPENHO       TO LIQUIDA.N_EMPENHO
+              MOVE ESTLIQUI.TIPO_DOCFISCAL  TO LIQUIDA.TIPO_DOCFISCAL
+              MOVE ESTLIQUI.N_DOCFISCAL     TO LIQUIDA.N_DOCFISCAL
+              MOVE ESTLIQUI.DATA_VENCIMENTO TO LIQUIDA.DATA_VENCIMENTO
+              MOVE ESTLIQUI.SEQUENCIA       TO LIQUIDA.SEQUENCIA
+              FIND EQ LIQUIDA BY INDEX.1
+              [~FOUND] CLEAR LIQUIDA
+              
+                     INDICATE OK! AS LIQUIDA.N_FUNDO GE JN_N_APLICACAO_INICIAL
+              [ OK!] INDICATE OK! AS LIQUIDA.N_FUNDO LE JN_N_APLICACAO_FINAL
+              [ OK!] BEGIN
+                      [~COD_APL!] BEGIN
+                                   MOVE MOVDES.FUNCAO TO ST_CHAVE_APLICACAO
+                                   APPEND ST_CHAVE_APLICACAO ' ' MOVDES.SUBFUNCAO ' ' ST_FONTE_AUX ' ' LIQUIDA.N_FUNDO
+                                   MOVE ST_CHAVE_APLICACAO TO ST_CODIGO
+                                  END
+                      [ COD_APL!] BEGIN
+                                   MOVE ST_CHAVE TO ST_CODIGO
+                                  END
+                      //--guarda chave por funcao, subfuncao, fonte, cod aplicacao e economica
+                      APPEND ST_CODIGO ' ' MOVDES.ECONOMICA
+                                   
+                      //--grava total por elemento
+                      GRAVA_TEMPORARIO ST_CODIGO           'L' (ESTLIQUI.VALOR * (-1)) 'ELEMENTO'
+                      //--grava total por funcao
+                      GRAVA_TEMPORARIO ST_CHAVE_FUNCAO     'L' (ESTLIQUI.VALOR * (-1)) 'FUNCAO'
+                      //--grava total por subfuncao
+                      GRAVA_TEMPORARIO ST_CHAVE_SUBFUNCAO  'L' (ESTLIQUI.VALOR * (-1)) 'SUBFUNCAO'
+                      //--grava total por fonte
+                      GRAVA_TEMPORARIO ST_CHAVE_FONTE      'L' (ESTLIQUI.VALOR * (-1)) 'FONTE'
+                      //--grava total por cod aplicacao
+                      GRAVA_TEMPORARIO ST_CHAVE_APLICACAO  'L' (ESTLIQUI.VALOR * (-1)) 'APLICACAO'
+                      //--grava total geral
+                      GRAVA_TEMPORARIO 'XX' 'L' (ESTLIQUI.VALOR * (-1)) 'TOTAL'
+
+                      [~ELEMENTO!] IF (MID(ESTLIQUI.ECONOMICA,2,11)) NE '00' BEGIN 
+                                                                              MOVE ST_CHAVE TO ST_CODIGO
+                                                                              APPEND ST_CODIGO ' ' ESTLIQUI.ECONOMICA
+                                                                              GRAVA_TEMPORARIO ST_CODIGO   'L' (ESTLIQUI.VALOR * (-1)) 'ITEM'
+                                                                             END
+                     END
+              
+              CONSTRAINED_FIND NEXT
+              END
+             CONSTRAINT_SET 4 CLEAR
+
+             CLEAR MOVEMP
+             CONSTRAINT_SET 4
+             CONSTRAIN MOVEMP.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+             CONSTRAIN MOVEMP.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+             CONSTRAIN MOVEMP.TIPO         EQ 'O'
+             CONSTRAIN MOVEMP.N_DESPESA    EQ JN_N_DESPESA
+             CONSTRAIN MOVEMP.DATA         GE DT_INICIO_ANO
+             CONSTRAIN MOVEMP.DATA         LE DT_FINAL
+             [~COD_APL!] BEGIN
+                          CONSTRAIN MOVEMP.N_FUNDO GE JN_N_APLICACAO_INICIAL
+                          CONSTRAIN MOVEMP.N_FUNDO LE JN_N_APLICACAO_FINAL
+                         END
+             CONSTRAINED_FIND FIRST MOVEMP BY INDEX.4
+             WHILE [FOUND]
+              CALC (JN_LENDO + 1) TO JN_LENDO
+              KEYCHECK GOSUB LB_ROTINA_PARADA
+
+              [~COD_APL!] BEGIN
+                           MOVE MOVDES.FUNCAO TO ST_CHAVE_APLICACAO
+                           APPEND ST_CHAVE_APLICACAO ' ' MOVDES.SUBFUNCAO ' ' ST_FONTE_AUX ' ' MOVEMP.N_FUNDO
+                           MOVE ST_CHAVE_APLICACAO TO ST_CODIGO
+                          END
+              [ COD_APL!] BEGIN
+                           MOVE ST_CHAVE TO ST_CODIGO
+                          END
+              //--guarda chave por funcao, subfuncao, fonte, cod aplicacao e economica
+              APPEND ST_CODIGO ' ' MOVDES.ECONOMICA
+              
+              //--grava total por elemento
+              GRAVA_TEMPORARIO ST_CODIGO           'P' MOVEMP.VALOR 'ELEMENTO'
+              //--grava total por funcao
+              GRAVA_TEMPORARIO ST_CHAVE_FUNCAO     'P' MOVEMP.VALOR 'FUNCAO'
+              //--grava total por subfuncao
+              GRAVA_TEMPORARIO ST_CHAVE_SUBFUNCAO  'P' MOVEMP.VALOR 'SUBFUNCAO'
+              //--grava total por fonte
+              GRAVA_TEMPORARIO ST_CHAVE_FONTE      'P' MOVEMP.VALOR 'FONTE'
+              //--grava total por cod aplicacao
+              GRAVA_TEMPORARIO ST_CHAVE_APLICACAO  'P' MOVEMP.VALOR 'APLICACAO'
+              //--grava total geral
+              GRAVA_TEMPORARIO 'XX' 'P' MOVEMP.VALOR 'TOTAL'
+
+              [~ELEMENTO!] IF (MID(MOVEMP.ECONOMICA,2,11)) NE '00' BEGIN 
+                                                                    MOVE ST_CHAVE TO ST_CODIGO
+                                                                    APPEND ST_CODIGO ' ' MOVEMP.ECONOMICA
+                                                                    GRAVA_TEMPORARIO ST_CODIGO   'P' MOVEMP.VALOR 'ITEM'
+                                                                   END
+
+              CONSTRAINED_FIND NEXT
+              END
+             CONSTRAINT_SET 4 CLEAR
+                 
+             CLEAR SUPLEMEN
+             CONSTRAINT_SET 5
+             CONSTRAIN SUPLEMEN.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+             CONSTRAIN SUPLEMEN.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+             CONSTRAIN SUPLEMEN.N_DESPESA    EQ JN_N_DESPESA
+             CONSTRAIN SUPLEMEN.DATA         GE DT_INICIO_ANO
+             CONSTRAIN SUPLEMEN.DATA         LE DT_FINAL
+             CONSTRAINED_FIND FIRST SUPLEMEN BY INDEX.6
+             WHILE [FOUND]
+              PRINT (JN_LENDO + 1) TO JN_LENDO
+              KEYCHECK GOSUB LB_ROTINA_PARADA
+              
+              MOVE ST_CHAVE TO ST_CODIGO
+              APPEND ST_CODIGO ' ' MOVDES.ECONOMICA
+              
+              //--grava total por elemento
+              GRAVA_TEMPORARIO ST_CODIGO           'F' SUPLEMEN.VALOR 'ELEMENTO'
+              //--grava total por funcao
+              GRAVA_TEMPORARIO ST_CHAVE_FUNCAO     'F' SUPLEMEN.VALOR 'FUNCAO'
+              //--grava total por subfuncao
+              GRAVA_TEMPORARIO ST_CHAVE_SUBFUNCAO  'F' SUPLEMEN.VALOR 'SUBFUNCAO'
+              //--grava total por fonte
+              GRAVA_TEMPORARIO ST_CHAVE_FONTE      'F' SUPLEMEN.VALOR 'FONTE'
+              //--grava total por cod aplicacao
+              GRAVA_TEMPORARIO ST_CHAVE_APLICACAO  'F' SUPLEMEN.VALOR 'APLICACAO'
+
+              //--grava total geral
+              GRAVA_TEMPORARIO 'XX' 'F' SUPLEMEN.VALOR 'TOTAL'
+
+              CONSTRAINED_FIND NEXT
+              END
+             CONSTRAINT_SET 5 CLEAR
+
+             CONSTRAINT_SET 1         
+             CONSTRAINED_FIND NEXT
+             END
+            CONSTRAINT_SET 1 CLEAR
+            //--final leitura das despesas
+           END
+
+[ LE_XML!] BEGIN
+            MOVE ST_MES TO IT_MES_FINAL
+            FOR IT_MES FROM 1 TO IT_MES_FINAL
+             MOVE IT_MES TO ST_MES_BUSCA
+             COMZEROS ST_MES_BUSCA 2
+
+             //--despesa empenhada, liquidada e paga
+             CLEAR CONTACOR
+             CONSTRAINT_SET 1
+             CONSTRAIN CONTACOR.ANO EQ ST_EXERCICIO
+             CONSTRAIN CONTACOR.MES EQ ST_MES_BUSCA
+             [~TCEMG!] CONSTRAIN CONTACOR.XML EQ '27'
+             [ TCEMG!] CONSTRAIN CONTACOR.XML EQ '11'
+             CONSTRAIN CONTACOR AS ((CONTACOR.CONTA EQ '6.2.2.1.3.01.00.00') OR;
+                                    (CONTACOR.CONTA EQ '6.2.2.1.3.02.00.00') OR;
+                                    (CONTACOR.CONTA EQ '6.2.2.1.3.03.00.00') OR;
+                                    (CONTACOR.CONTA EQ '6.2.2.1.3.04.00.00'))
+             [~TODAS!] CONSTRAIN CONTACOR.COD_ENTIDADE EQ ST_ENTIDADE_SELECAO
+             [~  MFC!] CONSTRAIN CONTACOR.COD_ENTIDADE NE ST_PROPRIA_ENTIDADE
+             CONSTRAINED_FIND FIRST CONTACOR BY INDEX.3
+             WHILE [FOUND]
+              CALC (JN_LENDO + 1) TO JN_LENDO
+              
+              MOVEALL '' TO ST_FUNCAO ST_SUBFUNCAO ST_FONTE ST_COD_APLICACAO ST_ECONOMICA
+              
+              [~TCEMG!] BEGIN
+                         MOVE (MID(CONTACOR.DADOS,2,38))  TO ST_FUNCAO
+                         MOVE (MID(CONTACOR.DADOS,3,41))  TO ST_SUBFUNCAO
+                         MOVE (MID(CONTACOR.DADOS,5,68))  TO ST_FONTE
+                         MOVE (MID(CONTACOR.DADOS,7,74))  TO ST_COD_APLICACAO
+                         MOVE (MID(CONTACOR.DADOS,12,55)) TO ST_ECONOMICA
+                        END
+              [ TCEMG!] BEGIN
+                         MOVE (MID(CONTACOR.DADOS,2,32))  TO ST_FUNCAO
+                         MOVE (MID(CONTACOR.DADOS,3,35))  TO ST_SUBFUNCAO
+                         MOVE (MID(CONTACOR.DADOS,5,67))  TO ST_FONTE
+                         MOVE (MID(CONTACOR.DADOS,12,54)) TO ST_ECONOMICA
+                         
+                         PAD ST_COD_APLICACAO TO ST_COD_APLICACAO 7
+                        END
+              
+              //--
+                     INDICATE OK! AS ST_FUNCAO        GE JN_N_FUNCAO_INICIAL
+              [ OK!] INDICATE OK! AS ST_FUNCAO        LE JN_N_FUNCAO_FINAL
+              [ OK!] INDICATE OK! AS ST_SUBFUNCAO     GE JN_N_SUBFUNCAO_INICIAL
+              [ OK!] INDICATE OK! AS ST_SUBFUNCAO     LE JN_N_SUBFUNCAO_FINAL
+              [ OK!] INDICATE OK! AS ST_FONTE         GE JN_N_FONTE_INICIAL
+              [ OK!] INDICATE OK! AS ST_FONTE         LE JN_N_FONTE_FINAL
+              [ OK!] INDICATE OK! AS ST_COD_APLICACAO GE JN_N_APLICACAO_INICIAL
+              [ OK!] INDICATE OK! AS ST_COD_APLICACAO LE JN_N_APLICACAO_FINAL
+              [ OK!] BEGIN
+                      //--guarda chave para totais
+                      MOVEALL ST_FUNCAO TO ST_CHAVE_FUNCAO ST_CHAVE_SUBFUNCAO ST_CHAVE_FONTE ST_CHAVE_APLICACAO
+                      
+                      APPEND ST_CHAVE_SUBFUNCAO ' ' ST_SUBFUNCAO
+                      APPEND ST_CHAVE_FONTE     ' ' ST_SUBFUNCAO ' ' ST_FONTE
+                      APPEND ST_CHAVE_APLICACAO ' ' ST_SUBFUNCAO ' ' ST_FONTE ' ' ST_COD_APLICACAO
+
+                      MOVE ST_CHAVE_APLICACAO TO ST_CODIGO
+                      
+                      APPEND ST_CODIGO ' ' (MID(ST_ECONOMICA,9,1)) '.00'
+
+                      IF (LEFT(CONTACOR.CONTA,9)) EQ '6.2.2.1.3' BEGIN //--empenhado
+                                                                  //--grava total por elemento
+                                                                  GRAVA_TEMPORARIO ST_CODIGO           'E' (CONTACOR.VALOR_2 - CONTACOR.VALOR_1) 'ELEMENTO'
+                                                                  
+                                                                  //--grava total por funcao
+                                                                  GRAVA_TEMPORARIO ST_CHAVE_FUNCAO     'E' (CONTACOR.VALOR_2 - CONTACOR.VALOR_1) 'FUNCAO'
+                                                                  //--grava total por subfuncao
+                                                                  GRAVA_TEMPORARIO ST_CHAVE_SUBFUNCAO  'E' (CONTACOR.VALOR_2 - CONTACOR.VALOR_1) 'SUBFUNCAO'
+                                                                  //--grava total por fonte
+                                                                  GRAVA_TEMPORARIO ST_CHAVE_FONTE      'E' (CONTACOR.VALOR_2 - CONTACOR.VALOR_1) 'FONTE'
+                                                                  //--grava total por cod aplicacao
+                                                                  GRAVA_TEMPORARIO ST_CHAVE_APLICACAO  'E' (CONTACOR.VALOR_2 - CONTACOR.VALOR_1) 'APLICACAO'
+                                                                  
+                                                                  [~ELEMENTO!] IF (MID(ST_ECONOMICA,2,11)) NE '00' BEGIN 
+                                                                                                                    MOVE ST_CHAVE_APLICACAO TO ST_CODIGO_ITEM
+                                                                                                                    APPEND ST_CODIGO_ITEM ' ' ST_ECONOMICA
+                                                                                                                    GRAVA_TEMPORARIO ST_CODIGO_ITEM   'E' (CONTACOR.VALOR_2 - CONTACOR.VALOR_1) 'ITEM'
+                                                                                                                   END
+                                                                  
+                                                                  //--grava total geral
+                                                                  GRAVA_TEMPORARIO 'XX' 'E' (CONTACOR.VALOR_2 - CONTACOR.VALOR_1) 'TOTAL'
+                                                                 END
+
+                      IF ((CONTACOR.CONTA EQ '6.2.2.1.3.03.00.00') OR (CONTACOR.CONTA EQ '6.2.2.1.3.04.00.00')) BEGIN //--liquidado
+                                                                                                                 //--grava total por elemento
+                                                                                                                 GRAVA_TEMPORARIO ST_CODIGO           'L' (CONTACOR.VALOR_2 - CONTACOR.VALOR_1) 'ELEMENTO'
+                                                                                                                 
+                                                                                                                 //--grava total por funcao
+                                                                                                                 GRAVA_TEMPORARIO ST_CHAVE_FUNCAO     'L' (CONTACOR.VALOR_2 - CONTACOR.VALOR_1) 'FUNCAO'
+                                                                                                                 //--grava total por subfuncao
+                                                                                                                 GRAVA_TEMPORARIO ST_CHAVE_SUBFUNCAO  'L' (CONTACOR.VALOR_2 - CONTACOR.VALOR_1) 'SUBFUNCAO'
+                                                                                                                 //--grava total por fonte
+                                                                                                                 GRAVA_TEMPORARIO ST_CHAVE_FONTE      'L' (CONTACOR.VALOR_2 - CONTACOR.VALOR_1) 'FONTE'
+                                                                                                                 //--grava total por cod aplicacao
+                                                                                                                 GRAVA_TEMPORARIO ST_CHAVE_APLICACAO  'L' (CONTACOR.VALOR_2 - CONTACOR.VALOR_1) 'APLICACAO'
+                                                                                                                 
+                                                                                                                 [~ELEMENTO!] IF (MID(ST_ECONOMICA,2,11)) NE '00' BEGIN 
+                                                                                                                                                                   MOVE ST_CHAVE_APLICACAO TO ST_CODIGO_ITEM
+                                                                                                                                                                   APPEND ST_CODIGO_ITEM ' ' ST_ECONOMICA
+                                                                                                                                                                   GRAVA_TEMPORARIO ST_CODIGO_ITEM   'L' (CONTACOR.VALOR_2 - CONTACOR.VALOR_1) 'ITEM'
+                                                                                                                                                                  END
+                                                                                                                 
+                                                                                                                 //--grava total geral
+                                                                                                                 GRAVA_TEMPORARIO 'XX' 'L' (CONTACOR.VALOR_2 - CONTACOR.VALOR_1) 'TOTAL'
+                                                                                                                END
+
+                      IF CONTACOR.CONTA EQ '6.2.2.1.3.04.00.00' BEGIN //--pago
+                                                                 //--grava total por elemento
+                                                                 GRAVA_TEMPORARIO ST_CODIGO           'P' (CONTACOR.VALOR_2 - CONTACOR.VALOR_1) 'ELEMENTO'
+                                                                 
+                                                                 //--grava total por funcao
+                                                                 GRAVA_TEMPORARIO ST_CHAVE_FUNCAO     'P' (CONTACOR.VALOR_2 - CONTACOR.VALOR_1) 'FUNCAO'
+                                                                 //--grava total por subfuncao
+                                                                 GRAVA_TEMPORARIO ST_CHAVE_SUBFUNCAO  'P' (CONTACOR.VALOR_2 - CONTACOR.VALOR_1) 'SUBFUNCAO'
+                                                                 //--grava total por fonte
+                                                                 GRAVA_TEMPORARIO ST_CHAVE_FONTE      'P' (CONTACOR.VALOR_2 - CONTACOR.VALOR_1) 'FONTE'
+                                                                 //--grava total por cod aplicacao
+                                                                 GRAVA_TEMPORARIO ST_CHAVE_APLICACAO  'P' (CONTACOR.VALOR_2 - CONTACOR.VALOR_1) 'APLICACAO'
+                                                                 
+                                                                 [~ELEMENTO!] IF (MID(ST_ECONOMICA,2,11)) NE '00' BEGIN 
+                                                                                                                   MOVE ST_CHAVE_APLICACAO TO ST_CODIGO_ITEM
+                                                                                                                   APPEND ST_CODIGO_ITEM ' ' ST_ECONOMICA
+                                                                                                                   GRAVA_TEMPORARIO ST_CODIGO_ITEM   'P' (CONTACOR.VALOR_2 - CONTACOR.VALOR_1) 'ITEM'
+                                                                                                                  END
+                                                                 
+                                                                 //--grava total geral
+                                                                 GRAVA_TEMPORARIO 'XX' 'P' (CONTACOR.VALOR_2 - CONTACOR.VALOR_1) 'TOTAL'
+                                                                END
+                     END
+
+              CONSTRAINT_SET 1
+              CONSTRAINED_FIND NEXT
+              END
+             CONSTRAINT_SET 1 CLEAR
+             
+             //--fixado inicial da despesa
+//              CLEAR CONTACOR
+//              CONSTRAINT_SET 1
+//              CONSTRAIN CONTACOR.ANO   EQ ST_EXERCICIO
+//              CONSTRAIN CONTACOR.MES   EQ ST_MES_BUSCA
+//              [~TCEMG!] CONSTRAIN CONTACOR.XML EQ '07'
+//              [ TCEMG!] CONSTRAIN CONTACOR.XML EQ '11'
+//              CONSTRAIN CONTACOR.CONTA GE '5.2.2.1.1'
+//              CONSTRAIN CONTACOR.CONTA LE '5.2.2.1.1.X'
+//              [~TODAS!] CONSTRAIN CONTACOR.COD_ENTIDADE EQ ST_ENTIDADE_SELECAO
+//              [ TODAS!] CONSTRAIN CONTACOR.COD_ENTIDADE NE ST_PROPRIA_ENTIDADE
+//              CONSTRAINED_FIND FIRST CONTACOR BY INDEX.3
+//              WHILE [FOUND]
+//               CALC (JN_LENDO + 1) TO JN_LENDO
+// 
+//               MOVEALL '' TO ST_FUNCAO ST_SUBFUNCAO ST_FONTE ST_COD_APLICACAO ST_ECONOMICA
+//               
+//               [~TCEMG!] BEGIN
+//                          MOVE (MID(CONTACOR.DADOS,2,38))  TO ST_FUNCAO
+//                          MOVE (MID(CONTACOR.DADOS,3,41))  TO ST_SUBFUNCAO
+//                          MOVE (MID(CONTACOR.DADOS,5,68))  TO ST_FONTE
+//                          MOVE (MID(CONTACOR.DADOS,7,74))  TO ST_COD_APLICACAO
+//                          MOVE (MID(CONTACOR.DADOS,12,55)) TO ST_ECONOMICA
+//                         END
+//               [ TCEMG!] BEGIN
+//                          MOVE (MID(CONTACOR.DADOS,2,32))  TO ST_FUNCAO
+//                          MOVE (MID(CONTACOR.DADOS,3,35))  TO ST_SUBFUNCAO
+//                          MOVE (MID(CONTACOR.DADOS,5,67))  TO ST_FONTE
+//                          MOVE (MID(CONTACOR.DADOS,12,54)) TO ST_ECONOMICA
+//                         END
+//                      
+//                      INDICATE OK! AS ST_FUNCAO        GE JN_N_FUNCAO_INICIAL
+//               [ OK!] INDICATE OK! AS ST_FUNCAO        LE JN_N_FUNCAO_FINAL
+//               [ OK!] INDICATE OK! AS ST_SUBFUNCAO     GE JN_N_SUBFUNCAO_INICIAL
+//               [ OK!] INDICATE OK! AS ST_SUBFUNCAO     LE JN_N_SUBFUNCAO_FINAL
+//               [ OK!] INDICATE OK! AS ST_FONTE         GE JN_N_FONTE_INICIAL
+//               [ OK!] INDICATE OK! AS ST_FONTE         LE JN_N_FONTE_FINAL
+//               [ OK!] INDICATE OK! AS ST_COD_APLICACAO GE JN_N_APLICACAO_INICIAL
+//               [ OK!] INDICATE OK! AS ST_COD_APLICACAO LE JN_N_APLICACAO_FINAL
+//               [ OK!] BEGIN
+//                       //--guarda chave para totais
+//                       MOVEALL ST_FUNCAO TO ST_CHAVE_FUNCAO ST_CHAVE_SUBFUNCAO ST_CHAVE_FONTE ST_CHAVE_APLICACAO
+//                       
+//                       APPEND ST_CHAVE_SUBFUNCAO ' ' ST_SUBFUNCAO
+//                       APPEND ST_CHAVE_FONTE     ' ' ST_SUBFUNCAO ' ' ST_FONTE
+//                       APPEND ST_CHAVE_APLICACAO ' ' ST_SUBFUNCAO ' ' ST_FONTE ' ' ST_COD_APLICACAO
+// 
+//                       MOVE ST_CHAVE_APLICACAO TO ST_CODIGO
+//                       APPEND ST_CODIGO ' ' (MID(ST_ECONOMICA,9,1)) '.00'
+//                       
+//                       //--grava total por elemento
+//                       GRAVA_TEMPORARIO ST_CODIGO           'I' (CONTACOR.VALOR_1 - CONTACOR.VALOR_2) 'ELEMENTO'
+//                       GRAVA_TEMPORARIO ST_CODIGO           'F' (CONTACOR.VALOR_1 - CONTACOR.VALOR_2) 'ELEMENTO'
+//                       
+//                       //--grava total por funcao
+//                       GRAVA_TEMPORARIO ST_CHAVE_FUNCAO     'I' (CONTACOR.VALOR_1 - CONTACOR.VALOR_2) 'FUNCAO'
+//                       GRAVA_TEMPORARIO ST_CHAVE_FUNCAO     'F' (CONTACOR.VALOR_1 - CONTACOR.VALOR_2) 'FUNCAO'
+//                       //--grava total por subfuncao
+//                       GRAVA_TEMPORARIO ST_CHAVE_SUBFUNCAO  'I' (CONTACOR.VALOR_1 - CONTACOR.VALOR_2) 'SUBFUNCAO'
+//                       GRAVA_TEMPORARIO ST_CHAVE_SUBFUNCAO  'F' (CONTACOR.VALOR_1 - CONTACOR.VALOR_2) 'SUBFUNCAO'
+//                       //--grava total por fonte
+//                       GRAVA_TEMPORARIO ST_CHAVE_FONTE      'I' (CONTACOR.VALOR_1 - CONTACOR.VALOR_2) 'FONTE'
+//                       GRAVA_TEMPORARIO ST_CHAVE_FONTE      'F' (CONTACOR.VALOR_1 - CONTACOR.VALOR_2) 'FONTE'
+//                       //--grava total por cod aplicacao
+//                       GRAVA_TEMPORARIO ST_CHAVE_APLICACAO  'I' (CONTACOR.VALOR_1 - CONTACOR.VALOR_2) 'APLICACAO'
+//                       GRAVA_TEMPORARIO ST_CHAVE_APLICACAO  'F' (CONTACOR.VALOR_1 - CONTACOR.VALOR_2) 'APLICACAO'
+//                       
+//                       //--grava total geral
+//                       GRAVA_TEMPORARIO 'XX' 'I' (CONTACOR.VALOR_1 - CONTACOR.VALOR_2) 'TOTAL'
+//                       GRAVA_TEMPORARIO 'XX' 'F' (CONTACOR.VALOR_1 - CONTACOR.VALOR_2) 'TOTAL'
+//                      END
+// 
+//               CONSTRAINT_SET 1         
+//               CONSTRAINED_FIND NEXT
+//               END
+//              CONSTRAINT_SET 1 CLEAR
+// 
+//              //--fixado final da despesa
+//              CLEAR CONTACOR
+//              CONSTRAINT_SET 1
+//              CONSTRAIN CONTACOR.ANO   EQ ST_EXERCICIO
+//              CONSTRAIN CONTACOR.MES   EQ ST_MES_BUSCA
+//              [~TCEMG!] CONSTRAIN CONTACOR.XML EQ '08'
+//              [ TCEMG!] CONSTRAIN CONTACOR.XML EQ '11'
+//              CONSTRAIN CONTACOR AS (((CONTACOR.CONTA GE '5.2.2.1.2') AND (CONTACOR.CONTA LE '5.2.2.1.2.X')) OR;
+//                                     ((CONTACOR.CONTA GE '5.2.2.1.9') AND (CONTACOR.CONTA LE '5.2.2.1.9.X')))
+//              [~TODAS!] CONSTRAIN CONTACOR.COD_ENTIDADE EQ ST_ENTIDADE_SELECAO
+//              [ TODAS!] CONSTRAIN CONTACOR.COD_ENTIDADE NE ST_PROPRIA_ENTIDADE
+//              CONSTRAINED_FIND FIRST CONTACOR BY INDEX.3
+//              WHILE [FOUND]
+//               CALC (JN_LENDO + 1) TO JN_LENDO
+// 
+//               MOVEALL '' TO ST_FUNCAO ST_SUBFUNCAO ST_FONTE ST_COD_APLICACAO ST_ECONOMICA
+//               MOVE (MID(CONTACOR.DADOS,2,38))  TO ST_FUNCAO
+//               MOVE (MID(CONTACOR.DADOS,3,41))  TO ST_SUBFUNCAO
+//               MOVE (MID(CONTACOR.DADOS,5,68))  TO ST_FONTE
+//               MOVE (MID(CONTACOR.DADOS,7,74))  TO ST_COD_APLICACAO
+//               MOVE (MID(CONTACOR.DADOS,12,55)) TO ST_ECONOMICA
+// 
+//                      INDICATE OK! AS ST_FUNCAO        GE JN_N_FUNCAO_INICIAL
+//               [ OK!] INDICATE OK! AS ST_FUNCAO        LE JN_N_FUNCAO_FINAL
+//               [ OK!] INDICATE OK! AS ST_SUBFUNCAO     GE JN_N_SUBFUNCAO_INICIAL
+//               [ OK!] INDICATE OK! AS ST_SUBFUNCAO     LE JN_N_SUBFUNCAO_FINAL
+//               [ OK!] INDICATE OK! AS ST_FONTE         GE JN_N_FONTE_INICIAL
+//               [ OK!] INDICATE OK! AS ST_FONTE         LE JN_N_FONTE_FINAL
+//               [ OK!] INDICATE OK! AS ST_COD_APLICACAO GE JN_N_APLICACAO_INICIAL
+//               [ OK!] INDICATE OK! AS ST_COD_APLICACAO LE JN_N_APLICACAO_FINAL
+//               [ OK!] BEGIN
+//                       //--guarda chave para totais
+//                       MOVEALL ST_FUNCAO TO ST_CHAVE_FUNCAO ST_CHAVE_SUBFUNCAO ST_CHAVE_FONTE ST_CHAVE_APLICACAO
+//                       
+//                       APPEND ST_CHAVE_SUBFUNCAO ' ' ST_SUBFUNCAO
+//                       APPEND ST_CHAVE_FONTE     ' ' ST_SUBFUNCAO ' ' ST_FONTE
+//                       APPEND ST_CHAVE_APLICACAO ' ' ST_SUBFUNCAO ' ' ST_FONTE ' ' ST_COD_APLICACAO
+// 
+//                       MOVE ST_CHAVE_APLICACAO TO ST_CODIGO
+//                       APPEND ST_CODIGO ' ' (MID(ST_ECONOMICA,9,1)) '.00'
+//                       
+//                       //--grava total por elemento
+//                       GRAVA_TEMPORARIO ST_CODIGO           'F' (CONTACOR.VALOR_1 - CONTACOR.VALOR_2) 'ELEMENTO'
+//                       
+//                       //--grava total por funcao
+//                       GRAVA_TEMPORARIO ST_CHAVE_FUNCAO     'F' (CONTACOR.VALOR_1 - CONTACOR.VALOR_2) 'FUNCAO'
+//                       //--grava total por subfuncao
+//                       GRAVA_TEMPORARIO ST_CHAVE_SUBFUNCAO  'F' (CONTACOR.VALOR_1 - CONTACOR.VALOR_2) 'SUBFUNCAO'
+//                       //--grava total por fonte
+//                       GRAVA_TEMPORARIO ST_CHAVE_FONTE      'F' (CONTACOR.VALOR_1 - CONTACOR.VALOR_2) 'FONTE'
+//                       //--grava total por cod aplicacao
+//                       GRAVA_TEMPORARIO ST_CHAVE_APLICACAO  'F' (CONTACOR.VALOR_1 - CONTACOR.VALOR_2) 'APLICACAO'
+//                       
+//                       //--grava total geral
+//                       GRAVA_TEMPORARIO 'XX' 'F' (CONTACOR.VALOR_1 - CONTACOR.VALOR_2) 'TOTAL'
+//                      END
+// 
+//               CONSTRAINT_SET 1
+//               CONSTRAINED_FIND NEXT
+//               END
+//              CONSTRAINT_SET 1 CLEAR
+            LOOP
+            
+            [ MFC!] BEGIN
+                     //--despesas
+                     CLEAR MOVDES
+                     CONSTRAINT_SET 1
+                     CONSTRAIN MOVDES.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+                     CONSTRAIN MOVDES.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+                     CONSTRAIN MOVDES.FUNCAO       GE JN_N_FUNCAO_INICIAL
+                     CONSTRAIN MOVDES.FUNCAO       LE JN_N_FUNCAO_FINAL
+                     CONSTRAIN MOVDES.SUBFUNCAO    GE JN_N_SUBFUNCAO_INICIAL
+                     CONSTRAIN MOVDES.SUBFUNCAO    LE JN_N_SUBFUNCAO_FINAL
+                     CONSTRAIN MOVDES.DATA         LE DT_FINAL
+                     CONSTRAIN MOVDES.N_FONTE      GE JN_N_FONTE_INICIAL
+                     CONSTRAIN MOVDES.N_FONTE      LE JN_N_FONTE_FINAL
+                     [ COD_APL!] BEGIN
+                                  CONSTRAIN MOVDES.COD_APLICACAO GE JN_N_APLICACAO_INICIAL
+                                  CONSTRAIN MOVDES.COD_APLICACAO LE JN_N_APLICACAO_FINAL
+                                 END
+                     CONSTRAINED_FIND FIRST MOVDES BY INDEX.6
+                     WHILE [FOUND]
+                      CALC (JN_LENDO + 1)        TO JN_LENDO
+                      MOVE MOVDES.NUMERO         TO JN_N_DESPESA
+                      MOVE MOVDES.ORGAO          TO JN_ORGAO
+                      MOVE MOVDES.ECONOMICA      TO JN_ECONOMICA
+                      MOVE MOVDES.FUNCAO         TO JN_FUNCAO
+                      MOVE MOVDES.SUBFUNCAO      TO JN_SUBFUNCAO
+                      MOVE MOVDES.PROGRAMA       TO JN_PROGRAMA
+                      MOVE MOVDES.TIPO_CODIGO_PA TO JN_ACAO
+                      KEYCHECK GOSUB LB_ROTINA_PARADA
+                      
+                      //--guarda chave para totais
+                      MOVEALL MOVDES.FUNCAO TO ST_CHAVE_FUNCAO ST_CHAVE_SUBFUNCAO ST_CHAVE_FONTE ST_CHAVE_APLICACAO
+                      
+                      MOVE MOVDES.N_FONTE       TO ST_FONTE_AUX
+                      MOVE MOVDES.COD_APLICACAO TO ST_COD_APLICACAO_AUX
+                      
+                      [ @SICOM!] BEGIN
+                                  //--fontes sicom
+                                  MOVE (TRIM(MOVDES.N_FONTE)) TO ST_FONTE_AUDESP
+                                  APPEND ST_FONTE_AUDESP ' ' MOVDES.COD_APLICACAO
+                                  BUSCA_FONTE_RECURSO_MG PARGERAL.EXERCICIO MOVDES.COD_ENTIDADE ST_FONTE_AUDESP ST_FONTE_AUX ST_CO_FONTE_MG 'CONAM'
+                                  
+                                  PAD ST_FONTE_AUX TO ST_FONTE_AUX 5
+                                  MOVE '       ' TO ST_COD_APLICACAO_AUX
+                                 END
+                      
+                      APPEND ST_CHAVE_SUBFUNCAO ' ' MOVDES.SUBFUNCAO
+                      APPEND ST_CHAVE_FONTE     ' ' MOVDES.SUBFUNCAO ' ' ST_FONTE_AUX
+                      
+                      [ COD_APL!] APPEND ST_CHAVE_APLICACAO ' ' MOVDES.SUBFUNCAO ' ' ST_FONTE_AUX ' ' ST_COD_APLICACAO_AUX
+                      [~COD_APL!] APPEND ST_CHAVE_APLICACAO ' ' MOVDES.SUBFUNCAO ' ' ST_FONTE_AUX ' ' '       '
+                                  
+                      //--guarda chave por funcao, subfuncao, fonte, cod aplicacao e economica
+                      MOVE ST_CHAVE_APLICACAO TO ST_CODIGO
+                      APPEND ST_CODIGO ' ' MOVDES.ECONOMICA
+
+                      IF ((MOVDES.TIPO_DESPESA EQ 'OR') AND (MOVDES.TIPO_INSTRUM EQ '')) BEGIN
+                                                                                          GRAVA_TEMPORARIO ST_CODIGO          'I' MOVDES.FIXADO_INICIAL 'ELEMENTO'
+                                                                                          //--grava total por funcao
+                                                                                          GRAVA_TEMPORARIO ST_CHAVE_FUNCAO    'I' MOVDES.FIXADO_INICIAL 'FUNCAO'
+                                                                                          //--grava total por subfuncao
+                                                                                          GRAVA_TEMPORARIO ST_CHAVE_SUBFUNCAO 'I' MOVDES.FIXADO_INICIAL 'SUBFUNCAO'
+                                                                                          //--grava total por fonte
+                                                                                          GRAVA_TEMPORARIO ST_CHAVE_FONTE     'I' MOVDES.FIXADO_INICIAL 'FONTE'
+                                                                                          //--grava total por cod aplicacao
+                                                                                          [ COD_APL!] GRAVA_TEMPORARIO ST_CHAVE_APLICACAO 'I' MOVDES.FIXADO_INICIAL 'APLICACAO'
+                                                                                          //--grava total geral
+                                                                                          GRAVA_TEMPORARIO 'XX' 'I' MOVDES.FIXADO_INICIAL 'TOTAL'
+                                                                                         END
+
+                      //--fixado final
+                      GRAVA_TEMPORARIO ST_CODIGO          'F' MOVDES.FIXADO_INICIAL 'ELEMENTO'
+                      //--grava total por funcao
+                      GRAVA_TEMPORARIO ST_CHAVE_FUNCAO    'F' MOVDES.FIXADO_INICIAL 'FUNCAO'
+                      //--grava total por subfuncao
+                      GRAVA_TEMPORARIO ST_CHAVE_SUBFUNCAO 'F' MOVDES.FIXADO_INICIAL 'SUBFUNCAO'
+                      //--grava total por fonte
+                      GRAVA_TEMPORARIO ST_CHAVE_FONTE     'F' MOVDES.FIXADO_INICIAL 'FONTE'
+                      //--grava total por cod aplicacao
+                      [ COD_APL!] GRAVA_TEMPORARIO ST_CHAVE_APLICACAO 'F' MOVDES.FIXADO_INICIAL 'APLICACAO'
+                      //--grava total geral
+                      GRAVA_TEMPORARIO 'XX' 'F' MOVDES.FIXADO_INICIAL 'TOTAL'
+                      
+                      //--guarda posicao mais analitica para listas elementos ou itens
+                      [ COD_APL!] MOVE ST_CHAVE_APLICACAO TO ST_CHAVE
+                      
+                      CLEAR SUPLEMEN
+                      CONSTRAINT_SET 5
+                      CONSTRAIN SUPLEMEN.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+                      CONSTRAIN SUPLEMEN.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+                      CONSTRAIN SUPLEMEN.N_DESPESA    EQ JN_N_DESPESA
+                      CONSTRAIN SUPLEMEN.DATA         GE DT_INICIO_ANO
+                      CONSTRAIN SUPLEMEN.DATA         LE DT_FINAL
+                      CONSTRAINED_FIND FIRST SUPLEMEN BY INDEX.6
+                      WHILE [FOUND]
+                       PRINT (JN_LENDO + 1) TO JN_LENDO
+                       KEYCHECK GOSUB LB_ROTINA_PARADA
+                       
+                       MOVE ST_CHAVE TO ST_CODIGO
+                       APPEND ST_CODIGO ' ' MOVDES.ECONOMICA
+                       
+                       //--grava total por elemento
+                       GRAVA_TEMPORARIO ST_CODIGO           'F' SUPLEMEN.VALOR 'ELEMENTO'
+                       //--grava total por funcao
+                       GRAVA_TEMPORARIO ST_CHAVE_FUNCAO     'F' SUPLEMEN.VALOR 'FUNCAO'
+                       //--grava total por subfuncao
+                       GRAVA_TEMPORARIO ST_CHAVE_SUBFUNCAO  'F' SUPLEMEN.VALOR 'SUBFUNCAO'
+                       //--grava total por fonte
+                       GRAVA_TEMPORARIO ST_CHAVE_FONTE      'F' SUPLEMEN.VALOR 'FONTE'
+                       //--grava total por cod aplicacao
+                       GRAVA_TEMPORARIO ST_CHAVE_APLICACAO  'F' SUPLEMEN.VALOR 'APLICACAO'
+
+                       //--grava total geral
+                       GRAVA_TEMPORARIO 'XX' 'F' SUPLEMEN.VALOR 'TOTAL'
+
+                       CONSTRAINED_FIND NEXT
+                       END
+                      CONSTRAINT_SET 5 CLEAR
+
+                      CONSTRAINT_SET 1
+                      CONSTRAINED_FIND NEXT
+                      END
+                     CONSTRAINT_SET 1 CLEAR
+                     //--final leitura das despesas
+                    END
+            
+            //--pega fixado inicial e final dos dados externos audesp (cod aplicacao)
+            CLEAR DESP_ENT
+            CONSTRAINT_SET 1
+            CONSTRAIN DESP_ENT.EXERCICIO EQ ST@EXERCICIO@FINANCEIRO
+            [~TODAS!] CONSTRAIN DESP_ENT.COD_ENTIDADE EQ ST_ENTIDADE_SELECAO
+            [ TODAS!] CONSTRAIN DESP_ENT.COD_ENTIDADE NE ST_PROPRIA_ENTIDADE
+            [   MFC!] CONSTRAIN DESP_ENT.COD_ENTIDADE NE ST_PROPRIA_ENTIDADE
+            CONSTRAIN DESP_ENT.FUNCAO        GE JN_N_FUNCAO_INICIAL
+            CONSTRAIN DESP_ENT.FUNCAO        LE JN_N_FUNCAO_FINAL
+            CONSTRAIN DESP_ENT.SUBFUNCAO     GE JN_N_SUBFUNCAO_INICIAL
+            CONSTRAIN DESP_ENT.SUBFUNCAO     LE JN_N_SUBFUNCAO_FINAL
+            CONSTRAIN DESP_ENT.DATA          LE DT_FINAL
+            CONSTRAIN DESP_ENT.N_FONTE       GE JN_N_FONTE_INICIAL
+            CONSTRAIN DESP_ENT.N_FONTE       LE JN_N_FONTE_FINAL
+            CONSTRAIN DESP_ENT.COD_APLICACAO GE JN_N_APLICACAO_INICIAL
+            CONSTRAIN DESP_ENT.COD_APLICACAO LE JN_N_APLICACAO_FINAL
+            CONSTRAINED_FIND FIRST DESP_ENT BY INDEX.2
+            WHILE [FOUND]
+             CALC (JN_LENDO + 1)        TO JN_LENDO
+             MOVE DESP_ENT.NUMERO         TO JN_N_DESPESA
+             MOVE DESP_ENT.ORGAO          TO JN_ORGAO
+             MOVE DESP_ENT.ECONOMICA      TO JN_ECONOMICA
+             MOVE DESP_ENT.FUNCAO         TO JN_FUNCAO
+             MOVE DESP_ENT.SUBFUNCAO      TO JN_SUBFUNCAO
+             MOVE DESP_ENT.PROGRAMA       TO JN_PROGRAMA
+             MOVE DESP_ENT.TIPO_CODIGO_PA TO JN_ACAO
+             KEYCHECK GOSUB LB_ROTINA_PARADA
+             
+             //--guarda chave para totais
+             MOVEALL DESP_ENT.FUNCAO TO ST_CHAVE_FUNCAO ST_CHAVE_SUBFUNCAO ST_CHAVE_FONTE ST_CHAVE_APLICACAO
+             
+             MOVE DESP_ENT.N_FONTE       TO ST_FONTE_AUX
+             MOVE DESP_ENT.COD_APLICACAO TO ST_COD_APLICACAO_AUX
+             
+             [ @SICOM!] BEGIN
+                         //--fontes sicom
+                         MOVE (TRIM(DESP_ENT.N_FONTE)) TO ST_FONTE_AUDESP
+                         APPEND ST_FONTE_AUDESP ' ' DESP_ENT.COD_APLICACAO
+                         BUSCA_FONTE_RECURSO_MG PARGERAL.EXERCICIO DESP_ENT.COD_ENTIDADE ST_FONTE_AUDESP ST_FONTE_AUX ST_CO_FONTE_MG 'CONAM'
+                         
+                         PAD ST_FONTE_AUX TO ST_FONTE_AUX 5
+                         MOVE '       ' TO ST_COD_APLICACAO_AUX
+                        END
+             
+             APPEND ST_CHAVE_SUBFUNCAO ' ' DESP_ENT.SUBFUNCAO
+             APPEND ST_CHAVE_FONTE     ' ' DESP_ENT.SUBFUNCAO ' ' ST_FONTE_AUX
+             
+             [ COD_APL!] APPEND ST_CHAVE_APLICACAO ' ' DESP_ENT.SUBFUNCAO ' ' ST_FONTE_AUX ' ' ST_COD_APLICACAO_AUX
+             [~COD_APL!] APPEND ST_CHAVE_APLICACAO ' ' DESP_ENT.SUBFUNCAO ' ' ST_FONTE_AUX ' ' '       '
+                         
+             //--guarda chave por funcao, subfuncao, fonte, cod aplicacao e economica
+             MOVE ST_CHAVE_APLICACAO TO ST_CODIGO
+             APPEND ST_CODIGO ' ' DESP_ENT.ECONOMICA
+
+             IF ((DESP_ENT.TIPO_DESPESA EQ 'OR') AND (DESP_ENT.TIPO_INSTRUM EQ '')) BEGIN
+                                                                                     GRAVA_TEMPORARIO ST_CODIGO          'I' DESP_ENT.FIXADO_INICIAL 'ELEMENTO'
+                                                                                     //--grava total por funcao
+                                                                                     GRAVA_TEMPORARIO ST_CHAVE_FUNCAO    'I' DESP_ENT.FIXADO_INICIAL 'FUNCAO'
+                                                                                     //--grava total por subfuncao
+                                                                                     GRAVA_TEMPORARIO ST_CHAVE_SUBFUNCAO 'I' DESP_ENT.FIXADO_INICIAL 'SUBFUNCAO'
+                                                                                     //--grava total por fonte
+                                                                                     GRAVA_TEMPORARIO ST_CHAVE_FONTE     'I' DESP_ENT.FIXADO_INICIAL 'FONTE'
+                                                                                     //--grava total por cod aplicacao
+                                                                                     [ COD_APL!] GRAVA_TEMPORARIO ST_CHAVE_APLICACAO 'I' DESP_ENT.FIXADO_INICIAL 'APLICACAO'
+                                                                                     //--grava total geral
+                                                                                     GRAVA_TEMPORARIO 'XX' 'I' DESP_ENT.FIXADO_INICIAL 'TOTAL'
+                                                                                    END
+
+             //--fixado final
+             GRAVA_TEMPORARIO ST_CODIGO          'F' DESP_ENT.FIXADO_INICIAL 'ELEMENTO'
+             //--grava total por funcao
+             GRAVA_TEMPORARIO ST_CHAVE_FUNCAO    'F' DESP_ENT.FIXADO_INICIAL 'FUNCAO'
+             //--grava total por subfuncao
+             GRAVA_TEMPORARIO ST_CHAVE_SUBFUNCAO 'F' DESP_ENT.FIXADO_INICIAL 'SUBFUNCAO'
+             //--grava total por fonte
+             GRAVA_TEMPORARIO ST_CHAVE_FONTE     'F' DESP_ENT.FIXADO_INICIAL 'FONTE'
+             //--grava total por cod aplicacao
+             [ COD_APL!] GRAVA_TEMPORARIO ST_CHAVE_APLICACAO 'F' DESP_ENT.FIXADO_INICIAL 'APLICACAO'
+             //--grava total geral
+             GRAVA_TEMPORARIO 'XX' 'F' DESP_ENT.FIXADO_INICIAL 'TOTAL'
+             
+             //--guarda posicao mais analitica para listas elementos ou itens
+             [ COD_APL!] MOVE ST_CHAVE_APLICACAO TO ST_CHAVE
+
+             CLEAR SUPL_ENT
+             CONSTRAINT_SET 5
+             CONSTRAIN SUPL_ENT.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+             CONSTRAIN SUPL_ENT.COD_ENTIDADE EQ DESP_ENT.COD_ENTIDADE
+             CONSTRAIN SUPL_ENT.N_DESPESA    EQ JN_N_DESPESA
+             CONSTRAIN SUPL_ENT.DATA         GE DT_INICIO_ANO
+             CONSTRAIN SUPL_ENT.DATA         LE DT_FINAL
+             CONSTRAINED_FIND FIRST SUPL_ENT BY INDEX.5
+             WHILE [FOUND]
+              PRINT (JN_LENDO + 1) TO JN_LENDO
+              KEYCHECK GOSUB LB_ROTINA_PARADA
+              
+              MOVE ST_CHAVE TO ST_CODIGO
+              APPEND ST_CODIGO ' ' DESP_ENT.ECONOMICA
+              
+              //--grava total por elemento
+              GRAVA_TEMPORARIO ST_CODIGO           'F' SUPL_ENT.VALOR 'ELEMENTO'
+              //--grava total por funcao
+              GRAVA_TEMPORARIO ST_CHAVE_FUNCAO     'F' SUPL_ENT.VALOR 'FUNCAO'
+              //--grava total por subfuncao
+              GRAVA_TEMPORARIO ST_CHAVE_SUBFUNCAO  'F' SUPL_ENT.VALOR 'SUBFUNCAO'
+              //--grava total por fonte
+              GRAVA_TEMPORARIO ST_CHAVE_FONTE      'F' SUPL_ENT.VALOR 'FONTE'
+              //--grava total por cod aplicacao
+              GRAVA_TEMPORARIO ST_CHAVE_APLICACAO  'F' SUPL_ENT.VALOR 'APLICACAO'
+
+              //--grava total geral
+              GRAVA_TEMPORARIO 'XX' 'F' SUPL_ENT.VALOR 'TOTAL'
+
+              CONSTRAINED_FIND NEXT
+              END
+             CONSTRAINT_SET 5 CLEAR
+
+             CONSTRAINT_SET 1
+             CONSTRAINED_FIND NEXT
+             END
+            CONSTRAINT_SET 1 CLEAR
+           END
+
+//--
+//--orcado para o proximo exercicio
+//--
+CLEAR VERSAO
+MOVE 'LOA'                    TO VERSAO.TIPO
+MOVE 'A'                      TO VERSAO.ATIVO
+MOVE (PARGERAL.EXERCICIO + 1) TO VERSAO.ANO_VIGENCIA_I
+MOVE 2                        TO VERSAO.NUMERO
+FIND EQ VERSAO BY INDEX.2
+[ FOUND] BEGIN
+          CLEAR PLANDES
+          CONSTRAINT_SET 1
+          CONSTRAIN PLANDES.ID_VERSAO  EQ VERSAO.ID_VERSAO
+          CONSTRAIN PLANDES.FUNCAO     GE JN_N_FUNCAO_INICIAL
+          CONSTRAIN PLANDES.FUNCAO     LE JN_N_FUNCAO_FINAL
+          CONSTRAIN PLANDES.SUBFUNCAO  GE JN_N_SUBFUNCAO_INICIAL
+          CONSTRAIN PLANDES.SUBFUNCAO  LE JN_N_SUBFUNCAO_FINAL
+          CONSTRAIN PLANDES.FONTE      GE JN_N_FONTE_INICIAL
+          CONSTRAIN PLANDES.FONTE      LE JN_N_FONTE_FINAL
+          [ COD_APL!] BEGIN
+                       CONSTRAIN PLANDES.COD_APLICACAO GE JN_N_APLICACAO_INICIAL
+                       CONSTRAIN PLANDES.COD_APLICACAO LE JN_N_APLICACAO_FINAL
+                      END
+          [~ TODAS!] CONSTRAIN PLANDES.COD_ENTIDADE EQ JN_COD_ENTIDADE
+          CONSTRAINED_FIND FIRST PLANDES BY INDEX.6
+          WHILE [FOUND]
+           CALC (JN_LENDO + 1)         TO JN_LENDO
+           MOVE PLANDES.NUMERO         TO JN_N_DESPESA
+           MOVE PLANDES.ORGAO          TO JN_ORGAO
+           MOVE PLANDES.ECONOMICA      TO JN_ECONOMICA
+           MOVE PLANDES.FUNCAO         TO JN_FUNCAO
+           MOVE PLANDES.SUBFUNCAO      TO JN_SUBFUNCAO
+           MOVE PLANDES.PROGRAMA       TO JN_PROGRAMA
+           MOVE PLANDES.COD_ACAO       TO JN_ACAO
+           KEYCHECK GOSUB LB_ROTINA_PARADA
+
+           //--guarda chave para totais
+           MOVEALL PLANDES.FUNCAO TO ST_CHAVE_FUNCAO ST_CHAVE_SUBFUNCAO ST_CHAVE_FONTE ST_CHAVE_APLICACAO
+           
+           APPEND ST_CHAVE_SUBFUNCAO ' ' PLANDES.SUBFUNCAO
+           APPEND ST_CHAVE_FONTE     ' ' PLANDES.SUBFUNCAO ' ' PLANDES.FONTE
+           APPEND ST_CHAVE_APLICACAO ' ' PLANDES.SUBFUNCAO ' ' PLANDES.FONTE ' ' PLANDES.COD_APLICACAO
+
+           //--guarda chave por funcao, subfuncao, fonte, cod aplicacao e economica
+           MOVE ST_CHAVE_APLICACAO TO ST_CODIGO
+           APPEND ST_CODIGO ' ' PLANDES.ECONOMICA
+
+           GRAVA_TEMPORARIO ST_CODIGO          'O' PLANDES.FIXADO 'ELEMENTO'
+           //--grava total por funcao
+           GRAVA_TEMPORARIO ST_CHAVE_FUNCAO    'O' PLANDES.FIXADO 'FUNCAO'
+           //--grava total por subfuncao
+           GRAVA_TEMPORARIO ST_CHAVE_SUBFUNCAO 'O' PLANDES.FIXADO 'SUBFUNCAO'
+           //--grava total por fonte
+           GRAVA_TEMPORARIO ST_CHAVE_FONTE     'O' PLANDES.FIXADO 'FONTE'
+           //--grava total por cod aplicacao
+           GRAVA_TEMPORARIO ST_CHAVE_APLICACAO 'O' PLANDES.FIXADO 'APLICACAO'
+           //--grava total geral
+           GRAVA_TEMPORARIO 'XX' 'O' PLANDES.FIXADO 'TOTAL'
+
+           CONSTRAINT_SET 1         
+           CONSTRAINED_FIND NEXT
+           END
+          CONSTRAINT_SET 1 CLEAR
+          //--final leitura das despesas
+         END
+//--
+
+//--impressao do relatorio
+MOVE 0 TO RECCOUNT
+MOVE 1 TO PAGECOUNT
+
+BLANKFORM HEADER
+CABEC ST@PREFEITURA    JHD_PREFEITURA
+CABEC ST_NOME_MES      JHD_PERIODO
+SYSDATA                JHD_DATA
+PRINT PAGECOUNT     TO JHD_PAGINA
+MOVE  PAGECOUNT     TO JN_PAGINA
+
+IF JN_COD_ENTIDADE GE '01' CABEC ENTIDADE.DESCRICAO JHD_ENTIDADE
+ELSE                       CABEC 'CONSOLIDADO'      JHD_ENTIDADE
+
+MOVE JN_N_FUNCAO_INICIAL    TO JHD_FUNCAO_INICIAL
+MOVE JN_N_FUNCAO_FINAL      TO JHD_FUNCAO_FINAL
+MOVE JN_N_SUBFUNCAO_INICIAL TO JHD_SUBFUNCAO_INICIAL
+MOVE JN_N_SUBFUNCAO_FINAL   TO JHD_SUBFUNCAO_FINAL
+MOVE JN_N_FONTE_INICIAL     TO JHD_FONTE_INICIAL
+MOVE JN_N_FONTE_FINAL       TO JHD_FONTE_FINAL
+MOVE JN_N_APLICACAO_INICIAL TO JHD_APLICACAO_INICIAL
+MOVE JN_N_APLICACAO_FINAL   TO JHD_APLICACAO_FINAL
+
+OUTPUT HEADER
+
+MOVE '3' TO ST_QUEBRA_ECONOMICA
+
+BLANKFORM BODY
+BLANKFORM TOTAL
+
+CLEAR TEMPCALC
+CONSTRAINT_SET 1
+CONSTRAIN TEMPCALC.COD_ENTIDADE EQ ST@CODIGO@ENTIDADE
+CONSTRAIN TEMPCALC.EXERCICIO    EQ ST@EXERCICIO@FINANCEIRO
+CONSTRAIN TEMPCALC.USUARIO      EQ ST@USUARIO
+CONSTRAINED_FIND FIRST TEMPCALC BY INDEX.1
+WHILE [FOUND]
+ KEYCHECK GOSUB LB_ROTINA_PARADA
+ CALC (JN_LENDO + 1) TO JN_LENDO
+ INCREMENT RECCOUNT
+ KEYCHECK GOSUB LB_ROTINA_PARADA
+
+ BLANKFORM BODY
+ INDICATE PULA! FALSE
+ 
+ MOVEALL '' TO ST_FUNCAO ST_SUBFUNCAO ST_ECONOMICA
+ 
+ MOVE (MID(TEMPCALC.CODIGO,2,1))   TO ST_FUNCAO
+ MOVE (MID(TEMPCALC.CODIGO,3,4))   TO ST_SUBFUNCAO
+ MOVE (MID(TEMPCALC.CODIGO,3,8))   TO ST_FONTE
+ MOVE (MID(TEMPCALC.CODIGO,7,14))  TO ST_COD_APLICACAO
+ MOVE (MID(TEMPCALC.CODIGO,12,22)) TO ST_ECONOMICA
+ 
+ IF ST_FUNCAO NE 'XX' BEGIN
+                       CLEAR FUNCNEW
+                       MOVE ST@EXERCICIO@FINANCEIRO TO FUNCNEW.EXERCICIO
+                       MOVE ST_FUNCAO               TO FUNCNEW.CODIGO
+                       FIND EQ FUNCNEW BY INDEX.1
+                       [~FOUND] CLEAR FUNCNEW
+                       
+                       CLEAR SUBFUNC
+                       MOVE ST@EXERCICIO@FINANCEIRO TO SUBFUNC.EXERCICIO
+                       MOVE ST_SUBFUNCAO            TO SUBFUNC.CODIGO
+                       FIND EQ SUBFUNC BY INDEX.1
+                       [~FOUND] CLEAR SUBFUNC
+                       
+                       CLEAR FONTES
+                       MOVE ST@EXERCICIO@FINANCEIRO TO FONTES.EXERCICIO
+                       MOVE ST@TIPO@FONTE           TO FONTES.TIPO
+                       MOVE ST_FONTE                TO FONTES.CODIGO
+                       FIND EQ FONTES BY INDEX.1
+                       [~FOUND] CLEAR FONTES
+                        
+                       CLEAR FUNDOS
+                       MOVE ST@CODIGO@ENTIDADE      TO FUNDOS.COD_ENTIDADE
+                       MOVE ST@EXERCICIO@FINANCEIRO TO FUNDOS.EXERCICIO
+                       MOVE ST@TIPO@FONTE           TO FUNDOS.TIPO
+                       MOVE ST_COD_APLICACAO        TO FUNDOS.CODIGO
+                       FIND EQ FUNDOS BY INDEX.1
+                       [~FOUND] CLEAR FUNDOS
+                       
+                       CLEAR ECONORCA
+                       MOVE PARGERAL.ESTADO    TO ECONORCA.UF
+                       MOVE PARGERAL.EXERCICIO TO ECONORCA.ANO
+                       MOVE ST_ECONOMICA       TO ECONORCA.CODIGO
+                       FIND EQ ECONORCA BY INDEX.1
+                       [~FOUND] CLEAR ECONORCA
+                       
+                       PRINT TEMPCALC.VALOR_1 TO JBD_DOTACAO_INICIAL 
+                       PRINT TEMPCALC.VALOR_2 TO JBD_DOTACAO_ATUAL 
+                       PRINT TEMPCALC.VALOR_3 TO JBD_EMPENHADO 
+                       PRINT TEMPCALC.VALOR_4 TO JBD_LIQUIDADO     
+                       PRINT TEMPCALC.VALOR_5 TO JBD_PAGO
+                       PRINT TEMPCALC.VALOR_6 TO JBD_ORCADO
+                       
+                       IF TEMPCALC.NUMERO EQ 'FUNCAO' BEGIN
+                                                       PRINT ST_FUNCAO         TO JBD_FUNCAO
+                                                       PRINT FUNCNEW.DESCRICAO TO JBD_DESCRICAO
+                                                      END
+                       ELSE IF TEMPCALC.NUMERO EQ 'SUBFUNCAO' BEGIN
+                                                               OUTPUT LINHA
+                                                               
+                                                               PRINT ST_FUNCAO         TO JBD_FUNCAO
+                                                               PRINT ST_SUBFUNCAO      TO JBD_SUBFUNCAO
+                                                               PRINT SUBFUNC.DESCRICAO TO JBD_DESCRICAO
+                                                              END
+                       ELSE IF TEMPCALC.NUMERO EQ 'FONTE' BEGIN
+                                                           OUTPUT LINHA
+                                                           
+                                                           PRINT ST_FUNCAO         TO JBD_FUNCAO
+                                                           PRINT ST_SUBFUNCAO      TO JBD_SUBFUNCAO
+                                                           PRINT ST_FONTE          TO JBD_FONTE
+                                                           PRINT FONTES.DESCRICAO  TO JBD_DESCRICAO
+                                                          END
+                       ELSE IF TEMPCALC.NUMERO EQ 'APLICACAO' BEGIN
+                                                               OUTPUT LINHA
+                                                               
+                                                               PRINT ST_FUNCAO         TO JBD_FUNCAO
+                                                               PRINT ST_SUBFUNCAO      TO JBD_SUBFUNCAO
+                                                               PRINT ST_FONTE          TO JBD_FONTE
+                                                               PRINT ST_COD_APLICACAO  TO JBD_COD_APLICACAO
+                                                               PRINT FUNDOS.DESCRICAO  TO JBD_DESCRICAO
+                                                               
+                                                               MOVE 'X' TO ST_QUEBRA_ECONOMICA
+                                                               INDICATE PULA! TRUE
+                                                              END
+                       ELSE IF ((TEMPCALC.NUMERO EQ 'ELEMENTO') OR (TEMPCALC.NUMERO EQ 'ITEM')) BEGIN
+                                                                                                 [ LINHA_COMPLETA!] BEGIN
+                                                                                                                     PRINT ST_FUNCAO         TO JBD_FUNCAO
+                                                                                                                     PRINT ST_SUBFUNCAO      TO JBD_SUBFUNCAO
+                                                                                                                     PRINT ST_FONTE          TO JBD_FONTE
+                                                                                                                     PRINT ST_COD_APLICACAO  TO JBD_COD_APLICACAO
+                                                                                                                    END
+                                                                                                 
+                                                                                                 PRINT ST_ECONOMICA       TO JBD_N_ECONOMICA
+                                                                                                 PRINT ECONORCA.DESCRICAO TO JBD_DESCRICAO
+                                                                                                 
+                                                                                                 [~ELEMENTO!] IF ECONORCA.GRAU EQ '5' BEGIN
+                                                                                                                                       LOWERCASE JBD_DESCRICAO TO JBD_DESCRICAO
+                                                                                                                                       INSERT '  ' IN JBD_DESCRICAO AT 1
+                                                                                                                                      END
+                                                                                                 [ ELEMENTO!] LOWERCASE JBD_DESCRICAO TO JBD_DESCRICAO
+                                                                                                 
+                                                                                                 IF (LEFT(ST_ECONOMICA,1)) NE ST_QUEBRA_ECONOMICA BEGIN
+                                                                                                                                                   IF ST_QUEBRA_ECONOMICA NE 'X' OUTPUT LINHA
+                                                                                                                                                   MOVE (LEFT(ST_ECONOMICA,1)) TO ST_QUEBRA_ECONOMICA
+                                                                                                                                                  END
+                                                                                                END
+                       
+                       OUTPUT BODY
+                       CALC (JN_IMPRIMINDO + 1) TO JN_IMPRIMINDO
+                       [ PULA!] OUTPUT LINHA
+                       GOSUB LB_PULA_PAGINA
+                      END
+ ELSE BEGIN
+       PRINT ' TOTAL '        TO JT_DESCRICAO
+       PRINT TEMPCALC.VALOR_1 TO JT_DOTACAO_INICIAL
+       PRINT TEMPCALC.VALOR_2 TO JT_DOTACAO_ATUAL
+       PRINT TEMPCALC.VALOR_3 TO JT_EMPENHADO
+       PRINT TEMPCALC.VALOR_4 TO JT_LIQUIDADO
+       PRINT TEMPCALC.VALOR_5 TO JT_PAGO
+       PRINT TEMPCALC.VALOR_6 TO JT_ORCADO
+       OUTPUT TOTAL
+      END
+
+ INDICATE ERR FALSE
+ ON ERROR GOSUB CHECA_GRAVACAO
+ REREAD TEMPCALC
+ DELETE TEMPCALC
+ UNLOCK
+ ON ERROR OFF
+ CONSTRAINED_FIND NEXT
+ END
+CONSTRAINT_SET 1 CLEAR
+
+#INCLUDE QAPLIC.INC
+
+BUSCA_CAMINHO_MENU 'R01SIOPE' ''
+FORMFEED
+GRAVAPAG
+
+[~TITULO_QUADRO!] BEGIN
+                   ADVERTE 'VERIFIQUE, NO FIM DO RELATORIO, RELACAO DA(S) ENTIDADE(S) SEM ARQUIVO(S) XML REFERENTE AO PERIODO SELECIONADO.'
+                  END
+
+ABORT
+
+LB_ROTINA_PARADA:
+CABEC 'GOSTARIA REALMENTE DE SAIR < S/N >?' CONFIRMA.1
+PAGE CONFIRMA
+INKEYCHECK ST_TECLA IN 'SsNn'
+IF ST_TECLA IN 'Ss' BEGIN
+                     MOVE 0 TO RECCOUNT
+                     LIMPA_PRN
+                    END
+
+MOVE 0 TO CURRENT_IMAGE
+PAGE TELA
+PAGE MSG
+RETURN
+
+LB_PULA_PAGINA:
+ IF LINECOUNT GE 58 BEGIN
+                     OUTPUT FOOTER
+                     FORMFEED
+                     PRINT PAGECOUNT TO JHD_PAGINA
+                     MOVE  PAGECOUNT TO JN_PAGINA
+                     OUTPUT HEADER
+                    END
+RETURN
+
+APAGA_TEMPCALC JN_LENDO
+
+KEYPROC KEY.ESCAPE
+LIMPA_PRN
+RETURN
+
+KEYPROC KEY.UP
+ BACKFIELD
+RETURN
+
+KEYPROC KEY.FIELD
+ IF CURRENT_WINDOW EQ 1 BEGIN
+                         MOVE 'CENTIDAD 1 ' TO ST_DESTINO
+                         APPEND ST_DESTINO ST@USUARIO ' ' ST@OPCAO ' ' ST@PROGRAMA ' ' ST@CODIGO@ENTIDADE ' ' ST@EXERCICIO@FINANCEIRO
+                         CHAIN WAIT ST_DESTINO EXPORT_FILES
+                         MOVE 0 TO CURRENT_IMAGE
+                         PAGE TELA
+                         IF ENTIDADE.CODIGO NE "" BEGIN
+                                                   TRIM ENTIDADE.CODIGO    TO JN_COD_ENTIDADE
+                                                   TRIM ENTIDADE.DESCRICAO TO JN_ENTIDADE
+                                                  END
+                         ELSE ENTAGAIN
+                         RETURN
+                        END
+ IF ( (CURRENT_WINDOW EQ 3 ) OR;
+      (CURRENT_WINDOW EQ 5 ) ) BEGIN
+                                MOVE 'CFUNCNEW 1 ' TO ST_DESTINO
+                                APPEND ST_DESTINO ST@USUARIO ' ' ST@OPCAO ' ' ST@PROGRAMA ' ' ST@CODIGO@ENTIDADE ' ' ST@EXERCICIO@FINANCEIRO
+                                CHAIN WAIT ST_DESTINO EXPORT_FILES
+                                MOVE 0 TO CURRENT_IMAGE
+                                PAGE TELA
+                                IF FUNCNEW.CODIGO NE '' BEGIN
+                                                         IF CURRENT_WINDOW EQ 3 TRIM FUNCNEW.CODIGO TO JN_N_FUNCAO_INICIAL
+                                                         ELSE                   TRIM FUNCNEW.CODIGO TO JN_N_FUNCAO_FINAL
+                                                        END
+                                ELSE RETURN LB_FUNCAO_INICIAL
+                               END
+ IF ( (CURRENT_WINDOW EQ 7 ) OR;
+      (CURRENT_WINDOW EQ 9 ) ) BEGIN
+                                MOVE 'CSUBFUNC 1 ' TO ST_DESTINO
+                                APPEND ST_DESTINO ST@USUARIO ' ' ST@OPCAO ' ' ST@PROGRAMA ' ' ST@CODIGO@ENTIDADE ' ' ST@EXERCICIO@FINANCEIRO
+                                CHAIN WAIT ST_DESTINO EXPORT_FILES
+                                MOVE 0 TO CURRENT_IMAGE
+                                PAGE TELA
+                                IF SUBFUNC.CODIGO NE '' BEGIN
+                                                         IF CURRENT_WINDOW EQ 7 TRIM SUBFUNC.CODIGO TO JN_N_SUBFUNCAO_INICIAL
+                                                         ELSE                   TRIM SUBFUNC.CODIGO TO JN_N_SUBFUNCAO_FINAL
+                                                        END
+                                ELSE RETURN LB_SUBFUNCAO_INICIAL
+                               END
+ IF ( (CURRENT_WINDOW EQ 11 ) OR;
+      (CURRENT_WINDOW EQ 13 ) ) BEGIN
+                                 MOVE 'CFONTES1 1 ' TO ST_DESTINO
+                                 APPEND ST_DESTINO ST@USUARIO ' ' ST@OPCAO ' ' ST@PROGRAMA ' ' ST@CODIGO@ENTIDADE ' ' ST@EXERCICIO@FINANCEIRO ' ' '01' ' ' '99'
+                                 CHAIN WAIT ST_DESTINO EXPORT_FILES
+                                 MOVE 0 TO CURRENT_IMAGE
+                                 PAGE TELA
+                                 IF FONTES.CODIGO NE "" BEGIN
+                                                         IF CURRENT_WINDOW EQ 11 MOVE FONTES.CODIGO    TO JN_N_FONTE_INICIAL
+                                                         ELSE                    MOVE FONTES.CODIGO    TO JN_N_FONTE_FINAL
+                                                        END
+                                 ELSE ENTAGAIN
+                                 RETURN
+                                END
+ IF ( (CURRENT_WINDOW EQ 15 ) OR;
+      (CURRENT_WINDOW EQ 17 ) ) BEGIN
+                                 MOVE 'CAPLIC1 1 ' TO ST_DESTINO
+                                 APPEND ST_DESTINO ST@USUARIO ' ' ST@OPCAO ' ' ST@PROGRAMA ' ' ST@CODIGO@ENTIDADE ' ' ST@EXERCICIO@FINANCEIRO ' ' '1000000' ' ' '9999999'
+                                 CHAIN WAIT ST_DESTINO EXPORT_FILES
+                                 MOVE 0 TO CURRENT_IMAGE
+                                 PAGE TELA
+                                 IF FUNDOS.CODIGO NE "" BEGIN
+                                                         IF CURRENT_WINDOW EQ 15 MOVE FUNDOS.CODIGO    TO JN_N_APLICACAO_INICIAL
+                                                         ELSE                    MOVE FUNDOS.CODIGO    TO JN_N_APLICACAO_FINAL
+                                                        END
+                                 ELSE ENTAGAIN
+                                 RETURN
+                                END
+ ELSE ENTAGAIN
+RETURN
+
+#INCLUDE INTEGRID.INC
+
