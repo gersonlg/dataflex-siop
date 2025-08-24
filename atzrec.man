@@ -1,0 +1,950 @@
+//--
+//-- (NAO PRECISA MAIS) rodar em seguida atzrecfon.man e acreceitas.man
+//-- (NAO PRECISA MAIS) se for MG rodar tambem o atzplamg.man(nao precisa mais) natureza = RECEITA (atreplan.man pra varginha enviar TXT do relplano FONTREC - RECEITAS)
+//--
+//-- todos os programas acima irao importar o mesmo arquivo.csv (receitas.csv) 
+//--       tudo em um mesmo programa ?? (ok ja chegou)
+//--
+//-- PLANILHA UNICA MFC - SFPM - DEVERA SER IMPORTADA APENAS COM ESTE PROGRAMA A PARTIR DE 2020/2021->
+//--
+
+/tela resident
+
+Estado         __
+
+Ano            ____
+
+
+Confirma       _ <S/N>
+
+/*
+#INCLUDE CONAM.LIB
+#INCLUDE ACENTO.LIB
+
+SET_ARGUMENT_SIZE 4096
+
+string st_tira_acento 255
+
+open receitas
+
+autopage tela
+name jn_uf
+name jn_ano
+name jn_confirma
+
+inicio:
+clearform tela
+page tela
+
+move 'S' to jn_planilha_nova
+
+repeat
+ accept jn_uf  {capslock,autoclear}
+until jn_uf ne ''
+
+repeat
+ ano_2000 jn_ano {capslock,autoclear}
+until jn_ano ne ''
+
+repeat
+ accept jn_confirma         {autoclear,capslock}
+ if not jn_confirma in 'SsNn' move '' to jn_confirma
+until jn_confirma ne ''
+
+if jn_confirma in 'Nn' goto inicio
+
+//--
+tirar_acentuacao_arquivo '/home/gerson/conv/siop/receitas.csv' '/home/gerson/conv/siop/receitas2.csv'
+//--
+
+direct_input channel 1 "/home/gerson/conv/siop/receitas.csv"
+
+[ seqeof] begin
+           gotoxy 5 2
+           showln 'Arquivo receitas.csv nao encontrado. '
+           pause .
+           abort
+          end
+
+gotoxy 20 0
+showln ''
+showln ' aguarde ...  apagando anteriores '
+showln ''
+
+clear receitas
+constraint_set 1
+constrain receitas.uf  eq ''
+constrained_find first receitas by index.1
+while [found]
+ reread receitas
+ delete receitas
+ unlock
+ constrained_find next
+ end
+constraint_set 1 clear
+
+clear receitas
+constraint_set 1
+constrain receitas.uf  eq jn_uf
+constrain receitas.ano eq jn_ano
+constrained_find first receitas by index.1
+while [found]
+ reread receitas
+ delete receitas
+ unlock
+ constrained_find next
+ end
+constraint_set 1 clear
+
+call ler_arquivo
+
+clearxy 20 0
+pause 'Termino'
+
+abort
+
+keyproc key.up
+ backfield
+return
+
+keyproc key.escape
+ abort
+return
+
+procedure ler_arquivo
+ local string st_linha
+ local string st_codigo
+ local string st_tipo
+ local string st_aux
+ 
+ local string st_fonte
+ local string st_fonte_sicom
+ local string st_codigo_aplicacao
+ 
+ local string st_uf
+ local string st_ano
+ local string st_descricao
+ local string st_descricao_completa
+ local string st_tributaria
+ 
+ local string st_divida_ativa
+ local string st_lancamento
+ local string st_tipo_lancamento
+ local string st_renuncia
+ local string st_desconto
+ local string st_rendimento_aplicacao
+ local string st_principal_divida_ativa
+ local string st_multas_juros_divida_ativa
+ local string st_atualizacao_monetaria_divida_ativa
+ local string st_ajustes
+ local string st_relacionamento_divida_ativa
+ local string st_de_para_stn
+ local string st_corrente
+ local string st_capital
+ local string st_relacionamento_d_ativa
+ local string st_deducao_fundeb
+ local string st_relacionamento_ded_fundeb
+ local string st_deducoes_da_receita
+ local string st_relacionamento_ded_receita
+ local string st_intraorcamentaria
+ local string st_relaciona_cnr
+ local string st_relaciona_cadastrada
+ local string st_vp_qualitativa
+ local string st_precatorio_reg_especial
+ local string st_rendimento_convenio
+ local string st_operacao_credito
+ local string st_emprestimo_concedido
+ local string st_receitas_primarias
+ local string st_fonte_de_recurso_fixa
+ local string st_cod_aplicacao_fixo
+ local string st_convenio
+ local string st_derivadas
+ local string st_originarias
+ local string st_transferencias
+ local string st_investimentos
+ local string st_financiamentos
+ local string st_divida_ativa_rpps
+ 
+ local string st_natureza
+ local string st_tipo_div_ativa
+ local string st_outras_receitas
+ local string st_emenda_93
+ local string st_alienacao
+ local string st_ensino
+ local string st_saude
+ local string st_fundeb
+ local string st_codigo_anterior
+ local string st_cod_anterior
+ local string st_cod_atual
+ local string st_tributos
+ 
+ local string st_fonte_stn
+ local string st_fonte_stn_consultoria
+ local string st_codigo_aplicacao_stn
+ local string st_codigo_aplicacao_stn_consultoria
+ 
+ local integer it_a      it_b    it_pos
+ local string  st_d1     st_d2   st_d3   st_d4
+ 
+ local string st_guarda_fonte          st_guarda_codigo_aplicacao st_guarda_codigo_aplicacao_fixo
+ local string st_guarda_codigo_receita st_guarda_fonte_fixa       st_detalhamento_fonte
+ local string st_complemento_fonte
+ 
+ local number nb_percentual
+ 
+ move 'RECEITA' to st_natureza
+
+ //--sempre verificar se tem essas linhas a mais
+ [ planilha_nova!] begin
+                    readln st_linha channel 1
+                    readln st_linha channel 1
+                    readln st_linha channel 1
+                    readln st_linha channel 1
+                    readln st_linha channel 1
+                    
+                    //--2 linhas a mais
+                    if jn_uf eq 'SP' begin
+                                      readln st_linha channel 1
+                                      readln st_linha channel 1
+                                      readln st_linha channel 1
+                                     end
+                   end
+
+ [~planilha_nova!] begin
+                    readln st_linha channel 1
+                   end
+ 
+ repeat
+  moveall '' to st_fonte st_codigo_aplicacao st_fonte_sicom st_codigo
+  
+  [ planilha_nova!] begin
+                     read channel 1 st_aux
+                     read channel 1 st_uf
+                     read channel 1 st_ano
+                     read channel 1 st_aux
+                     read channel 1 st_aux
+                     read channel 1 st_aux
+                     read channel 1 st_aux
+                     read channel 1 st_aux
+                     read channel 1 st_aux
+                     read channel 1 st_aux
+                     read channel 1 st_codigo
+                     
+                     //--codigo ano anterior ( nao tinha na planilha anterior )
+                     if jn_ano ge '2022' begin
+                                          read channel 1 st_codigo_anterior
+                                         end
+                     
+                     read channel 1 st_descricao_completa
+                     
+                     if jn_uf eq 'MG' begin
+                                       read channel 1 st_fonte
+                                       read channel 1 st_fonte_sicom
+                                      end
+                     if jn_uf eq 'SP' begin
+                                       read channel 1 st_fonte
+                                       read channel 1 st_codigo_aplicacao
+                                      end
+                     
+                     clearxy 0 0
+                     showln st_descricao_completa
+                     showln st_codigo_aplicacao
+//                      pause .
+                     keycheck abort
+                     
+                     if jn_uf eq 'SP' if jn_ano ge '2023' begin
+                                                           read channel 1 st_fonte_stn
+                                                           read channel 1 st_codigo_aplicacao_stn
+                                                           
+                                                           read channel 1 st_fonte_stn_consultoria
+                                                           read channel 1 st_codigo_aplicacao_stn_consultoria
+                                                          end
+                     
+                     
+                     read channel 1 nb_percentual
+                     read channel 1 st_tipo
+                     read channel 1 st_tributos
+                     read channel 1 st_divida_ativa
+                     read channel 1 st_lancamento
+                     read channel 1 st_tipo_lancamento
+                     read channel 1 st_renuncia
+                     read channel 1 st_desconto
+                     read channel 1 st_rendimento_aplicacao
+                     read channel 1 st_principal_divida_ativa
+                     read channel 1 st_multas_juros_divida_ativa
+                     read channel 1 st_atualizacao_monetaria_divida_ativa
+                     read channel 1 st_ajustes
+                     read channel 1 st_relacionamento_divida_ativa
+                     read channel 1 st_de_para_stn
+                     read channel 1 st_corrente
+                     read channel 1 st_capital
+                     read channel 1 st_relacionamento_d_ativa
+                     read channel 1 st_deducao_fundeb
+                     read channel 1 st_relacionamento_ded_fundeb
+                     read channel 1 st_deducoes_da_receita
+                     read channel 1 st_relacionamento_ded_receita
+                     read channel 1 st_intraorcamentaria
+                     read channel 1 st_relaciona_cnr
+                     read channel 1 st_relaciona_cadastrada
+                     read channel 1 st_vp_qualitativa
+                     read channel 1 st_precatorio_reg_especial
+                     read channel 1 st_rendimento_convenio
+                     read channel 1 st_operacao_credito
+                     read channel 1 st_emprestimo_concedido
+                     read channel 1 st_receitas_primarias
+                     read channel 1 st_fonte_de_recurso_fixa
+                     read channel 1 st_cod_aplicacao_fixo
+                     read channel 1 st_convenio
+                     read channel 1 st_derivadas
+                     read channel 1 st_originarias
+                     read channel 1 st_transferencias
+                     read channel 1 st_investimentos
+                     read channel 1 st_financiamentos
+                     read channel 1 st_divida_ativa_rpps
+                     read channel 1 st_aux
+                     read channel 1 st_descricao
+                     read channel 1 st_aux
+                     read channel 1 st_aux
+                    end
+  
+  [~planilha_nova!] begin
+                     read channel 1 st_uf
+                     read channel 1 st_ano
+                     read channel 1 st_aux
+                     read channel 1 st_aux
+                     read channel 1 st_aux
+                     read channel 1 st_aux
+                     read channel 1 st_aux
+                     read channel 1 st_aux
+                     read channel 1 st_aux
+                     read channel 1 st_aux
+                     read channel 1 st_codigo
+                     read channel 1 st_descricao
+                     read channel 1 st_aux
+                     read channel 1 st_tipo
+                     read channel 1 st_fonte
+                     read channel 1 st_codigo_aplicacao
+                     read channel 1 nb_percentual
+                     read channel 1 st_aux
+                     read channel 1 st_aux
+                     read channel 1 st_aux
+                     read channel 1 st_aux
+                     read channel 1 st_aux
+                     read channel 1 st_aux
+                     read channel 1 st_aux
+                     read channel 1 st_aux
+                     read channel 1 st_aux
+                     read channel 1 st_aux
+                     read channel 1 st_aux
+                     read channel 1 st_aux
+                     read channel 1 st_aux
+                     read channel 1 st_aux
+                     read channel 1 st_aux
+                     read channel 1 st_aux
+                     read channel 1 st_aux
+                     read channel 1 st_tipo_lancamento
+                     read channel 1 st_lancamento
+                     read channel 1 st_renuncia
+                     read channel 1 st_desconto
+                     read channel 1 st_outras_receitas
+                     read channel 1 st_derivadas
+                     read channel 1 st_originarias
+                     read channel 1 st_transferencias
+                     read channel 1 st_investimentos
+                     read channel 1 st_financiamentos
+                     read channel 1 st_rendimento_aplicacao
+                     read channel 1 st_divida_ativa
+                     read channel 1 st_relacionamento_divida_ativa
+                     read channel 1 st_ajustes
+                     read channel 1 st_tipo_div_ativa
+                     read channel 1 st_emenda_93
+                     read channel 1 st_alienacao
+                     read channel 1 st_operacao_credito
+                     read channel 1 st_emprestimo_concedido
+                     read channel 1 st_de_para_stn
+                     read channel 1 st_ensino
+                     read channel 1 st_saude
+                     read channel 1 st_fundeb
+                     read channel 1 st_aux
+                     read channel 1 st_aux
+                     read channel 1 st_aux
+                     read channel 1 st_precatorio_reg_especial
+                    end
+  
+  readln st_linha
+
+  RETIRAR_ACENTUACAO st_descricao st_descricao
+  uppercase st_descricao
+  
+  RETIRAR_ACENTUACAO st_descricao_completa st_descricao_completa
+  uppercase st_descricao_completa
+  
+  if st_uf eq 'REGRAS DOS ATRIBUTOS DAS RECEITAS' begin
+                                                   moveall '' to st_codigo st_relacionamento_divida_ativa st_guarda_fonte st_guarda_codigo_aplicacao st_guarda_codigo_receita
+                                                  end
+  
+  if st_codigo ne '' begin
+                      trim st_codigo to st_codigo
+                      pontua_receita st_codigo st_ano
+                     end
+  
+  if st_codigo_anterior ne '' begin
+                               trim st_codigo_anterior to st_codigo_anterior
+                               pontua_receita st_codigo_anterior st_ano
+                              end
+  
+  if st_de_para_stn ne '' begin
+                           trim st_de_para_stn to st_de_para_stn
+                           pontua_receita st_de_para_stn st_ano
+                          end
+  
+  if st_relacionamento_divida_ativa ne '' begin
+                                           trim st_relacionamento_divida_ativa to st_relacionamento_divida_ativa
+                                           pontua_receita st_relacionamento_divida_ativa st_ano
+                                          end
+  
+  if ((st_uf eq jn_uf) and (st_codigo ne '')) begin
+                                               //--prepara pra fonte
+                                               moveall '' to st_guarda_fonte st_guarda_codigo_aplicacao st_guarda_codigo_receita
+                                               move st_codigo to st_guarda_codigo_receita
+                                              end
+  
+  if jn_uf eq 'SP' begin
+                    if st_codigo_aplicacao ne '' begin
+                                                  move st_codigo_aplicacao to st_guarda_codigo_aplicacao
+                                                  repeat
+                                                   remove '.' from st_guarda_codigo_aplicacao
+                                                  until [~found]
+                                                  
+                                                       if nb_percentual eq 60 begin
+                                                                               move 'S' to st_guarda_fonte_fixa
+                                                                               move 'S' to st_guarda_codigo_aplicacao_fixo
+                                                                              end
+                                                  else if nb_percentual eq 25 begin
+                                                                               move 'S' to st_guarda_fonte_fixa
+                                                                               move 'S' to st_guarda_codigo_aplicacao_fixo
+                                                                              end
+                                                  else if nb_percentual eq 15 begin
+                                                                               move 'S' to st_guarda_fonte_fixa
+                                                                               move 'S' to st_guarda_codigo_aplicacao_fixo
+                                                                              end
+                                                  else begin
+                                                        move 'N' to st_guarda_fonte_fixa
+                                                        move 'N' to st_guarda_codigo_aplicacao_fixo
+                                                       end
+                                                 end
+                    else move '' to st_guarda_codigo_aplicacao
+                   end
+  
+  if st_fonte  ne '' begin
+                      trim st_fonte to st_fonte
+                      
+                      if jn_uf eq 'SP' comzeros st_fonte 2
+                      if jn_uf eq 'MG' begin
+                                        comzeros st_fonte 3
+                                       end
+                      
+                      move st_fonte to st_guarda_fonte
+                      
+                      if jn_uf eq 'MG' begin
+                                        if st_fonte_sicom eq 'Y' begin
+                                                                  move 'XXX'     to st_guarda_fonte
+                                                                  move 'XXXXXXX' to st_guarda_codigo_aplicacao
+                                                                 end
+                                        else begin
+                                              clear fontes
+                                              move jn_ano          to fontes.exercicio
+                                              move 'S'             to fontes.tipo
+                                              move st_guarda_fonte to fontes.codigo
+                                              find eq fontes by index.1
+                                              [~found] clear fontes
+                                              
+                                              if nb_percentual eq 100. begin
+                                                                        if fontes.detalha eq 'S' begin
+                                                                                                  move st_guarda_fonte to st_codigo_aplicacao
+                                                                                                  append st_codigo_aplicacao 'XXXX'
+                                                                                                 end
+                                                                        else begin
+                                                                              move st_guarda_fonte to st_codigo_aplicacao
+                                                                              append st_codigo_aplicacao '0000'
+                                                                             end
+                                                                       end
+                                              else begin
+                                                    move st_guarda_fonte to st_codigo_aplicacao
+                                                    append st_codigo_aplicacao '0000'
+                                                   end
+                                              
+                                              move st_codigo_aplicacao to st_guarda_codigo_aplicacao
+                                             end
+                                       end
+                     end
+  
+  clearxy 10 0
+  showln st_uf
+  showln st_ano
+  showln st_codigo
+  showln st_descricao
+  showln ' ' 
+  showln st_guarda_codigo_receita
+  showln st_fonte
+  showln st_guarda_fonte
+  showln st_codigo_aplicacao
+  showln st_guarda_codigo_aplicacao
+  showln st_fonte_sicom
+  showln ' ' 
+  showln nb_percentual
+  showln
+  keycheck abort
+  
+  [~seqeof] begin
+                    indicate ok! as st_codigo ne ''
+             [ ok!] indicate ok! as st_uf     eq jn_uf
+             [ ok!] indicate ok! as st_ano    eq jn_ano
+             [ ok!] begin
+                     [ planilha_nova!] begin
+                                             if st_ajustes         eq 'CM' move 'M' to st_ajustes
+                                        else if st_ajustes         eq 'CT' move 'C' to st_ajustes
+                                        else if st_ajustes         eq 'IM' move 'I' to st_ajustes
+                                        else if st_ajustes         eq 'N'  move ' ' to st_ajustes
+                                        else if st_ajustes         eq 'NT' move 'N' to st_ajustes
+                                        else if st_ajustes         eq 'TX' move 'T' to st_ajustes
+                                        else                               move ' ' to st_ajustes
+                                        
+                                             if st_tipo_lancamento eq 'N'  move ' ' to st_tipo_lancamento
+                                        else if st_tipo_lancamento eq 'TB' move 'S' to st_tipo_lancamento
+                                        else if st_tipo_lancamento eq 'NT' move 'N' to st_tipo_lancamento
+                                        else                               move ' ' to st_tipo_lancamento
+                                        
+                                             if st_divida_ativa    eq 'N'  move ' ' to st_divida_ativa
+                                        else if st_divida_ativa    eq 'TB' move 'T' to st_divida_ativa
+                                        else if st_divida_ativa    eq 'NT' move 'N' to st_divida_ativa
+                                        else                               move ' ' to st_divida_ativa
+                                        
+                                        if st_lancamento              ne 'S' move ' ' to st_lancamento
+                                        if st_renuncia                ne 'S' move ' ' to st_renuncia
+                                        if st_desconto                ne 'S' move ' ' to st_desconto
+                                        if st_rendimento_aplicacao    ne 'S' move ' ' to st_rendimento_aplicacao
+                                        if st_originarias             ne 'S' move ' ' to st_originarias
+                                        if st_transferencias          ne 'S' move ' ' to st_transferencias
+                                        if st_investimentos           ne 'S' move ' ' to st_investimentos
+                                        if st_financiamentos          ne 'S' move ' ' to st_financiamentos
+                                        if st_convenio                ne 'S' move ' ' to st_convenio
+                                        if st_operacao_credito        ne 'S' move ' ' to st_operacao_credito
+                                        if st_emprestimo_concedido    ne 'S' move ' ' to st_emprestimo_concedido
+                                        if st_precatorio_reg_especial ne 'S' move ' ' to st_precatorio_reg_especial
+                                        if st_deducao_fundeb          ne 'S' move ' ' to st_deducao_fundeb
+                                        
+                                        move '' to st_tipo_div_ativa
+                                        if st_principal_divida_ativa             eq 'S' move 'PR' to st_tipo_div_ativa
+                                        if st_multas_juros_divida_ativa          eq 'S' move 'MJ' to st_tipo_div_ativa
+                                        if st_atualizacao_monetaria_divida_ativa eq 'S' move 'AT' to st_tipo_div_ativa
+                                       end
+                     
+                     //--na planilha vai estar como 'A' para auxiliar na importacao do MFC
+                     if st_codigo eq '9.5.1.0.00.0.0.0000' move 'S' to st_tipo
+                     
+                     clear receitas
+                     move st_uf     to receitas.uf
+                     move st_ano    to receitas.ano
+                     move st_codigo to receitas.codigo
+                     find eq receitas by index.1
+                     [ found] reread receitas
+                     move st_tipo                                              to receitas.tipo
+                     move st_descricao                                         to receitas.descricao
+                     move 'S'                                                  to receitas.previdencia
+                     
+                     move st_relacionamento_divida_ativa                       to receitas.cod_relacionado
+                     move st_ajustes                                           to receitas.ajustes
+                     move st_de_para_stn                                       to receitas.de_para_stn
+                     
+                     move st_tipo_lancamento                                   to receitas.tributaria
+                     move st_lancamento                                        to receitas.lancamento
+                     
+                     move st_renuncia                                          to receitas.renuncia
+                     move st_desconto                                          to receitas.desconto
+                     move st_derivadas                                         to receitas.derivadas
+                     move st_originarias                                       to receitas.originarias
+                     move st_transferencias                                    to receitas.transferencias
+                     move st_investimentos                                     to receitas.investimentos
+                     move st_financiamentos                                    to receitas.financiamentos
+                     move st_rendimento_aplicacao                              to receitas.rend_aplicacao
+                     
+                     move st_divida_ativa                                      to receitas.divida_ativa
+                     move st_tipo_div_ativa                                    to receitas.tipo_div_ativa
+                     
+                     move st_operacao_credito                                  to receitas.oper_credito
+                     move st_emprestimo_concedido                              to receitas.am_emprestimo
+                     move st_precatorio_reg_especial                           to receitas.prec_reg_esp
+                     
+                     move st_outras_receitas                                   to receitas.outras_receitas
+                     move st_ensino                                            to receitas.ensino
+                     move st_saude                                             to receitas.saude
+                     move st_fundeb                                            to receitas.fundeb
+                     move st_emenda_93                                         to receitas.emenda_const_93
+                     
+                     move st_convenio                                          to receitas.convenio 
+                     move st_deducao_fundeb                                    to receitas.deducao_fundeb
+                     move (calcula_grau_receita(receitas.codigo,receitas.ano)) to receitas.grau
+                     saverecord receitas
+                     unlock
+                     
+                     if jn_uf eq 'MG' begin
+                                       if (length(st_codigo)) ne '19' append st_codigo '0'
+                                       
+                                       clear planomg
+                                       move st_ano      to planomg.ano
+                                       move st_natureza to planomg.natureza
+                                       move st_codigo   to planomg.codigo
+                                       find eq planomg by index.1
+                                       [ found] reread planomg
+                                       
+                                       move st_descricao  to planomg.descricao
+                                       move st_tipo       to planomg.tipo
+                                       move receitas.grau to planomg.grau
+                                       
+                                       //quebra_descricao
+                                       moveall  0 to it_a  it_b  it_pos
+                                       moveall '' to st_d1 st_d2 st_d3 st_d4
+                                       
+                                       trim st_descricao_completa to st_descricao_completa
+
+                                       for it_a from 0 to 3
+                                        for it_b from 1 to 50
+                                         if (mid(st_descricao_completa, 1 ,it_b)) eq '' move it_b to it_pos
+                                        loop
+                                              if it_a eq 0 begin
+                                                            move (mid(st_descricao_completa, it_pos, 1)) to st_d1
+                                                            remove st_d1 from st_descricao_completa
+                                                           end
+                                         else if it_a eq 1 begin
+                                                            move (mid(st_descricao_completa, it_pos, 1)) to st_d2
+                                                            remove st_d2 from st_descricao_completa
+                                                           end
+                                         else if it_a eq 2 begin
+                                                            move (mid(st_descricao_completa, it_pos, 1)) to st_d3
+                                                            remove st_d3 from st_descricao_completa
+                                                           end
+                                         else if it_a eq 3 begin
+                                                            move (mid(st_descricao_completa, it_pos, 1)) to st_d4
+                                                            remove st_d4 from st_descricao_completa
+                                                           end
+                                         trim st_descricao_completa to st_descricao_completa
+                                       loop
+
+                                       move st_d1 to planomg.descricao_1
+                                       move st_d2 to planomg.descricao_2
+                                       move st_d3 to planomg.descricao_3
+                                       move st_d4 to planomg.descricao_4
+                                       saverecord planomg
+                                      end
+                    end
+             
+                          indicate ok_fonte! as st_guarda_codigo_receita   ne ''
+             [ ok_fonte!] indicate ok_fonte! as st_guarda_fonte            ne ''
+             [ ok_fonte!] indicate ok_fonte! as st_guarda_codigo_aplicacao ne ''
+             [ ok_fonte!] begin
+                           clear recfonte
+                           move jn_uf                           to recfonte.uf
+                           move jn_ano                          to recfonte.ano
+                           move st_guarda_codigo_receita        to recfonte.codigo
+                           move st_guarda_fonte                 to recfonte.fonte
+                           move st_guarda_codigo_aplicacao      to recfonte.cod_aplicacao
+                           move st_guarda_fonte_fixa            to recfonte.fonte_fixa
+                           move st_guarda_codigo_aplicacao_fixo to recfonte.cod_apl_fixo
+                           move nb_percentual                   to recfonte.percentual
+                           find eq recfonte by index.1
+                           [ found] reread recfonte
+                           
+                           if ((jn_uf eq 'SP') and (jn_ano ge '2023') and ((left(st_guarda_codigo_receita,5)) eq '9.5.1')) begin
+                            move '2000000' to recfonte.cod_aplicacao
+                           end
+                           
+                           saverecord recfonte
+                           unlock
+                           
+                           if ((jn_uf eq 'MG') and (jn_ano ge '2018')) begin
+                                                                        clear relplano
+                                                                        move jn_ano                   to relplano.ano
+                                                                        move 'FONTREC'                to relplano.natureza
+                                                                        move st_guarda_codigo_receita to relplano.codigo_origem
+                                                                        move st_guarda_fonte          to relplano.codigo_destino
+                                                                        find eq relplano by index.1
+                                                                        [ found] reread relplano
+                                                                        move st_fonte_sicom           to relplano.auxiliar
+                                                                        saverecord relplano
+                                                                        unlock
+                                                                       end
+                          end
+            end
+ until [seqeof]
+end_procedure
+
+
+procedure acreceitas
+ local string  st_codigo_aplicacao st_codigo_aplicacao_fixo st_codigo_receita st_fonte st_fonte_fixa st_fonte_sicom
+
+ local integer it_recnum
+ local string  it_60     it_25   it_15
+
+ local number  nb_percentual
+ 
+ //--replica a fonte e cod aplicacao da receita principal nas receitas de multas, div ativa...etc
+ clear receitas
+ constraint_set 1
+ constrain receitas.uf     eq jn_uf
+ constrain receitas.ano    eq jn_ano
+ constrain receitas.codigo lt '9'
+ constrained_find first receitas by index.1
+ while [found]
+  clearxy 0 0
+  showln ' acreceitas '
+  showln receitas.codigo
+  
+  if (mid(receitas.codigo,1,14)) in '2-3-4-5-6-7-8-9' begin
+                                                       //--tenta com final 1 e 2
+                                                       move (left(receitas.codigo,13)) to st_codigo_receita
+                                                       append st_codigo_receita '1.0000'
+                                                       
+                                                       clear recfonte
+                                                       move receitas.uf       to recfonte.uf
+                                                       move receitas.ano      to recfonte.ano
+                                                       move st_codigo_receita to recfonte.codigo
+                                                       find gt recfonte by index.1
+                                                       [ found] indicate found as recfonte.uf     eq receitas.uf
+                                                       [ found] indicate found as recfonte.ano    eq receitas.ano
+                                                       [ found] indicate found as recfonte.codigo eq st_codigo_receita
+                                                       [~found] begin
+                                                                 //--tenta com final 1 e 2
+                                                                 move (left(receitas.codigo,13)) to st_codigo_receita
+                                                                 append st_codigo_receita '2.0000'
+                                                                end
+                                                       
+                                                       clear recfonte
+                                                       constraint_set 2
+                                                       constrain recfonte.uf     eq receitas.uf
+                                                       constrain recfonte.ano    eq receitas.ano
+                                                       constrain recfonte.codigo eq st_codigo_receita
+                                                       constrained_find first recfonte by index.1
+                                                       while [found]
+                                                        move recfonte.recnum        to it_recnum
+                                                        move recfonte.fonte         to st_fonte
+                                                        move recfonte.cod_aplicacao to st_codigo_aplicacao
+                                                        move recfonte.percentual    to nb_percentual
+                                                        move recfonte.fonte_fixa    to st_fonte_fixa
+                                                        move recfonte.cod_apl_fixo  to st_codigo_aplicacao_fixo
+                                                        
+                                                        clear recfonte
+                                                        move receitas.uf                     to recfonte.uf
+                                                        move receitas.ano                    to recfonte.ano
+                                                        move receitas.codigo                 to recfonte.codigo
+                                                        move st_fonte                        to recfonte.fonte
+                                                        move st_codigo_aplicacao             to recfonte.cod_aplicacao
+                                                        move nb_percentual                   to recfonte.percentual
+                                                        find eq recfonte by index.1
+                                                        [ found] reread recfonte
+                                                        move st_fonte_fixa                   to recfonte.fonte_fixa
+                                                        move st_codigo_aplicacao_fixo        to recfonte.cod_apl_fixo
+                                                        saverecord recfonte
+                                                        unlock
+                                                        
+                                                        if ((jn_uf eq 'MG') and (jn_ano ge '2018')) begin
+                                                                                                     move '' to st_fonte_sicom
+                                                                                                     clear relplano
+                                                                                                     move jn_ano            to relplano.ano
+                                                                                                     move 'FONTREC'         to relplano.natureza
+                                                                                                     move st_codigo_receita to relplano.codigo_origem
+                                                                                                     move st_fonte          to relplano.codigo_destino
+                                                                                                     find eq relplano by index.1
+                                                                                                     [ found] move relplano.auxiliar to st_fonte_sicom
+                                                                                                     
+                                                                                                     clear relplano
+                                                                                                     move jn_ano          to relplano.ano
+                                                                                                     move 'FONTREC'       to relplano.natureza
+                                                                                                     move recfonte.codigo to relplano.codigo_origem
+                                                                                                     move recfonte.fonte  to relplano.codigo_destino
+                                                                                                     find eq relplano by index.1
+                                                                                                     [ found] reread relplano
+                                                                                                     move st_fonte_sicom  to relplano.auxiliar
+                                                                                                     saverecord relplano
+                                                                                                     unlock
+                                                                                                    end
+                                                        
+                                                        clear recfonte
+                                                        move it_recnum to recfonte.recnum
+                                                        find eq recfonte by recnum
+                                                        
+                                                        constraint_set 2
+                                                        constrained_find next
+                                                        end
+                                                       constraint_set 2 clear
+                                                      end
+  
+  constraint_set 1
+  constrained_find next
+  end
+ constraint_set 1 clear
+
+ clear receitas
+ move jn_uf  to receitas.uf
+ move jn_ano to receitas.ano
+ repeat
+  find gt receitas by index.1
+  [ found] indicate found as receitas.uf  eq jn_uf
+  [ found] indicate found as receitas.ano eq jn_ano
+  [ found] begin
+            clearxy 0 0
+            showln ' acreceitas '
+            showln receitas.codigo
+  
+            if receitas.tipo eq 'A' begin
+                                     indicate codigo_fixo! false
+                                     
+                                     move 0 to it_60
+                                     move 0 to it_25
+                                     move 0 to it_15
+                                     
+                                     clear recfonte
+                                     move receitas.uf     to recfonte.uf
+                                     move receitas.ano    to recfonte.ano
+                                     move receitas.codigo to recfonte.codigo
+                                     repeat
+                                      find gt recfonte by index.1
+                                      [ found] indicate found as recfonte.uf     eq receitas.uf
+                                      [ found] indicate found as recfonte.ano    eq receitas.ano
+                                      [ found] indicate found as recfonte.codigo eq receitas.codigo
+                                      [ found] begin
+                                                if recfonte.percentual eq 60 move 1 to it_60
+                                                if recfonte.percentual eq 25 move 1 to it_25
+                                                if recfonte.percentual eq 15 move 1 to it_15
+                                                
+                                                if ((recfonte.percentual eq 60) or (recfonte.percentual eq 25) or (recfonte.percentual eq 15)) indicate codigo_fixo! true
+                                               end
+                                      until [~found]
+                                      
+                                      if (left(receitas.codigo,5)) eq '9.5.1' indicate codigo_fixo! true
+                                      else begin
+                                            indicate codigo_fixo! as ((it_60 eq 1) and (it_25 eq 1) and (it_15 eq 1))
+                                           end
+                                      
+                                      [~codigo_fixo!] begin
+                                                       reread receitas
+                                                       move '' to receitas.fonte1
+                                                       move '' to receitas.fonte2
+                                                       move '' to receitas.fonte3
+                                                       move '' to receitas.fonte4
+                                                       move '' to receitas.fonte5
+                                                       
+                                                       move '' to receitas.cod_aplicacao1
+                                                       move '' to receitas.cod_aplicacao2
+                                                       move '' to receitas.cod_aplicacao3
+                                                       move '' to receitas.cod_aplicacao4
+                                                       move '' to receitas.cod_aplicacao5
+                                                       
+                                                       move '' to receitas.perc1
+                                                       move '' to receitas.perc2
+                                                       move '' to receitas.perc3
+                                                       move '' to receitas.perc4
+                                                       move '' to receitas.perc5
+                                                       
+                                                       saverecord receitas
+                                                       unlock
+                                                      end
+                                      
+                                      [ codigo_fixo!] begin
+                                                       move 0 to fieldindex
+                                                       clear recfonte
+                                                       move receitas.uf     to recfonte.uf
+                                                       move receitas.ano    to recfonte.ano
+                                                       move receitas.codigo to recfonte.codigo
+                                                       repeat
+                                                        find gt recfonte by index.1
+                                                        [ found] indicate found as recfonte.uf     eq receitas.uf
+                                                        [ found] indicate found as recfonte.ano    eq receitas.ano
+                                                        [ found] indicate found as recfonte.codigo eq receitas.codigo
+                                                        [ found] begin
+                                                                  reread receitas
+                                                                  move recfonte.fonte         to receitas.fonte1&
+                                                                  move recfonte.cod_aplicacao to receitas.cod_aplicacao1&
+                                                                  move recfonte.percentual    to receitas.perc1&
+                                                                  saverecord receitas
+                                                                  unlock
+                                                                  
+                                                                  increment fieldindex
+                                                                 end
+                                                        until [~found]
+                                                      end
+                                     
+                                     indicate found true
+                                    end
+           end
+ until [~found]
+end_procedure
+
+procedure ac_pergunta_rec
+ local string st_codigo_receita
+ 
+ clear receitas
+ move jn_uf  to receitas.uf
+ move jn_ano to receitas.ano
+ repeat
+  find gt receitas by index.1
+  [ found] indicate found as receitas.uf  eq jn_uf
+  [ found] indicate found as receitas.ano eq jn_ano
+  [ found] begin
+            reread receitas
+            move '' to receitas.pergunta_cont
+            move '' to receitas.grp_itlancto
+            move '' to receitas.grp_itlancto_e
+            saverecord receitas
+            unlock
+            
+            gotoxy 10 0
+            showln ' ac-pergunta-rec'
+            showln receitas.ano ' ' receitas.codigo
+           end
+ until [~found]
+
+ clear lancto
+ move jn_uf            to lancto.uf
+ move jn_ano           to lancto.ano
+ move 12               to lancto.cod_tplancto
+ repeat
+  find gt lancto by index.1
+  [ found] indicate found as lancto.uf           eq jn_uf
+  [ found] indicate found as lancto.ano          eq jn_ano
+  [ found] indicate found as lancto.cod_tplancto eq 12
+  [ found] begin
+            gotoxy 10 0
+            showln ' ac-pergunta-rec'
+            showln lancto.ano ' ' lancto.cat_economica
+                   
+                   indicate ok! as lancto.grupo eq 7
+            [~ok!] indicate ok! as lancto.grupo eq 8
+            [ ok!] begin
+                    move (trim(lancto.cat_economica)) to st_codigo_receita
+                    append st_codigo_receita '.0000'
+                    
+                    clear receitas
+                    move lancto.uf         to receitas.uf
+                    move lancto.ano        to receitas.ano
+                    move st_codigo_receita to receitas.codigo
+                    find eq receitas by index.1
+                    [ found] begin
+                              reread receitas
+                              move 'S'                               to receitas.pergunta_cont
+                              if lancto.grupo eq 7 move lancto.grupo to receitas.grp_itlancto
+                              if lancto.grupo eq 8 move lancto.grupo to receitas.grp_itlancto_e
+                              saverecord receitas
+                              unlock
+                             end
+                    clear receitas
+                    
+                    clearxy 10 0
+                    showln ' ac-pergunta-rec'
+                    showln st_codigo_receita
+                    
+                   end
+            indicate found true
+           end
+ until [~found]
+end_procedure

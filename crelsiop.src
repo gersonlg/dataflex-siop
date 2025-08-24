@@ -1,0 +1,392 @@
+/TELA_PESQUISA RESIDENT
+ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ Consulta de Relacionamento Contas do Siops ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+³ Codigo    ____________________                                  Ano ____  ³
+³ Descricao ______________________________________________________________  ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ ________________________________________________________________________  ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³ ________________________________________________________________________  ³
+³ ________________________________________________________________________  ³
+³ ________________________________________________________________________  ³
+³ ________________________________________________________________________  ³
+³ ________________________________________________________________________  ³
+³ ________________________________________________________________________  ³
+³ ________________________________________________________________________  ³
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³                                                              <ESC> Retorna³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/BUFFER RESIDENT
+T  ________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+1  ________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+2  ________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+3  ________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+4  ________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+5  ________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+6  ________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+7  ________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+/TELA_RECNUM RESIDENT
+TITULO _________.
+1      _________.
+2      _________.
+3      _________.
+4      _________.
+5      _________.
+6      _________.
+7      _________.
+/CONFIRMA RESIDENT
+ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
+³______________________________________________________________________________³
+ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+/*
+#INCLUDE CONAM.LIB
+
+STRING ST_MONTALINHA 240 ST@LINHA 240 ST_DESCRICAO ST_CODIGO_TCE ST_CODIGO_RECEITA
+
+INTEGER IT_CONTADOR IT@LINHAS  IT_JANELA IT_RECNUM
+
+#COMMAND MONTALINHA
+ IF RELSIOP.NATUREZA EQ 'RECEITA' BEGIN
+                                   MOVE (OBTER_CODIGO_PADRAO_RECEITA(RELSIOP.CODIGO_TCE,PARGERAL.EXERCICIO)) TO ST_CODIGO_RECEITA
+                                   
+                                   CLEAR RECEITAS
+                                   MOVE RELSIOP.UF        TO RECEITAS.UF
+                                   MOVE RELSIOP.ANO       TO RECEITAS.ANO
+                                   MOVE ST_CODIGO_RECEITA TO RECEITAS.CODIGO
+                                   FIND EQ RECEITAS BY INDEX.1
+                                   [ FOUND] MOVE RECEITAS.DESCRICAO TO ST_DESCRICAO
+                                   [~FOUND] BEGIN
+                                             CLEAR RECEITAS
+                                             
+                                             CLEAR MOVREC
+                                             MOVE ST@CODIGO@ENTIDADE      TO MOVREC.COD_ENTIDADE
+                                             MOVE ST@EXERCICIO@FINANCEIRO TO MOVREC.EXERCICIO
+                                             MOVE RELSIOP.CODIGO_TCE      TO MOVREC.CODIGO
+                                             FIND EQ MOVREC BY INDEX.1
+                                             [~FOUND] CLEAR MOVREC
+                                             
+                                             MOVE MOVREC.DESCRICAO TO ST_DESCRICAO
+                                            END
+                                  END
+ ELSE BEGIN
+       CLEAR ECONORCA
+       MOVE RELSIOP.UF         TO ECONORCA.UF
+       MOVE RELSIOP.ANO        TO ECONORCA.ANO
+       MOVE RELSIOP.CODIGO_TCE TO ECONORCA.CODIGO
+       FIND EQ ECONORCA BY INDEX.1
+       [~FOUND] CLEAR ECONORCA
+       MOVE ECONORCA.DESCRICAO TO ST_DESCRICAO
+      END
+ 
+ MOVE (TRIM(RELSIOP.CODIGO_TCE)) TO ST_CODIGO_TCE
+ 
+ 
+ MOVE '' TO ST@LINHA
+ APPEND ST@LINHA ' Ano  Codigo               Descricao '
+
+ MOVE ST@LINHA TO JN_BUFFER_TITULO
+ MOVE '' TO ST_MONTALINHA
+ APPEND ST_MONTALINHA ' ' RELSIOP.ANO ' ' (PAD(ST_CODIGO_TCE,20)) ' ' ST_DESCRICAO
+#ENDCOMMAND
+
+#COMMAND SOBE_1
+  MOVE JN_BUFFER_2  TO JN_BUFFER_1
+  MOVE JN_BUFFER_3  TO JN_BUFFER_2
+  MOVE JN_BUFFER_4  TO JN_BUFFER_3
+  MOVE JN_BUFFER_5  TO JN_BUFFER_4
+  MOVE JN_BUFFER_6  TO JN_BUFFER_5
+  MOVE JN_BUFFER_7  TO JN_BUFFER_6
+
+  MOVE JN_RECNUM_2  TO JN_RECNUM_1
+  MOVE JN_RECNUM_3  TO JN_RECNUM_2
+  MOVE JN_RECNUM_4  TO JN_RECNUM_3
+  MOVE JN_RECNUM_5  TO JN_RECNUM_4
+  MOVE JN_RECNUM_6  TO JN_RECNUM_5
+  MOVE JN_RECNUM_7  TO JN_RECNUM_6
+#ENDCOMMAND
+
+#COMMAND DESCE_1
+  MOVE JN_BUFFER_6  TO JN_BUFFER_7
+  MOVE JN_BUFFER_5  TO JN_BUFFER_6
+  MOVE JN_BUFFER_4  TO JN_BUFFER_5
+  MOVE JN_BUFFER_3  TO JN_BUFFER_4
+  MOVE JN_BUFFER_2  TO JN_BUFFER_3
+  MOVE JN_BUFFER_1  TO JN_BUFFER_2
+
+  MOVE JN_RECNUM_6  TO JN_RECNUM_7
+  MOVE JN_RECNUM_5  TO JN_RECNUM_6
+  MOVE JN_RECNUM_4  TO JN_RECNUM_5
+  MOVE JN_RECNUM_3  TO JN_RECNUM_4
+  MOVE JN_RECNUM_2  TO JN_RECNUM_3
+  MOVE JN_RECNUM_1  TO JN_RECNUM_2
+#ENDCOMMAND
+
+AUTOPAGE TELA_PESQUISA
+NAME JN_CODIGO JN_ANO JN_DESCRICAO
+NAME JN_TITULO
+NAME JN_LINHA_1
+NAME JN_LINHA_2
+NAME JN_LINHA_3
+NAME JN_LINHA_4
+NAME JN_LINHA_5
+NAME JN_LINHA_6
+NAME JN_LINHA_7
+
+AUTOPAGE BUFFER
+NAME JN_BUFFER_TITULO
+NAME JN_BUFFER_1
+NAME JN_BUFFER_2
+NAME JN_BUFFER_3
+NAME JN_BUFFER_4
+NAME JN_BUFFER_5
+NAME JN_BUFFER_6
+NAME JN_BUFFER_7
+
+AUTOPAGE TELA_RECNUM
+NAME JN_RECNUM_TITULO
+NAME JN_RECNUM_1
+NAME JN_RECNUM_2
+NAME JN_RECNUM_3
+NAME JN_RECNUM_4
+NAME JN_RECNUM_5
+NAME JN_RECNUM_6
+NAME JN_RECNUM_7
+
+OPEN CADSIOP
+OPEN RELSIOP
+OPEN RECEITAS
+OPEN ECONORCA
+OPEN MOVREC
+
+PAGE SET CONFIRMA      AT 21 00  COLORS IT_COR_TARJA  IT_COR_MOLDURA
+PAGE SET TELA_PESQUISA AT 05 01  COLORS IT_COR_TARJA  IT_COR_MOLDURA
+
+INICIO:
+KEYPROC OFF
+
+SCREENMODE IT_COR_TITULO  ON
+MOVE CADSIOP.CODIGO    TO JN_CODIGO
+MOVE CADSIOP.ANO       TO JN_ANO
+MOVE CADSIOP.DESCRICAO TO JN_DESCRICAO
+SCREENMODE IT_COR_TARJA   OFF
+
+CLEAR RELSIOP
+MOVE PARGERAL.ESTADO  TO RELSIOP.UF
+MOVE CADSIOP.ANO      TO RELSIOP.ANO
+MOVE CADSIOP.SISTEMA  TO RELSIOP.SISTEMA
+MOVE CADSIOP.NATUREZA TO RELSIOP.NATUREZA
+MOVE CADSIOP.CODIGO   TO RELSIOP.CODIGO_SIOP
+FIND GT RELSIOP BY INDEX.1
+[ FOUND] INDICATE FOUND AS RELSIOP.UF          EQ PARGERAL.ESTADO
+[ FOUND] INDICATE FOUND AS RELSIOP.ANO         EQ CADSIOP.ANO
+[ FOUND] INDICATE FOUND AS RELSIOP.SISTEMA     EQ CADSIOP.SISTEMA
+[ FOUND] INDICATE FOUND AS RELSIOP.NATUREZA    EQ CADSIOP.NATUREZA
+[ FOUND] INDICATE FOUND AS RELSIOP.CODIGO_SIOP EQ CADSIOP.CODIGO
+[~FOUND] BEGIN
+          ADVERTE 'CODIGO SEM RELACIONAMENTO'
+          CLEAR RELSIOP
+          ABORT
+         END
+         
+FIND LT RELSIOP BY INDEX.1
+[ FOUND] MOVE RELSIOP.RECNUM TO IT_RECNUM
+[~FOUND] MOVE 0              TO IT_RECNUM
+
+MOVE 0 TO IT_JANELA
+SCREENMODE IT_COR_MOLDURA ON
+
+LB_ROTINA_INICIO:
+
+ CLEARFORM JN_BUFFER_1 THRU JN_BUFFER_7
+ CLEARFORM JN_RECNUM_1 THRU JN_RECNUM_7
+
+ MOVE 0 TO IT_CONTADOR 
+ MOVE 0 TO WINDOWINDEX
+ MOVE 7 TO IT@LINHAS
+
+ CLEAR RELSIOP
+ MOVE IT_RECNUM TO RELSIOP.RECNUM
+ FIND EQ RELSIOP BY RECNUM
+
+FOR IT_CONTADOR FROM 1 TO IT@LINHAS
+  FIND GT RELSIOP BY INDEX.1
+  [  FOUND] INDICATE FOUND AS RELSIOP.UF          EQ PARGERAL.ESTADO
+  [  FOUND] INDICATE FOUND AS RELSIOP.ANO         EQ CADSIOP.ANO
+  [  FOUND] INDICATE FOUND AS RELSIOP.SISTEMA     EQ CADSIOP.SISTEMA
+  [  FOUND] INDICATE FOUND AS RELSIOP.NATUREZA    EQ CADSIOP.NATUREZA
+  [  FOUND] INDICATE FOUND AS RELSIOP.CODIGO_SIOP EQ CADSIOP.CODIGO
+  [FINDERR] BEGIN
+             IF (WINDOWINDEX-1) LT IT_JANELA CALC (WINDOWINDEX-1) TO IT_JANELA
+             MOVE IT@LINHAS TO IT_CONTADOR
+            END
+
+  [FOUND] BEGIN
+           MONTALINHA
+           MOVE ST_MONTALINHA  TO JN_BUFFER_1&
+           MOVE RELSIOP.RECNUM TO JN_RECNUM_1&
+           INCREMENT WINDOWINDEX
+          END
+LOOP 
+
+ ENCHE_TELA
+ PAGE TELA_PESQUISA
+
+ MOVE IT_JANELA     TO WINDOWINDEX
+ MOVE RELSIOP.RECNUM TO IT_RECNUM
+
+ REPEAT
+  GOSUB ALTA_INTENSIDADE
+  INKEY ST_TECLA
+  GOSUB BAIXA_INTENSIDADE
+
+  [KEY.RIGHT] BEGIN
+               IF IT@POSICAO LE (IT@MAXIMO-76) BEGIN
+                                                INCREMENT IT@POSICAO
+                                                ENCHE_TELA
+                                               END
+              END
+
+  [KEY.LEFT] IF IT@POSICAO NE 1 BEGIN
+                                 DECREMENT IT@POSICAO
+                                 ENCHE_TELA
+                                END
+
+  [KEY.ESCAPE] BEGIN
+                CLEAR RELSIOP
+                ABORT
+               END
+
+  [ KEY.RETURN] BEGIN
+                 CLEAR RELSIOP
+                 MOVE JN_RECNUM_1& TO RELSIOP.RECNUM
+                 FIND EQ RELSIOP BY RECNUM
+                 ABORT
+                END
+
+  [KEY.UP] BEGIN                            // SET SOBE
+            IF WINDOWINDEX NE 0 DECREMENT WINDOWINDEX
+            ELSE BEGIN
+                  CLEAR RELSIOP
+                  MOVE JN_RECNUM_1 TO RELSIOP.RECNUM
+                  FIND EQ RELSIOP BY RECNUM
+                  FIND LT RELSIOP BY INDEX.1
+                  [ FOUND] INDICATE FOUND AS RELSIOP.UF          EQ PARGERAL.ESTADO
+                  [ FOUND] INDICATE FOUND AS RELSIOP.ANO         EQ CADSIOP.ANO
+                  [ FOUND] INDICATE FOUND AS RELSIOP.SISTEMA     EQ CADSIOP.SISTEMA
+                  [ FOUND] INDICATE FOUND AS RELSIOP.NATUREZA    EQ CADSIOP.NATUREZA
+                  [ FOUND] INDICATE FOUND AS RELSIOP.CODIGO_SIOP EQ CADSIOP.CODIGO
+                  [ FOUND] BEGIN
+                            DESCE_1
+                            MONTALINHA
+                            MOVE ST_MONTALINHA  TO JN_BUFFER_1
+                            MOVE RELSIOP.RECNUM TO JN_RECNUM_1
+                            ENCHE_TELA
+                           END
+                 END
+           END
+
+  [KEY.DOWN] BEGIN                         // SET DESCE
+               IF WINDOWINDEX EQ (IT@LINHAS-1) BEGIN
+                                                CLEAR RELSIOP
+                                                MOVE JN_RECNUM_7 TO RELSIOP.RECNUM
+                                                FIND EQ RELSIOP BY RECNUM
+                                                FIND GT RELSIOP BY INDEX.1
+                                                [ FOUND] INDICATE FOUND AS RELSIOP.UF          EQ PARGERAL.ESTADO
+                                                [ FOUND] INDICATE FOUND AS RELSIOP.ANO         EQ CADSIOP.ANO
+                                                [ FOUND] INDICATE FOUND AS RELSIOP.SISTEMA     EQ CADSIOP.SISTEMA
+                                                [ FOUND] INDICATE FOUND AS RELSIOP.NATUREZA    EQ CADSIOP.NATUREZA
+                                                [ FOUND] INDICATE FOUND AS RELSIOP.CODIGO_SIOP EQ CADSIOP.CODIGO
+                                                [ FOUND] BEGIN
+                                                          SOBE_1
+                                                          MONTALINHA
+                                                          MOVE ST_MONTALINHA  TO JN_BUFFER_7
+                                                          MOVE RELSIOP.RECNUM TO JN_RECNUM_7
+                                                          ENCHE_TELA
+                                                         END
+                                               END
+              ELSE BEGIN
+                    INCREMENT WINDOWINDEX
+                    IF JN_RECNUM_1& EQ 0 DECREMENT WINDOWINDEX
+                   END
+            END
+
+  [KEY.NEXT] IF JN_RECNUM_7 NE 0 BEGIN
+                                  CLEAR RELSIOP
+                                  MOVE JN_RECNUM_7 TO RELSIOP.RECNUM
+                                  FIND EQ RELSIOP BY RECNUM
+                                  FIND GT RELSIOP BY INDEX.1
+                                  [ FOUND] INDICATE FOUND AS RELSIOP.UF          EQ PARGERAL.ESTADO
+                                  [ FOUND] INDICATE FOUND AS RELSIOP.ANO         EQ CADSIOP.ANO
+                                  [ FOUND] INDICATE FOUND AS RELSIOP.SISTEMA     EQ CADSIOP.SISTEMA
+                                  [ FOUND] INDICATE FOUND AS RELSIOP.NATUREZA    EQ CADSIOP.NATUREZA
+                                  [ FOUND] INDICATE FOUND AS RELSIOP.CODIGO_SIOP EQ CADSIOP.CODIGO
+                                  [ FOUND] BEGIN
+                                            MOVE JN_RECNUM_7 TO IT_RECNUM
+                                            MOVE WINDOWINDEX TO IT_JANELA
+                                            GOTO LB_ROTINA_INICIO
+                                           END
+                                 END
+
+  [KEY.PREVIOUS] BEGIN
+                  CLEAR RELSIOP
+                  MOVE JN_RECNUM_1 TO RELSIOP.RECNUM
+                  FIND EQ RELSIOP BY RECNUM
+                  FOR IT_CONTADOR FROM 1 TO (IT@LINHAS+1)
+                   FIND LT RELSIOP BY INDEX.1
+                   [ FOUND] INDICATE FOUND AS RELSIOP.UF          EQ PARGERAL.ESTADO
+                   [ FOUND] INDICATE FOUND AS RELSIOP.ANO         EQ CADSIOP.ANO
+                   [ FOUND] INDICATE FOUND AS RELSIOP.SISTEMA     EQ CADSIOP.SISTEMA
+                   [ FOUND] INDICATE FOUND AS RELSIOP.NATUREZA    EQ CADSIOP.NATUREZA
+                   [ FOUND] INDICATE FOUND AS RELSIOP.CODIGO_SIOP EQ CADSIOP.CODIGO
+                   [~FOUND] MOVE (IT@LINHAS+1) TO IT_CONTADOR
+                   [ FOUND] MOVE RELSIOP.RECNUM TO IT_RECNUM
+                  LOOP
+
+                  MOVE WINDOWINDEX  TO IT_JANELA
+
+                  [~FOUND] BEGIN
+                            CLEAR RELSIOP
+                            MOVE PARGERAL.ESTADO  TO RELSIOP.UF
+                            MOVE CADSIOP.ANO      TO RELSIOP.ANO
+                            MOVE CADSIOP.SISTEMA  TO RELSIOP.SISTEMA
+                            MOVE CADSIOP.NATUREZA TO RELSIOP.NATUREZA
+                            MOVE CADSIOP.CODIGO   TO RELSIOP.CODIGO_SIOP
+                            FIND GT RELSIOP BY INDEX.1
+                            [ FOUND] INDICATE FOUND AS RELSIOP.UF          EQ PARGERAL.ESTADO
+                            [ FOUND] INDICATE FOUND AS RELSIOP.ANO         EQ CADSIOP.ANO
+                            [ FOUND] INDICATE FOUND AS RELSIOP.SISTEMA     EQ CADSIOP.SISTEMA
+                            [ FOUND] INDICATE FOUND AS RELSIOP.NATUREZA    EQ CADSIOP.NATUREZA
+                            [ FOUND] INDICATE FOUND AS RELSIOP.CODIGO_SIOP EQ CADSIOP.CODIGO
+                            [ FOUND] BEGIN
+                                      FIND LT RELSIOP BY INDEX.1
+                                      [ FOUND] MOVE RELSIOP.RECNUM TO IT_RECNUM
+                                      [~FOUND] MOVE 0              TO IT_RECNUM
+                                     END
+                           END
+                  GOTO LB_ROTINA_INICIO
+                 END
+
+PAGE TELA_PESQUISA
+
+GOSUB ALTA_INTENSIDADE
+
+LOOP
+ABORT
+
+BAIXA_INTENSIDADE:
+ SCREENMODE IT_COR_MOLDURA ON
+ DISPLAY JN_LINHA_1& TO JN_LINHA_1&
+ GOTOXY 25 0
+RETURN
+
+ALTA_INTENSIDADE:
+ SCREENMODE IT_COR_TITULO ON
+ DISPLAY JN_LINHA_1& TO JN_LINHA_1&
+ GOTOXY 25 0
+RETURN
+
+KEYPROC KEY.HELP
+AJUDA
+PAGE TELA_PESQUISA
+GOTOXY 30 0
+RETURN
+

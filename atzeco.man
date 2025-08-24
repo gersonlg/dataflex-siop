@@ -1,0 +1,194 @@
+//--
+//-- antes precisava rodar no final atzgrueco.man (sp e mg) e atzplamg.man (mg)
+//-- 
+//--
+//-- PLANILHA UNICA MFC - SFPM - DEVERA SER IMPORTADA APENAS COM ESTE PROGRAMA A PARTIR DE 2020/2021->
+//--
+/tela resident
+
+Estado         __      Ano   ____
+
+
+Confirma       _ <S/N>
+
+/*
+#INCLUDE CONAM.LIB
+#INCLUDE ACENTO.LIB
+
+SET_ARGUMENT_SIZE 4096
+
+open econorca
+
+autopage tela
+name jn_uf
+name jn_ano
+name jn_confirma
+
+inicio:
+clearform tela
+page tela
+
+accept jn_uf  {capslock,autoclear}
+accept jn_ano {capslock,autoclear}
+
+repeat
+ accept jn_confirma         {autoclear,capslock}
+ [ key.escape] abort
+ if not jn_confirma in 'SsNn' move '' to jn_confirma
+until jn_confirma ne ''
+
+if jn_confirma in 'Nn' goto inicio
+
+//--
+tirar_acentuacao_arquivo '/home/gerson/conv/siop/econorca.csv' '/home/gerson/conv/siop/econorca2.csv'
+//--
+
+direct_input channel 1 "/home/gerson/conv/siop/econorca.csv"
+
+[ seqeof] begin
+           gotoxy 5 2
+           showln 'Arquivo econorca.csv nao encontrado. '
+           pause .
+           abort
+          end
+
+gotoxy 20 0
+showln ' apagando antigos '
+
+clear econorca
+constraint_set 1
+constrain econorca.uf   eq jn_uf
+constrain econorca.ano  eq jn_ano
+constrained_find first econorca by index.1
+while [found]
+ gotoxy 21 0
+ showln econorca.recnum
+ reread econorca
+ delete econorca
+ unlock
+ constrained_find next
+ end
+constraint_set 1 clear
+
+gotoxy 20 0
+showln ' apagando sem uf'
+
+clear econorca
+constraint_set 1
+constrain econorca.uf   eq ''
+constrained_find first econorca by index.1
+while [found]
+ gotoxy 21 0
+ showln econorca.recnum
+ reread econorca
+ delete econorca
+ unlock
+ constrained_find next
+ end
+constraint_set 1 clear
+
+gotoxy 20 0
+showln ' apagando sem exercicio'
+
+clear econorca
+constraint_set 1
+constrain econorca.ano  eq ''
+constrained_find first econorca by recnum
+while [found]
+ gotoxy 21 0
+ showln econorca.recnum
+ reread econorca
+ delete econorca
+ unlock
+ constrained_find next
+ end
+constraint_set 1 clear
+
+clearxy 10 0
+showln ' comecando a ler os arquivos '
+call ler_arquivo
+call atualiza_grau_cnd
+
+gotoxy 23 0
+pause 'Termino da atualizacao.'
+abort
+
+keyproc key.up
+ backfield
+return
+
+keyproc key.escape
+abort
+
+procedure ler_arquivo
+ local string  st_linha st_descricao st_codigo st_tipo 
+ 
+ //--sempre verificar se tem essas linhas a mais
+ readln channel 1 st_linha
+
+ repeat
+  read channel 1 st_codigo
+  read channel 1 st_descricao
+  read channel 1 st_tipo
+  readln channel 1
+  
+  uppercase st_tipo to st_tipo
+  trim      st_tipo to st_tipo
+  
+  clearxy 15 0
+  showln 'Atualizando econorca'
+  showln st_codigo
+  showln st_tipo
+  showln st_descricao
+//   pause .
+  
+  retirar_acentuacao st_descricao st_descricao
+  uppercase st_descricao
+  
+  if st_codigo ne '' begin
+                      clear econorca
+                      move jn_uf     to econorca.uf
+                      move jn_ano    to econorca.ano
+                      move st_codigo to econorca.codigo
+                      find eq econorca by index.1
+                      [ found] reread econorca
+                      [~seqeof] begin
+                                 move (left(st_tipo,1)) to econorca.tipo
+                                 move st_descricao       to econorca.descricao
+                                 move st_descricao       to econorca.desc_completa
+                                 saverecord econorca
+                                end
+                      unlock
+                     end
+ until [seqeof]
+end_procedure
+
+procedure atualiza_grau_cnd
+ local integer it_grau
+ 
+ clear econorca
+ move jn_uf  to econorca.uf
+ move jn_ano to econorca.ano
+ repeat
+  find gt econorca by index.1
+  [ found] indicate found as econorca.uf  eq jn_uf
+  [ found] indicate found as econorca.ano eq jn_ano
+  [ found] begin
+            move 0 to it_grau
+            
+                 if (mid(econorca.codigo,4,20)) ne '0000' move 8 to it_grau
+            else if (mid(econorca.codigo,2,17)) ne '00'   move 7 to it_grau
+            else if (mid(econorca.codigo,2,14)) ne '00'   move 6 to it_grau
+            else if (mid(econorca.codigo,2,11)) ne '00'   move 5 to it_grau
+            else if (mid(econorca.codigo,2,8))  ne '00'   move 4 to it_grau
+            else if (mid(econorca.codigo,2,5))  ne '00'   move 3 to it_grau
+            else if (mid(econorca.codigo,1,3))  ne '0'    move 2 to it_grau
+            else if (mid(econorca.codigo,1,1))  ne '0'    move 1 to it_grau
+            
+            reread econorca
+            move it_grau to econorca.grau
+            saverecord econorca
+            unlock
+           end
+ until [~found]
+end_procedure
